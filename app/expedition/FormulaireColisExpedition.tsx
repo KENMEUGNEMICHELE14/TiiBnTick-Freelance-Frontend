@@ -307,7 +307,7 @@ export default function PackageRegistration({ initialData = {}, onContinue, onBa
               >
                 <PhotoIcon className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                 <p className="text-gray-600 dark:text-gray-300 font-medium text-sm">Cliquez pour ajouter une photo</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">PNG, JPG jusqu'à 5MB</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">PNG, JPG jusqu&apos;à 5MB</p>
               </div>
             ) : (
               <div className="relative inline-block">
@@ -497,7 +497,7 @@ export default function PackageRegistration({ initialData = {}, onContinue, onBa
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <OptionCard
                 title="Récupération à domicile"
-                subtitle="Un livreur vient chercher le colis"
+                subtitle="Un freelancer vient chercher le colis"
                 icon={<HomeIcon className="w-4 h-4" />}
                 additionalCost={1000}
                 isSelected={packageData.pickup}

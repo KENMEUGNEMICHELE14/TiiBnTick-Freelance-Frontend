@@ -163,7 +163,7 @@ export default function LoginPage() {
                     </svg>
                   </div>
                   <div className="flex flex-col items-center gap-1 md:gap-2">
-                    <h3 className="font-semibold text-gray-900 text-lg md:text-xl">Livreur</h3>
+                    <h3 className="font-semibold text-gray-900 text-lg md:text-xl">Freelancer</h3>
                     <p className="text-xs md:text-sm text-gray-500">Je souhaite livrer des colis</p>
                   </div>
                 </CardContent>
@@ -392,7 +392,7 @@ export default function LoginPage() {
 
                 {/* 3. Lieu dit de l'adresse */}
                 <div className="space-y-1 md:space-y-2">
-                  <Label className="text-gray-700 text-xs md:text-sm font-medium">Lieu dit de l'adresse</Label>
+                  <Label className="text-gray-700 text-xs md:text-sm font-medium">Lieu dit de l&apos;adresse</Label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-orange-500" />
                     <Input
@@ -407,7 +407,7 @@ export default function LoginPage() {
 
                 {/* 4. Photo d'identité */}
                 <div className="space-y-1 md:space-y-2">
-                  <Label className="text-gray-700 text-xs md:text-sm font-medium">Photo d'identité</Label>
+                  <Label className="text-gray-700 text-xs md:text-sm font-medium">Photo d&apos;identité</Label>
                   <div className="relative">
                     <label htmlFor="photo-identite" className="block">
                       <div className="border-2 border-dashed border-orange-300 rounded-lg p-4 md:p-6 cursor-pointer hover:border-orange-400 transition-colors text-center bg-orange-100 hover:bg-orange-100">
@@ -421,7 +421,7 @@ export default function LoginPage() {
                           ) : (
                             <div className="text-center">
                               <p className="text-xs md:text-sm font-medium text-gray-700">Cliquez pour téléverser</p>
-                              <p className="text-xs text-gray-500">Photo d'identité (CNI, Passeport)</p>
+                              <p className="text-xs text-gray-500">Photo d&apos;identité (CNI, Passeport)</p>
                             </div>
                           )}
                         </div>
@@ -708,7 +708,7 @@ export default function LoginPage() {
 
                 {/* 4. Numéro d'immatriculation */}
                 <div className="space-y-1 md:space-y-2">
-                  <Label className="text-gray-700 text-xs md:text-sm font-medium">Numéro d'immatriculation</Label>
+                  <Label className="text-gray-700 text-xs md:text-sm font-medium">Numéro d&apos;immatriculation</Label>
                   <div className="relative">
                     <Car className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-orange-500" />
                     <Input

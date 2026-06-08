@@ -7,6 +7,7 @@ import { AuthProvider } from '@/context/AuthContext'
 import { NotificationProvider } from '@/context/NotificationContext'
 import { cookies } from 'next/headers'
 import ThemeCookieSync from '@/components/theme-cookie-sync'
+import FloatingChatWidget from '@/components/chat/FloatingChatWidget'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -64,6 +65,7 @@ export default async function RootLayout({
               {children}
               {/* Client component that keeps the cookie in sync when theme changes */}
               <ThemeCookieSync />
+              <FloatingChatWidget />
             </NotificationProvider>
           </AuthProvider>
         </ThemeProvider>

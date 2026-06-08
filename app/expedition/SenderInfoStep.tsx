@@ -165,7 +165,7 @@ const BreakingNewsNotification = ({ isVisible, onClose, onRegister, onContinueWi
                     </motion.div>
                   </div>
                   <div className="flex items-center space-x-3 ml-4">
-                    <motion.button onClick={onRegister} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center bg-white text-orange-600 px-4 py-2 rounded-full font-semibold text-sm hover:bg-orange-50 transition-colors shadow-lg"><UserPlus className="w-4 h-4 mr-2" />S'inscrire</motion.button>
+                    <motion.button onClick={onRegister} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center bg-white text-orange-600 px-4 py-2 rounded-full font-semibold text-sm hover:bg-orange-50 transition-colors shadow-lg"><UserPlus className="w-4 h-4 mr-2" />S&apos;inscrire</motion.button>
                     <motion.button onClick={onContinueWithout} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="text-white text-sm hover:text-orange-200 transition-colors underline">Continuer sans compte</motion.button>
                     <motion.button onClick={onClose} whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} className="text-white/80 hover:text-white transition-colors ml-2"><X className="w-5 h-5" /></motion.button>
                   </div>
@@ -180,7 +180,7 @@ const BreakingNewsNotification = ({ isVisible, onClose, onRegister, onContinueWi
                 </div>
                 <p className="text-white font-medium text-sm text-center mb-3">🎉 Créez votre compte pour un suivi optimal de vos envois !</p>
                 <div className="flex flex-col sm:flex-row sm:justify-center sm:space-x-4 space-y-2 sm:space-y-0">
-                    <button onClick={onRegister} className="w-full sm:w-auto flex items-center justify-center bg-white text-orange-600 px-4 py-2.5 rounded-full font-semibold text-sm shadow-lg"><UserPlus className="w-4 h-4 mr-2" />S'inscrire gratuitement</button>
+                    <button onClick={onRegister} className="w-full sm:w-auto flex items-center justify-center bg-white text-orange-600 px-4 py-2.5 rounded-full font-semibold text-sm shadow-lg"><UserPlus className="w-4 h-4 mr-2" />S&apos;inscrire gratuitement</button>
                     <button onClick={onContinueWithout} className="w-full sm:w-auto text-white text-sm hover:text-orange-200">Continuer sans compte</button>
                 </div>
             </div>

@@ -110,7 +110,7 @@ export default function RouteSelectionStep({ onContinue, onBack, initialDepartur
             <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
           <div>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Sélection de l'itinéraire</h2>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Sélection de l&apos;itinéraire</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">Itinéraire calculé à partir des adresses fournies.</p>
           </div>
         </div>

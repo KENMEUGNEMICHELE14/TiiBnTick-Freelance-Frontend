@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import {
   Package,
@@ -21,11 +19,8 @@ import {
   LogOut,
   Menu,
   X,
-  Phone,
   Map as MapIcon,
-  AlertCircle,
   TrendingUp,
-  CreditCard,
   Calendar,
   LayoutDashboard,
   Megaphone,
@@ -33,11 +28,7 @@ import {
   Home,
   Crown,
   Award,
-  Target,
-  Zap,
   BarChart3,
-  ArrowUpRight,
-  Shield,
 } from 'lucide-react'
 import { EarningsChart } from '@/components/charts/earnings-chart'
 import { DeliveriesChart } from '@/components/charts/deliveries-chart'
@@ -79,7 +70,7 @@ export default function LivreurDashboard() {
   }
 
   // Livraisons actives
-  const [activeDeliveries, setActiveDeliveries] = useState([
+  const [activeDeliveries, setActiveDeliveries] = useState<any[]>([
     {
       id: 'TBP-2024-001',
       customerName: 'Amani Yao',
@@ -109,7 +100,7 @@ export default function LivreurDashboard() {
   ])
 
   // Livraisons disponibles
-  const [availableDeliveries, setAvailableDeliveries] = useState([
+  const [availableDeliveries, setAvailableDeliveries] = useState<any[]>([
     {
       id: 'TBP-2024-003',
       customerName: 'Kouassi Paul',
@@ -282,7 +273,7 @@ export default function LivreurDashboard() {
                 <h1 className="text-xl font-bold">
                   TiiB<span className="text-orange-500">n</span>Pick
                 </h1>
-                <p className="text-xs text-gray-500">Espace Livreur</p>
+                <p className="text-xs text-gray-500">Espace Freelancer</p>
               </div>
             </div>
 
@@ -295,7 +286,10 @@ export default function LivreurDashboard() {
               </Button>
 
               {/* Profile Menu */}
-              <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 rounded-lg border border-orange-200">
+              <div 
+                className="flex items-center gap-2 px-3 py-2 bg-orange-50 rounded-lg border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
+                onClick={() => router.push('/livreur/profil')}
+              >
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
@@ -312,7 +306,7 @@ export default function LivreurDashboard() {
                 <Settings className="w-5 h-5" />
               </Button>
 
-              <Button variant="ghost" size="icon" className="text-red-600">
+              <Button variant="ghost" size="icon" className="text-red-600" onClick={() => router.push('/')}>
                 <LogOut className="w-5 h-5" />
               </Button>
             </nav>
@@ -358,7 +352,7 @@ export default function LivreurDashboard() {
                 <Calendar className="w-4 h-4 mr-2" />
                 Historique des livraisons
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-red-600">
+              <Button variant="ghost" className="w-full justify-start text-red-600" onClick={() => router.push('/')}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Déconnexion
               </Button>
@@ -379,7 +373,7 @@ export default function LivreurDashboard() {
                     <div>
                       <p className="text-sm opacity-90 mb-1">Bienvenue,</p>
                       <h1 className="text-2xl md:text-3xl font-bold mb-2">{livreurInfo.lastName} {livreurInfo.firstName}</h1>
-                      <p className="text-sm opacity-90">Bienvenue sur votre espace livreur</p>
+                      <p className="text-sm opacity-90">Bienvenue sur votre espace freelancer</p>
                     </div>
                     <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
                       <Truck className="w-10 h-10" />
@@ -635,7 +629,7 @@ export default function LivreurDashboard() {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                 <Card className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3 px-4 py-3">
-                    <CardDescription className="text-[10px] md:text-xs">Aujourd'hui</CardDescription>
+                    <CardDescription className="text-[10px] md:text-xs">Aujourd&apos;hui</CardDescription>
                     <CardTitle className="text-xl md:text-2xl text-orange-600">{todayStats.deliveries}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-4 pb-4">
@@ -788,7 +782,7 @@ export default function LivreurDashboard() {
                           className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
                           onClick={() => handleAcceptDelivery(delivery.id)}
                         >
-                          Souscrire à l'annonce
+                          Souscrire à l&apos;annonce
                         </Button>
                       </div>
                     </CardContent>
@@ -864,7 +858,7 @@ export default function LivreurDashboard() {
                         </div>
 
                         <div className="flex gap-2 w-full sm:w-auto">
-                          <DialogClose>
+                          <DialogClose asChild>
                             <Button variant="outline" className="flex-1 sm:flex-none">← Retour</Button>
                           </DialogClose>
                           <Button onClick={() => { if (selectedDelivery) handleAcceptDelivery(selectedDelivery.id); setDetailsOpen(false) }} className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">Continuer vers les adresses →</Button>
@@ -1015,7 +1009,7 @@ export default function LivreurDashboard() {
       {/* Footer - Desktop Only */}
       <footer className="hidden md:block w-full bg-white border-t py-4 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
-          <p>© 2025 TiiBnPick - Espace Livreur • Disponible 24h/24</p>
+          <p>© 2025 TiiBnTick - Espace Freelancer • Disponible 24h/24</p>
         </div>
       </footer>
     </div>

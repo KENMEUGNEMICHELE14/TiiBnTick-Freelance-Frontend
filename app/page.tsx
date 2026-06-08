@@ -5,16 +5,26 @@ import React from "react"
 import { useState } from "react"
 import { Eye, EyeOff, Shield } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle login logic here
-    console.log("Login attempt:", { email, password })
+    // Smart routing based on email for development
+    const lowerEmail = email.toLowerCase()
+    if (lowerEmail.includes("admin")) {
+      router.push("/admin")
+    } else if (lowerEmail.includes("livreur") || lowerEmail.includes("freelance")) {
+      router.push("/livreur")
+    } else {
+      // Default to client
+      router.push("/client")
+    }
   }
 
   return (
@@ -102,6 +112,22 @@ export default function LoginPage() {
         <div className="flex items-center justify-center gap-2 mt-6 text-gray-400 text-sm">
           <Shield size={16} />
           <span>Connexion sécurisée</span>
+        </div>
+
+        {/* Quick Dev Links (To be removed in production) */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-xs text-center text-gray-500 mb-3 uppercase tracking-wider font-semibold">Liens rapides (Dev)</p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Link href="/client" className="px-3 py-1.5 bg-orange-50 text-orange-600 rounded-md text-xs font-medium hover:bg-orange-100 transition-colors">
+              Espace Client
+            </Link>
+            <Link href="/livreur" className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md text-xs font-medium hover:bg-blue-100 transition-colors">
+              Espace Freelancer
+            </Link>
+            <Link href="/admin" className="px-3 py-1.5 bg-purple-50 text-purple-600 rounded-md text-xs font-medium hover:bg-purple-100 transition-colors">
+              Espace Admin
+            </Link>
+          </div>
         </div>
       </div>
     </div>

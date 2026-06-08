@@ -257,7 +257,7 @@ export default function HistoriqueLivraisons() {
                     <option value="all">Toutes les livraisons</option>
                     <option value="month">30 derniers jours</option>
                     <option value="week">7 derniers jours</option>
-                    <option value="today">Aujourd'hui</option>
+                    <option value="today">Aujourd&apos;hui</option>
                   </select>
                 </div>
               </div>
@@ -385,7 +385,7 @@ export default function HistoriqueLivraisons() {
       {/* Footer */}
       <footer className="w-full bg-white border-t py-4 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
-          <p>© 2025 TiiBnPick - Historique des livraisons</p>
+          <p>© 2025 TiiBnTick - Historique des livraisons</p>
         </div>
       </footer>
     </div>

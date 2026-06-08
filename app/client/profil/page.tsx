@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { WalletInterface } from '@/components/wallet/WalletInterface'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
@@ -47,7 +49,7 @@ export default function ClientProfile() {
     phone: '+225 07 00 00 00 00',
     address: 'Cocody, Rue des Jardins',
     city: 'Abidjan',
-    paymentMethod: 'cash',
+    paymentMethod: 'compte_principal',
     rating: 4.6,
     totalOrders: 24,
     memberSince: '2023-06-15'
@@ -79,7 +81,7 @@ export default function ClientProfile() {
       title: 'Déconnexion',
       description: 'Vous avez été déconnecté avec succès',
     })
-    router.push('/client')
+    router.push('/')
   }
 
   const handleDeleteAccount = () => {
@@ -91,7 +93,7 @@ export default function ClientProfile() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -113,32 +115,40 @@ export default function ClientProfile() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+      <main className="p-4 sm:p-6 lg:p-8 pb-24">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Profile Overview Card */}
           <Card className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-4 border-white/30">
-                  <User className="w-10 h-10 text-white" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex flex-shrink-0 items-center justify-center border-4 border-white/30">
+                  <User className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold mb-1">{clientData.lastName} {clientData.firstName}</h2>
-                  <div className="flex items-center gap-4 text-sm opacity-90">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-xl sm:text-2xl font-bold mb-1 truncate">{clientData.lastName} {clientData.firstName}</h2>
+                  <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs sm:text-sm opacity-90">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-semibold">{clientData.rating}</span>
                     </div>
-                    <span>•</span>
-                    <span>Membre depuis {new Date(clientData.memberSince).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="truncate">Membre depuis {new Date(clientData.memberSince).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Personal Information Card */}
-          <Card>
+          <Tabs defaultValue="profil" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 bg-orange-100 p-1 rounded-xl h-auto">
+              <TabsTrigger value="profil" className="text-xs sm:text-sm py-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-sm whitespace-normal">Profil</TabsTrigger>
+              <TabsTrigger value="wallet" className="text-xs sm:text-sm py-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-sm whitespace-normal">Portefeuille</TabsTrigger>
+              <TabsTrigger value="fidelite" className="text-xs sm:text-sm py-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-sm whitespace-normal">Fidélité</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="profil" className="space-y-6">
+              {/* Personal Information Card */}
+              <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5 text-orange-600" />
@@ -264,9 +274,10 @@ export default function ClientProfile() {
                         <SelectValue placeholder="Sélectionnez un mode de paiement" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="cash">Cash</SelectItem>
-                        <SelectItem value="momo">MoMo</SelectItem>
-                        <SelectItem value="orange">Orange Money</SelectItem>
+                        <SelectItem value="compte_principal">Compte Principal</SelectItem>
+                        <SelectItem value="orange_money">Orange Money</SelectItem>
+                        <SelectItem value="mtn_momo">MTN MoMo</SelectItem>
+                        <SelectItem value="wave">Wave</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -274,8 +285,10 @@ export default function ClientProfile() {
                   <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
                     <CreditCard className="w-5 h-5 text-gray-400" />
                     <span className="font-medium">
-                      {clientData.paymentMethod === 'cash' ? 'Cash' : 
-                       clientData.paymentMethod === 'momo' ? 'MoMo' : 'Orange Money'}
+                      {clientData.paymentMethod === 'compte_principal' ? 'Compte Principal' : 
+                       clientData.paymentMethod === 'orange_money' ? 'Orange Money' : 
+                       clientData.paymentMethod === 'mtn_momo' ? 'MTN MoMo' : 
+                       clientData.paymentMethod === 'wave' ? 'Wave' : clientData.paymentMethod}
                     </span>
                   </div>
                 )}
@@ -339,6 +352,37 @@ export default function ClientProfile() {
               </Button>
             </CardContent>
           </Card>
+          </TabsContent>
+
+          <TabsContent value="wallet" className="mt-0">
+            <WalletInterface 
+              userName={`${clientData.firstName} ${clientData.lastName}`}
+              balance={245000}
+              onAddFunds={() => toast({ title: "Recharger", description: "Fonction de rechargement" })}
+              onWithdraw={() => toast({ title: "Retirer", description: "Fonction de retrait" })}
+              onSend={() => toast({ title: "Envoyer", description: "Fonction d'envoi d'argent" })}
+              onScan={() => toast({ title: "Scanner", description: "Fonction de scan QR" })}
+            />
+          </TabsContent>
+
+          <TabsContent value="fidelite" className="mt-0">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="w-5 h-5 text-orange-600" />
+                  Programme de Fidélité
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center py-10">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-8 h-8 text-orange-500" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Bientôt disponible</h3>
+                <p className="text-gray-500">Votre programme de fidélité arrive bientôt !</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          </Tabs>
 
           {/* Delete Confirmation Dialog */}
           {showDeleteDialog && (

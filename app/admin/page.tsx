@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   Package,
@@ -63,6 +64,7 @@ type ActiveView = 'dashboard' | 'registrations' | 'accounts'
 
 export default function SuperAdminDashboard() {
   const { toast } = useToast()
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [selectedRequest, setSelectedRequest] = useState<DeliveryPersonRequest | null>(null)
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
@@ -150,7 +152,7 @@ export default function SuperAdminDashboard() {
         if (response.ok) {
           toast({
             title: 'Inscription approuvée',
-            description: `Le livreur ${selectedRequest.name} a été approuvé avec succès.`
+            description: `Le freelancer ${selectedRequest.name} a été approuvé avec succès.`
           })
           await fetchRegistrations()
           await fetchAccounts()
@@ -238,7 +240,7 @@ export default function SuperAdminDashboard() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'DELIVERY':
-        return <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">Livreur</Badge>
+        return <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">Freelancer</Badge>
       case 'AGENCY':
         return <Badge variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">Agence</Badge>
       case 'POINT':
@@ -400,11 +402,11 @@ export default function SuperAdminDashboard() {
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{superAdminName}</p>
-                <p className="text-xs text-muted-foreground truncate">admin@tiibnpick.com</p>
+                <p className="text-xs text-muted-foreground truncate">admin@tiibntick.com</p>
               </div>
             )}
             {sidebarOpen && (
-              <Button variant="ghost" size="icon" className="flex-shrink-0">
+              <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => router.push('/')}>
                 <LogOut className="w-4 h-4" />
               </Button>
             )}
@@ -458,7 +460,7 @@ export default function SuperAdminDashboard() {
 
                 <Card className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3 px-4 py-3">
-                    <CardDescription className="text-[10px] md:text-xs">Livreurs</CardDescription>
+                    <CardDescription className="text-[10px] md:text-xs">Freelancers</CardDescription>
                     <CardTitle className="text-xl md:text-2xl text-green-600">{stats.activeDeliveryPersons}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-4 pb-4">
@@ -504,7 +506,7 @@ export default function SuperAdminDashboard() {
                       <UserCheck className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
                       Voir les inscriptions
                     </CardTitle>
-                    <CardDescription className="text-xs md:text-sm">Consultez et validez les nouvelles demandes d'inscription</CardDescription>
+                    <CardDescription className="text-xs md:text-sm">Consultez et validez les nouvelles demandes d&apos;inscription</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -536,7 +538,7 @@ export default function SuperAdminDashboard() {
                     <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
                       <CheckCircle className="w-8 h-8 text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-medium">Aucune demande d'inscription</h3>
+                    <h3 className="text-lg font-medium">Aucune demande d&apos;inscription</h3>
                     <p className="text-muted-foreground mt-2">
                       Il n'y a pour l'instant aucune demande d'inscription en attente de validation.
                     </p>
