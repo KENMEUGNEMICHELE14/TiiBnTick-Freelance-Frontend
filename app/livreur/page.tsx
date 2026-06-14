@@ -279,6 +279,47 @@ export default function LivreurDashboard() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-4">
+              <div className="flex bg-gray-100 p-1 rounded-lg mr-4">
+                <button
+                  onClick={() => setActiveTab('accueil')}
+                  className={cn(
+                    'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                    activeTab === 'accueil' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                  )}
+                >
+                  Accueil
+                </button>
+                {(isPremium || isMedium) && (
+                  <button
+                    onClick={() => setActiveTab('dashboard')}
+                    className={cn(
+                      'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                      activeTab === 'dashboard' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                    )}
+                  >
+                    Dashboard
+                  </button>
+                )}
+                <button
+                  onClick={() => setActiveTab('annonces')}
+                  className={cn(
+                    'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                    activeTab === 'annonces' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                  )}
+                >
+                  Annonces
+                </button>
+                <button
+                  onClick={() => setActiveTab('livraisons')}
+                  className={cn(
+                    'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                    activeTab === 'livraisons' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                  )}
+                >
+                  Livraisons
+                </button>
+              </div>
+
               {/* Notification Bell */}
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="w-5 h-5" />
@@ -302,11 +343,15 @@ export default function LivreurDashboard() {
                 </div>
               </div>
 
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" title="Historique" onClick={() => router.push('/livreur/historique')}>
+                <Calendar className="w-5 h-5" />
+              </Button>
+
+              <Button variant="ghost" size="icon" title="Paramètres">
                 <Settings className="w-5 h-5" />
               </Button>
 
-              <Button variant="ghost" size="icon" className="text-red-600" onClick={() => router.push('/')}>
+              <Button variant="ghost" size="icon" className="text-red-600" title="Déconnexion" onClick={() => router.push('/')}>
                 <LogOut className="w-5 h-5" />
               </Button>
             </nav>
@@ -344,11 +389,30 @@ export default function LivreurDashboard() {
                   </div>
                 </div>
               </div>
+              <Button variant="ghost" className="w-full justify-start" onClick={() => { setActiveTab('accueil'); setMobileMenuOpen(false); }}>
+                <Home className="w-4 h-4 mr-2" />
+                Accueil
+              </Button>
+              {(isPremium || isMedium) && (
+                <Button variant="ghost" className="w-full justify-start" onClick={() => { setActiveTab('dashboard'); setMobileMenuOpen(false); }}>
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Button>
+              )}
+              <Button variant="ghost" className="w-full justify-start" onClick={() => { setActiveTab('annonces'); setMobileMenuOpen(false); }}>
+                <Megaphone className="w-4 h-4 mr-2" />
+                Annonces
+              </Button>
+              <Button variant="ghost" className="w-full justify-start" onClick={() => { setActiveTab('livraisons'); setMobileMenuOpen(false); }}>
+                <Truck className="w-4 h-4 mr-2" />
+                Livraisons
+              </Button>
+              <div className="border-t my-2 border-gray-100"></div>
               <Button variant="ghost" className="w-full justify-start">
                 <Settings className="w-4 h-4 mr-2" />
                 Paramètres
               </Button>
-              <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/livreur/historique')}>
+              <Button variant="ghost" className="w-full justify-start" onClick={() => { router.push('/livreur/historique'); setMobileMenuOpen(false); }}>
                 <Calendar className="w-4 h-4 mr-2" />
                 Historique des livraisons
               </Button>
@@ -459,7 +523,7 @@ export default function LivreurDashboard() {
           {isPremium && activeTab === 'dashboard' && (
             <>
               {/* Premium Header */}
-              <Card className="bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 text-white overflow-hidden relative">
+              <Card className="bg-gradient-to-br from-orange-500 to-amber-500 text-white overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
                 <CardContent className="p-6 relative z-10">
@@ -917,8 +981,9 @@ export default function LivreurDashboard() {
                         <Button
                           size="sm"
                           className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                          onClick={() => router.push('/livreur/tracking')}
                         >
-                          Continuer
+                          Suivre la livraison
                         </Button>
                       ) : (
                         <div className="flex gap-2 pt-2">
