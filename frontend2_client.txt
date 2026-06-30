@@ -1,0 +1,36 @@
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+import { withAuth } from '@/components/hoc/withAuth'
+import { useAuth } from '@/context/AuthContext'
+import { useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
+import { getRoute } from '@/services/routing'
+export function ClientLanding() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [trackingNumber, setTrackingNumber] = useState('')
+  const [activeTab, setActiveTab] = useState('accueil')
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<any>(null)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [myAnnouncements, setMyAnnouncements] = useState<AnnouncementResponseDTO[]>([])
+  const [route, setRoute] = useState<any>(null)
+  const [responsesAnnouncements, setResponsesAnnouncements] = useState<AnnouncementResponseDTO[]>([])
+  const [responsesLoading, setResponsesLoading] = useState(false)
+  const [selectedResponseAnnouncement, setSelectedResponseAnnouncement] = useState<AnnouncementResponseDTO | null>(null)
+  const [subscriptions, setSubscriptions] = useState<SubscriptionResponseDTO[]>([])
+  const [subscriptionsLoading, setSubscriptionsLoading] = useState(false)
+  const [subscriptionsDialogOpen, setSubscriptionsDialogOpen] = useState(false)
+  const [assigningId, setAssigningId] = useState<string | null>(null)
+  useEffect(() => {
+  useEffect(() => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [announcementToDelete, setAnnouncementToDelete] = useState<string | null>(null)

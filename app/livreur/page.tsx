@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 import {
   Package,
@@ -50,6 +51,7 @@ export default function LivreurDashboard() {
   const { toast } = useToast()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [isAvailable, setIsAvailable] = useState(false)
 
   // Données fictives du livreur
   const livreurInfo = {
@@ -198,7 +200,7 @@ export default function LivreurDashboard() {
     ]
   }
 
-  // availability toggle removed per UI request
+  // availability toggle reinstated per user request
 
   const handleAcceptDelivery = async (deliveryId: string) => {
     try {
@@ -320,6 +322,27 @@ export default function LivreurDashboard() {
                 </button>
               </div>
 
+              {/* Availability Toggle Desktop */}
+              <div 
+                className="flex items-center gap-2 mr-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => {
+                  const newState = !isAvailable;
+                  setIsAvailable(newState);
+                  toast({
+                    title: newState ? 'Vous êtes en ligne' : 'Vous êtes hors ligne',
+                    description: newState ? 'Vous recevrez maintenant les nouvelles annonces.' : 'Vous ne recevrez plus de nouvelles annonces.',
+                  });
+                }}
+              >
+                <span className={cn("text-sm font-medium", isAvailable ? "text-green-600" : "text-gray-500")}>
+                  {isAvailable ? "En ligne" : "Hors ligne"}
+                </span>
+                <Switch
+                  checked={isAvailable}
+                  className="data-[state=checked]:bg-green-500"
+                />
+              </div>
+
               {/* Notification Bell */}
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="w-5 h-5" />
@@ -358,6 +381,22 @@ export default function LivreurDashboard() {
 
             {/* Mobile Menu */}
             <div className="md:hidden flex items-center gap-2">
+              {/* Availability Toggle Mobile */}
+              <div className="flex items-center gap-1.5 mr-1 bg-gray-50 px-2 py-1 rounded-full border border-gray-200">
+                <div className={cn("w-2 h-2 rounded-full", isAvailable ? "bg-green-500" : "bg-gray-400")} />
+                <Switch
+                  checked={isAvailable}
+                  onCheckedChange={(checked) => {
+                    setIsAvailable(checked)
+                    toast({
+                      title: checked ? 'Vous êtes en ligne' : 'Vous êtes hors ligne',
+                      description: checked ? 'Vous recevrez maintenant les annonces.' : 'Vous ne recevrez plus d\'annonces.',
+                    })
+                  }}
+                  className="data-[state=checked]:bg-green-500 scale-[0.8]"
+                />
+              </div>
+
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
