@@ -1,0 +1,674 @@
+     1→'use client'
+     2→
+     3→import { useState } from 'react'
+     4→import { useRouter } from 'next/navigation'
+     5→import { Button } from '@/components/ui/button'
+     6→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+     7→import { Badge } from '@/components/ui/badge'
+     8→import { Input } from '@/components/ui/input'
+     9→import { Label } from '@/components/ui/label'
+    10→import {
+    11→  Dialog,
+    12→  DialogContent,
+    13→  DialogHeader,
+    14→  DialogTitle,
+    15→  DialogDescription,
+    16→  DialogFooter,
+    17→  DialogClose,
+    18→} from '@/components/ui/dialog'
+    19→import { withAuth } from '@/components/hoc/withAuth'
+    20→import { useAuth } from '@/context/AuthContext'
+    21→import { useToast } from '@/hooks/use-toast'
+    22→import {
+    23→  TrendingDown,
+    24→  DollarSign,
+    25→  ArrowUpRight,
+    26→  ArrowDownLeft,
+    27→  Wallet as WalletIcon,
+    28→  Clock,
+    29→  CheckCircle2,
+    30→  XCircle,
+    31→  Smartphone,
+    32→  Building2,
+    33→  Send,
+    34→  Plus,
+    35→  Download,
+    36→  Eye,
+    37→  EyeOff,
+    38→  Shield,
+    39→  Star,
+    40→  User,
+    41→  LogOut,
+    42→  Menu,
+    43→  X,
+    44→  Bell,
+    45→  Settings,
+    46→  Megaphone,
+    47→  UserCircle,
+    48→  MapPin,
+    49→  MessageSquare,
+    50→  Package,
+    51→  Home,
+    52→  Contact,
+    53→  MapPinIcon,
+    54→  Calendar,
+    55→} from 'lucide-react'
+    56→import { cn } from '@/lib/utils'
+    57→
+    58→// Google Wallet-style icon (orange & white)
+    59→function GoogleWalletIcon({ className = 'w-5 h-5' }: { className?: string }) {
+    60→  return (
+    61→    <svg className={className} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    62→      <rect x="4" y="10" width="28" height="28" rx="5" fill="#F97316" />
+    63→      <rect x="16" y="6" width="28" height="28" rx="5" fill="#fff" stroke="#FDBA74" strokeWidth="1" />
+    64→      <rect x="16" y="6" width="28" height="7" rx="5" fill="#FFF7ED" />
+    65→      <rect x="16" y="6" width="28" height="7" rx="5" fill="url(#wlt-grad-top)" />
+    66→      <rect x="16" y="27" width="28" height="7" rx="0" fill="#FED7AA" />
+    67→      <rect x="16" y="27" width="28" height="7" rx="5" fill="url(#wlt-grad-bottom)" />
+    68→      <path d="M26 20L23 26L20 20H18L22.5 28L21 31H23L29 20H26Z" fill="#F97316" />
+    69→      <path d="M32 20L29 26L26 20H24L28.5 28L27 31H29L35 20H32Z" fill="#F97316" opacity="0.7" />
+    70→      <defs>
+    71→        <linearGradient id="wlt-grad-top" x1="16" y1="6" x2="44" y2="13">
+    72→          <stop offset="0" stopColor="#FDBA74" />
+    73→          <stop offset="0.5" stopColor="#FFFFFF" />
+    74→          <stop offset="1" stopColor="#FED7AA" />
+    75→        </linearGradient>
+    76→        <linearGradient id="wlt-grad-bottom" x1="16" y1="27" x2="44" y2="34">
+    77→          <stop offset="0" stopColor="#FDBA74" />
+    78→          <stop offset="1" stopColor="#F97316" />
+    79→        </linearGradient>
+    80→      </defs>
+    81→    </svg>
+    82→  )
+    83→}
+    84→
+    85→// Mock transactions
+    86→const mockTransactions = [
+    87→  { id: 'TXN001', type: 'debit' as const, label: 'Livraison Abidjan → Cocody', amount: 3500, date: '2025-01-15 14:30', status: 'completed' as const },
+    88→  { id: 'TXN002', type: 'debit' as const, label: 'Livraison Plateau → Marcory', amount: 2000, date: '2025-01-15 11:15', status: 'completed' as const },
+    89→  { id: 'TXN003', type: 'credit' as const, label: 'Remboursement colis endommagé', amount: 15000, date: '2025-01-14 18:00', status: 'completed' as const },
+    90→  { id: 'TXN004', type: 'debit' as const, label: 'Livraison Yopougon → Zone 4', amount: 4000, date: '2025-01-14 09:45', status: 'completed' as const },
+    91→  { id: 'TXN005', type: 'debit' as const, label: 'Livraison Treichville → Bouaké', amount: 8000, date: '2025-01-13 16:20', status: 'completed' as const },
+    92→  { id: 'TXN006', type: 'credit' as const, label: 'Recharge Mobile Money', amount: 50000, date: '2025-01-12 12:00', status: 'completed' as const },
+    93→  { id: 'TXN007', type: 'debit' as const, label: 'Livraison Bingerville → Abidjan', amount: 2500, date: '2025-01-12 08:30', status: 'pending' as const },
+    94→  { id: 'TXN008', type: 'credit' as const, label: 'Bonus fidélité', amount: 2000, date: '2025-01-11 20:00', status: 'completed' as const },
+    95→  { id: 'TXN009', type: 'debit' as const, label: 'Livraison Adjamé → Plateau', amount: 3000, date: '2025-01-10 15:10', status: 'completed' as const },
+    96→  { id: 'TXN010', type: 'credit' as const, label: 'Recharge compte bancaire', amount: 100000, date: '2025-01-09 10:00', status: 'failed' as const },
+    97→]
+    98→
+    99→export function GoWallet() {
+   100→  const router = useRouter()
+   101→  const { toast } = useToast()
+   102→  const { user, logout } = useAuth()
+   103→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+   104→  const [showRechargeDialog, setShowRechargeDialog] = useState(false)
+   105→  const [rechargeMethod, setRechargeMethod] = useState<'momo' | 'bank' | null>(null)
+   106→  const [rechargeAmount, setRechargeAmount] = useState('')
+   107→  const [showBalance, setShowBalance] = useState(true)
+   108→  const [activeFilter, setActiveFilter] = useState<'all' | 'credit' | 'debit'>('all')
+   109→
+   110→  const currentActiveTab = 'wallet'
+   111→
+   112→  const goInfo = {
+   113→    firstName: user?.firstName || 'Go',
+   114→    lastName: user?.lastName || '',
+   115→    rating: user?.rating || 4.6,
+   116→  }
+   117→
+   118→  const walletData = {
+   119→    totalSpent: 180000,
+   120→    balance: 98500,
+   121→    pending: 2500,
+   122→    thisMonth: 23000,
+   123→    lastMonth: 31000,
+   124→  }
+   125→
+   126→  const filteredTransactions = mockTransactions.filter(t =>
+   127→    activeFilter === 'all' ? true : t.type === activeFilter
+   128→  )
+   129→
+   130→  const handleRecharge = () => {
+   131→    const amount = parseInt(rechargeAmount)
+   132→    if (!amount || amount <= 0) {
+   133→      toast({ title: 'Erreur', description: 'Entrez un montant valide', variant: 'destructive' })
+   134→      return
+   135→    }
+   136→    if (amount < 500) {
+   137→      toast({ title: 'Montant minimum', description: 'La recharge minimum est de 500 FCFA', variant: 'destructive' })
+   138→      return
+   139→    }
+   140→    toast({ title: 'Demande envoyée', description: `Votre recharge de ${amount.toLocaleString()} FCFA est en cours de traitement.` })
+   141→    setShowRechargeDialog(false)
+   142→    setRechargeAmount('')
+   143→    setRechargeMethod(null)
+   144→  }
+   145→
+   146→  return (
+   147→    <div className="min-h-screen flex flex-col bg-white">
+   148→      {/* Header */}
+   149→      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+   150→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   151→          <div className="flex items-center justify-between h-16">
+   152→            {/* Logo */}
+   153→            <div className="flex items-center gap-2">
+   154→              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
+   155→                <Package className="w-6 h-6 text-white" />
+   156→              </div>
+   157→              <h1 className="text-xl font-bold text-gray-900">
+   158→                TiiB<span className="text-amber-500">n</span>Tick
+   159→              </h1>
+   160→            </div>
+   161→
+   162→            {/* Desktop Navigation */}
+   163→            <nav className="hidden md:flex items-center gap-1">
+   164→              <Button
+   165→                variant="ghost"
+   166→                className="text-gray-700 font-medium"
+   167→                onClick={() => router.push('/go')}
+   168→              >
+   169→                <Home className="w-4 h-4 mr-1.5" />
+   170→                Accueil
+   171→              </Button>
+   172→              <Button
+   173→                variant="ghost"
+   174→                className="text-gray-700 font-medium"
+   175→                onClick={() => router.push('/go')}
+   176→              >
+   177→                <Megaphone className="w-4 h-4 mr-1.5" />
+   178→                Annonces
+   179→              </Button>
+   180→              <Button
+   181→                variant="ghost"
+   182→                className="text-gray-700 font-medium"
+   183→                onClick={() => router.push('/go')}
+   184→              >
+   185→                <MessageSquare className="w-4 h-4 mr-1.5" />
+   186→                Réponses
+   187→              </Button>
+   188→              <Button
+   189→                variant="ghost"
+   190→                className="text-gray-700 font-medium"
+   191→                onClick={() => router.push('/go')}
+   192→              >
+   193→                <Package className="w-4 h-4 mr-1.5" />
+   194→                Livraisons
+   195→              </Button>
+   196→              <div className="w-px h-6 bg-gray-200 mx-1" />
+   197→              <Button
+   198→                variant="ghost"
+   199→                className={cn('font-medium', currentActiveTab === 'wallet' ? 'text-orange-600 bg-orange-50' : 'text-gray-700')}
+   200→              >
+   201→                <WalletIcon className="w-4 h-4 mr-1.5" />
+   202→                Wallet
+   203→              </Button>
+   204→              <Button
+   205→                variant="ghost"
+   206→                className="text-gray-700 font-medium"
+   207→                onClick={() => router.push('/go/profil')}
+   208→              >
+   209→                <UserCircle className="w-4 h-4 mr-1.5" />
+   210→                Profil
+   211→              </Button>
+   212→              <Button variant="ghost" size="icon" onClick={logout} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+   213→                <LogOut className="w-5 h-5" />
+   214→              </Button>
+   215→            </nav>
+   216→
+   217→            {/* Mobile Menu */}
+   218→            <div className="md:hidden flex items-center gap-2">
+   219→              <Button variant="ghost" size="icon" className="relative opacity-50 cursor-not-allowed" disabled>
+   220→                <Bell className="w-5 h-5" />
+   221→              </Button>
+   222→              <Button
+   223→                variant="outline"
+   224→                size="icon-lg"
+   225→                className="border-gray-200 active:scale-95 transition-transform"
+   226→                aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+   227→                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+   228→              >
+   229→                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+   230→              </Button>
+   231→            </div>
+   232→          </div>
+   233→
+   234→          {/* Mobile Menu Dropdown */}
+   235→          {mobileMenuOpen && (
+   236→            <nav className="md:hidden border-t bg-white py-4 space-y-1">
+   237→              {/* User profile card */}
+   238→              <div className="flex items-center gap-3 px-4 py-3 mb-2">
+   239→                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
+   240→                  <User className="w-5 h-5 text-white" />
+   241→                </div>
+   242→                <div className="flex-1">
+   243→                  <p className="text-sm font-bold text-gray-900">{goInfo.lastName} {goInfo.firstName}</p>
+   244→                  <div className="flex items-center gap-1">
+   245→                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
+   246→                    <span className="text-xs text-gray-600">{goInfo.rating}</span>
+   247→                  </div>
+   248→                </div>
+   249→              </div>
+   250→
+   251→              <div className="h-px bg-gray-100 mx-2" />
+   252→
+   253→              {/* Navigation items */}
+   254→              <Button
+   255→                variant="ghost"
+   256→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   257→                onClick={() => { router.push('/go'); setMobileMenuOpen(false); }}
+   258→              >
+   259→                <Home className="w-5 h-5" />
+   260→                Accueil
+   261→              </Button>
+   262→
+   263→              <Button
+   264→                variant="ghost"
+   265→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   266→                onClick={() => { router.push('/go'); setMobileMenuOpen(false); }}
+   267→              >
+   268→                <Megaphone className="w-5 h-5" />
+   269→                Annonces
+   270→              </Button>
+   271→
+   272→              <Button
+   273→                variant="ghost"
+   274→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   275→                onClick={() => { router.push('/go'); setMobileMenuOpen(false); }}
+   276→              >
+   277→                <MessageSquare className="w-5 h-5" />
+   278→                Réponses
+   279→              </Button>
+   280→
+   281→              <Button
+   282→                variant="ghost"
+   283→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   284→                onClick={() => { router.push('/go'); setMobileMenuOpen(false); }}
+   285→              >
+   286→                <Package className="w-5 h-5" />
+   287→                Livraisons
+   288→              </Button>
+   289→
+   290→              <div className="h-px bg-gray-100 mx-2" />
+   291→
+   292→              <Button
+   293→                variant="ghost"
+   294→                className="w-full justify-start gap-3 rounded-lg bg-orange-50 text-orange-600 font-semibold"
+   295→                onClick={() => setMobileMenuOpen(false)}
+   296→              >
+   297→                <WalletIcon className="w-5 h-5" />
+   298→                Mon Wallet
+   299→              </Button>
+   300→
+   301→              <Button
+   302→                variant="ghost"
+   303→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   304→                onClick={() => { router.push('/go'); setMobileMenuOpen(false); }}
+   305→              >
+   306→                <MapPinIcon className="w-5 h-5" />
+   307→                Mes adresses
+   308→              </Button>
+   309→
+   310→              <Button
+   311→                variant="ghost"
+   312→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   313→                onClick={() => { router.push('/go'); setMobileMenuOpen(false); }}
+   314→              >
+   315→                <Contact className="w-5 h-5" />
+   316→                Contacts
+   317→              </Button>
+   318→
+   319→              <div className="h-px bg-gray-100 mx-2" />
+   320→
+   321→              <Button
+   322→                variant="ghost"
+   323→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   324→                onClick={() => { router.push('/go/profil'); setMobileMenuOpen(false); }}
+   325→              >
+   326→                <UserCircle className="w-5 h-5" />
+   327→                Mon profil
+   328→              </Button>
+   329→
+   330→              <Button
+   331→                variant="ghost"
+   332→                className="w-full justify-start gap-3 rounded-lg text-gray-700 opacity-50 cursor-not-allowed"
+   333→                disabled
+   334→              >
+   335→                <Settings className="w-5 h-5" />
+   336→                Paramètres
+   337→              </Button>
+   338→
+   339→              <div className="h-px bg-gray-100 mx-2" />
+   340→
+   341→              <Button
+   342→                variant="ghost"
+   343→                className="w-full justify-start gap-3 rounded-lg text-red-600 hover:bg-red-50"
+   344→                onClick={logout}
+   345→              >
+   346→                <LogOut className="w-5 h-5" />
+   347→                Déconnexion
+   348→              </Button>
+   349→            </nav>
+   350→          )}
+   351→        </div>
+   352→      </header>
+   353→
+   354→      {/* Main Content */}
+   355→      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+   356→        <div className="max-w-3xl mx-auto space-y-6">
+   357→
+   358→          {/* Solde principal */}
+   359→          <Card className="relative overflow-hidden border-2 border-orange-100 bg-gradient-to-br from-orange-500 via-orange-400 to-amber-400 text-white">
+   360→            <div className="absolute top-0 right-0 w-40 h-40 opacity-10">
+   361→              <GoogleWalletIcon className="w-full h-full" />
+   362→            </div>
+   363→            <CardHeader className="pb-2">
+   364→              <div className="flex items-center justify-between">
+   365→                <CardTitle className="text-sm font-medium text-orange-100 flex items-center gap-2">
+   366→                  <WalletIcon className="w-4 h-4" />
+   367→                  Solde disponible
+   368→                </CardTitle>
+   369→                <Button
+   370→                  variant="ghost"
+   371→                  size="icon"
+   372→                  className="text-white/80 hover:text-white hover:bg-white/10"
+   373→                  onClick={() => setShowBalance(!showBalance)}
+   374→                >
+   375→                  {showBalance ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+   376→                </Button>
+   377→              </div>
+   378→            </CardHeader>
+   379→            <CardContent>
+   380→              <div className="flex items-end gap-2 mb-1">
+   381→                <span className="text-4xl md:text-5xl font-bold">
+   382→                  {showBalance ? walletData.balance.toLocaleString() : '•••••'}
+   383→                </span>
+   384→                <span className="text-sm text-orange-100 mb-2">FCFA</span>
+   385→              </div>
+   386→              <div className="flex items-center gap-4 mt-4">
+   387→                <div className="flex-1">
+   388→                  <p className="text-xs text-orange-100">Ce mois</p>
+   389→                  <p className="text-lg font-bold">{showBalance ? walletData.thisMonth.toLocaleString() : '••••'} <span className="text-xs font-normal text-orange-100">FCFA</span></p>
+   390→                </div>
+   391→                <div className="flex-1">
+   392→                  <p className="text-xs text-orange-100">En attente</p>
+   393→                  <p className="text-lg font-bold">{showBalance ? walletData.pending.toLocaleString() : '••••'} <span className="text-xs font-normal text-orange-100">FCFA</span></p>
+   394→                </div>
+   395→                <div className="flex items-center gap-1 text-xs text-green-200">
+   396→                  <TrendingDown className="w-3 h-3" />
+   397→                  <span>{showBalance ? '-26' : '•'}% vs mois dernier</span>
+   398→                </div>
+   399→              </div>
+   400→            </CardContent>
+   401→          </Card>
+   402→
+   403→          {/* Actions rapides */}
+   404→          <div className="grid grid-cols-2 gap-3">
+   405→            <Button
+   406→              className="h-auto py-4 flex flex-col items-center gap-2 bg-gradient-to-br from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0"
+   407→              onClick={() => { setRechargeMethod('momo'); setShowRechargeDialog(true) }}
+   408→            >
+   409→              <Plus className="w-6 h-6" />
+   410→              <span className="text-sm font-semibold">Recharger</span>
+   411→              <span className="text-[10px] text-orange-100">Mobile Money</span>
+   412→            </Button>
+   413→
+   414→            <Button
+   415→              className="h-auto py-4 flex flex-col items-center gap-2 bg-white border-2 border-orange-200 text-orange-600 hover:bg-orange-50"
+   416→              onClick={() => { setRechargeMethod('bank'); setShowRechargeDialog(true) }}
+   417→            >
+   418→              <Building2 className="w-6 h-6" />
+   419→              <span className="text-sm font-semibold">Recharger</span>
+   420→              <span className="text-[10px]">Via compte bancaire</span>
+   421→            </Button>
+   422→          </div>
+   423→
+   424→          {/* Statistiques */}
+   425→          <div className="grid grid-cols-3 gap-3">
+   426→            <Card className="hover:shadow-md transition-shadow flex flex-col">
+   427→              <CardHeader className="pb-2 px-3 py-3">
+   428→                <CardDescription className="text-[10px] text-gray-500">Total dépenses</CardDescription>
+   429→                <CardTitle className="text-lg text-gray-900">{walletData.totalSpent.toLocaleString()}</CardTitle>
+   430→              </CardHeader>
+   431→              <CardContent className="px-3 pb-3 mt-auto">
+   432→                <div className="flex items-center text-[10px] text-orange-600">
+   433→                  <TrendingDown className="w-3 h-3 mr-1" />
+   434→                  <span>FCFA</span>
+   435→                </div>
+   436→              </CardContent>
+   437→            </Card>
+   438→
+   439→            <Card className="hover:shadow-md transition-shadow flex flex-col">
+   440→              <CardHeader className="pb-2 px-3 py-3">
+   441→                <CardDescription className="text-[10px] text-gray-500">Mois dernier</CardDescription>
+   442→                <CardTitle className="text-lg text-gray-900">{walletData.lastMonth.toLocaleString()}</CardTitle>
+   443→              </CardHeader>
+   444→              <CardContent className="px-3 pb-3 mt-auto">
+   445→                <div className="flex items-center text-[10px] text-muted-foreground">
+   446→                  <Clock className="w-3 h-3 mr-1" />
+   447→                  <span>Déc 2024</span>
+   448→                </div>
+   449→              </CardContent>
+   450→            </Card>
+   451→
+   452→            <Card className="hover:shadow-md transition-shadow flex flex-col">
+   453→              <CardHeader className="pb-2 px-3 py-3">
+   454→                <CardDescription className="text-[10px] text-gray-500">En attente</CardDescription>
+   455→                <CardTitle className="text-lg text-amber-600">{walletData.pending.toLocaleString()}</CardTitle>
+   456→              </CardHeader>
+   457→              <CardContent className="px-3 pb-3 mt-auto">
+   458→                <div className="flex items-center text-[10px] text-amber-600">
+   459→                  <Clock className="w-3 h-3 mr-1" />
+   460→                  <span>FCFA</span>
+   461→                </div>
+   462→              </CardContent>
+   463→            </Card>
+   464→          </div>
+   465→
+   466→          {/* Historique des transactions */}
+   467→          <Card>
+   468→            <CardHeader>
+   469→              <div className="flex items-center justify-between">
+   470→                <CardTitle className="text-lg flex items-center gap-2">
+   471→                  <Clock className="w-5 h-5 text-orange-500" />
+   472→                  Transactions
+   473→                </CardTitle>
+   474→              </div>
+   475→              {/* Filtres */}
+   476→              <div className="flex gap-2 mt-2">
+   477→                {[
+   478→                  { key: 'all' as const, label: 'Toutes' },
+   479→                  { key: 'credit' as const, label: 'Recharges' },
+   480→                  { key: 'debit' as const, label: 'Dépenses' },
+   481→                ].map(f => (
+   482→                  <button
+   483→                    key={f.key}
+   484→                    onClick={() => setActiveFilter(f.key)}
+   485→                    className={cn(
+   486→                      'px-3 py-1.5 rounded-full text-xs font-medium transition-colors',
+   487→                      activeFilter === f.key
+   488→                        ? 'bg-orange-500 text-white'
+   489→                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+   490→                    )}
+   491→                  >
+   492→                    {f.label}
+   493→                  </button>
+   494→                ))}
+   495→              </div>
+   496→            </CardHeader>
+   497→            <CardContent>
+   498→              <div className="space-y-2 max-h-[500px] overflow-y-auto">
+   499→                {filteredTransactions.length === 0 ? (
+   500→                  <div className="text-center py-8">
+   501→                    <WalletIcon className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+   502→                    <p className="text-sm text-gray-500">Aucune transaction</p>
+   503→                  </div>
+   504→                ) : (
+   505→                  filteredTransactions.map((txn) => (
+   506→                    <div
+   507→                      key={txn.id}
+   508→                      className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+   509→                    >
+   510→                      <div className="flex items-center gap-3">
+   511→                        <div className={cn(
+   512→                          'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
+   513→                          txn.type === 'credit' ? 'bg-green-100' : 'bg-red-100'
+   514→                        )}>
+   515→                          {txn.type === 'credit'
+   516→                            ? <ArrowDownLeft className="w-5 h-5 text-green-600" />
+   517→                            : <ArrowUpRight className="w-5 h-5 text-red-500" />
+   518→                          }
+   519→                        </div>
+   520→                        <div className="min-w-0">
+   521→                          <p className="text-sm font-medium text-gray-900 truncate">{txn.label}</p>
+   522→                          <p className="text-xs text-gray-500">{txn.date}</p>
+   523→                        </div>
+   524→                      </div>
+   525→                      <div className="text-right flex-shrink-0 ml-3">
+   526→                        <p className={cn(
+   527→                          'text-sm font-bold',
+   528→                          txn.type === 'credit' ? 'text-green-600' : 'text-red-500'
+   529→                        )}>
+   530→                          {txn.type === 'credit' ? '+' : '-'}{txn.amount.toLocaleString()} FCFA
+   531→                        </p>
+   532→                        <Badge
+   533→                          variant="outline"
+   534→                          className={cn(
+   535→                            'text-[9px] px-1.5 py-0',
+   536→                            txn.status === 'completed' && 'bg-green-50 text-green-600 border-green-200',
+   537→                            txn.status === 'pending' && 'bg-amber-50 text-amber-600 border-amber-200',
+   538→                            txn.status === 'failed' && 'bg-red-50 text-red-500 border-red-200'
+   539→                          )}
+   540→                        >
+   541→                          {txn.status === 'completed' ? <><CheckCircle2 className="w-2.5 h-2.5 mr-0.5" />Terminé</> : null}
+   542→                          {txn.status === 'pending' ? <><Clock className="w-2.5 h-2.5 mr-0.5" />En attente</> : null}
+   543→                          {txn.status === 'failed' ? <><XCircle className="w-2.5 h-2.5 mr-0.5" />Échoué</> : null}
+   544→                        </Badge>
+   545→                      </div>
+   546→                    </div>
+   547→                  ))
+   548→                )}
+   549→              </div>
+   550→            </CardContent>
+   551→          </Card>
+   552→
+   553→          {/* Info sécurité */}
+   554→          <Card className="border-orange-100 bg-orange-50/50">
+   555→            <CardContent className="p-4">
+   556→              <div className="flex items-start gap-3">
+   557→                <Shield className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+   558→                <div>
+   559→                  <p className="text-sm font-semibold text-gray-900">Sécurité de votre Wallet</p>
+   560→                  <p className="text-xs text-gray-600 mt-1">
+   561→                    Vos fonds sont protégés. Les recharges sont traitées sous 24h ouvrables.
+   562→                    Le montant minimum de recharge est de 500 FCFA.
+   563→                  </p>
+   564→                </div>
+   565→              </div>
+   566→            </CardContent>
+   567→          </Card>
+   568→        </div>
+   569→      </main>
+   570→
+   571→      {/* Dialog Recharge */}
+   572→      <Dialog open={showRechargeDialog} onOpenChange={setShowRechargeDialog}>
+   573→        <DialogContent className="sm:max-w-md">
+   574→          <DialogHeader>
+   575→            <DialogTitle className="flex items-center gap-2">
+   576→              <Plus className="w-5 h-5 text-orange-500" />
+   577→              Recharger votre compte
+   578→            </DialogTitle>
+   579→            <DialogDescription>
+   580→              {rechargeMethod === 'momo'
+   581→                ? 'Effectuez une recharge via Mobile Money'
+   582→                : 'Effectuez une recharge via virement bancaire'
+   583→              }
+   584→            </DialogDescription>
+   585→          </DialogHeader>
+   586→
+   587→          <div className="space-y-4 py-2">
+   588→            {/* Méthode choisie */}
+   589→            <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg border border-orange-100">
+   590→              {rechargeMethod === 'momo' ? (
+   591→                <>
+   592→                  <Smartphone className="w-6 h-6 text-orange-500" />
+   593→                  <div>
+   594→                    <p className="text-sm font-semibold text-gray-900">Mobile Money</p>
+   595→                    <p className="text-xs text-gray-500">MTN / Moov / Orange Money</p>
+   596→                  </div>
+   597→                </>
+   598→              ) : (
+   599→                <>
+   600→                  <Building2 className="w-6 h-6 text-orange-500" />
+   601→                  <div>
+   602→                    <p className="text-sm font-semibold text-gray-900">Virement bancaire</p>
+   603→                    <p className="text-xs text-gray-500">Depuis votre compte bancaire</p>
+   604→                  </div>
+   605→                </>
+   606→              )}
+   607→            </div>
+   608→
+   609→            {/* Solde actuel */}
+   610→            <div className="flex items-center justify-between text-sm">
+   611→              <span className="text-gray-500">Solde actuel</span>
+   612→              <span className="font-bold text-green-600">{walletData.balance.toLocaleString()} FCFA</span>
+   613→            </div>
+   614→
+   615→            {/* Montant */}
+   616→            <div>
+   617→              <Label htmlFor="amount" className="text-sm font-medium">Montant (FCFA)</Label>
+   618→              <Input
+   619→                id="amount"
+   620→                type="number"
+   621→                placeholder="Entrez le montant"
+   622→                value={rechargeAmount}
+   623→                onChange={(e) => setRechargeAmount(e.target.value)}
+   624→                min={500}
+   625→                className="mt-1.5"
+   626→              />
+   627→              <p className="text-[10px] text-gray-400 mt-1">Minimum : 500 FCFA</p>
+   628→            </div>
+   629→
+   630→            {/* Montants rapides */}
+   631→            <div className="flex gap-2">
+   632→              {[1000, 5000, 10000, 20000].map(amount => (
+   633→                <button
+   634→                  key={amount}
+   635→                  onClick={() => setRechargeAmount(String(amount))}
+   636→                  className={cn(
+   637→                    'flex-1 py-2 rounded-lg text-xs font-medium border transition-colors',
+   638→                    rechargeAmount === String(amount)
+   639→                      ? 'bg-orange-500 text-white border-orange-500'
+   640→                      : 'bg-white text-gray-700 border-gray-200 hover:border-orange-300'
+   641→                  )}
+   642→                >
+   643→                  {amount >= 1000 ? `${amount / 1000}k` : amount}
+   644→                </button>
+   645→              ))}
+   646→            </div>
+   647→          </div>
+   648→
+   649→          <DialogFooter className="gap-2 sm:gap-0">
+   650→            <DialogClose asChild>
+   651→              <Button variant="outline" className="flex-1 sm:flex-none">Annuler</Button>
+   652→            </DialogClose>
+   653→            <Button
+   654→              className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+   655→              onClick={handleRecharge}
+   656→            >
+   657→              <Send className="w-4 h-4 mr-2" />
+   658→              Confirmer la recharge
+   659→            </Button>
+   660→          </DialogFooter>
+   661→        </DialogContent>
+   662→      </Dialog>
+   663→
+   664→      {/* Desktop Footer */}
+   665→      <footer className="hidden md:block py-6 bg-white border-t border-gray-100 mt-auto">
+   666→        <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+   667→          <p>© 2025 TiiBnTick - Espace Go • Disponible 24h/24</p>
+   668→        </div>
+   669→      </footer>
+   670→    </div>
+   671→  )
+   672→}
+   673→
+   674→export default withAuth(GoWallet, ['CLIENT'])

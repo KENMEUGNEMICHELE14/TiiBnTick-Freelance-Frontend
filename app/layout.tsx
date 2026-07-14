@@ -1,36 +1,33 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Hanken_Grotesk } from 'next/font/google'
 import './globals.css'
+
+const hanken = Hanken_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-hanken',
+  display: 'swap',
+})
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/context/AuthContext'
 import { NotificationProvider } from '@/context/NotificationContext'
 import { cookies } from 'next/headers'
 import ThemeCookieSync from '@/components/theme-cookie-sync'
-
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+import { Toaster } from '@/components/ui/toaster'
+import LocationTracker from '@/components/LocationTracker'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'TiiBnTick',
+  description: 'Plateforme intelligente de gestion et livraison',
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
       {
         url: '/icon.svg',
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: '/icon.svg',
   },
 }
 
@@ -56,18 +53,20 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" className={themeCookie === 'dark' ? 'dark' : 'light'} style={{ colorScheme: themeCookie }}>
-      <body className={`font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${hanken.variable} ${themeCookie === 'dark' ? 'dark' : 'light'}`} style={{ colorScheme: themeCookie as any }}>
+      <body className={`font-sans antialiased`} style={{ fontFamily: "var(--font-hanken), 'Hanken Grotesk', sans-serif" }}>
         <ThemeProvider attribute="class">
           <AuthProvider>
             <NotificationProvider>
+              <LocationTracker />
               {children}
               {/* Client component that keeps the cookie in sync when theme changes */}
               <ThemeCookieSync />
+              <Toaster />
             </NotificationProvider>
           </AuthProvider>
         </ThemeProvider>
-        <Analytics />
+        {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )

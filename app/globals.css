@@ -122,5 +122,173 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Prevent double-tap zoom on the whole page — keeps native scroll intact */
+    touch-action: pan-x pan-y;
   }
+  /* Eliminate the 300ms tap delay on all interactive elements */
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea,
+  label {
+    touch-action: manipulation;
+  }
+}
+
+/* ─── TiiBnTick Design System ─── */
+
+.tiibtick {
+  /* ── Colors ── */
+  --tt-bg: #faf8ff;
+  --tt-surface: #faf8ff;
+  --tt-surface-bright: #faf8ff;
+  --tt-surface-container-lowest: #ffffff;
+  --tt-surface-container-low: #f2f3ff;
+  --tt-surface-container: #eaedff;
+  --tt-surface-container-high: #e2e7ff;
+  --tt-surface-container-highest: #dae2fd;
+  --tt-surface-dim: #d2d9f4;
+  --tt-surface-gray: #F8FAFC;
+  --tt-on-background: #131b2e;
+  --tt-on-surface: #131b2e;
+  --tt-on-surface-variant: #5a4138;
+  --tt-primary: #a33900;
+  --tt-on-primary: #ffffff;
+  --tt-primary-container: #cc4900;
+  --tt-primary-fixed: #ffdbce;
+  --tt-on-primary-fixed: #370e00;
+  --tt-on-primary-fixed-variant: #7f2b00;
+  --tt-inverse-primary: #ffb599;
+  --tt-secondary: #0058be;
+  --tt-on-secondary: #ffffff;
+  --tt-secondary-container: #2170e4;
+  --tt-secondary-fixed: #adc6ff;
+  --tt-secondary-fixed-dim: #adc6ff;
+  --tt-on-secondary-fixed: #001a42;
+  --tt-on-secondary-fixed-variant: #004395;
+  --tt-tertiary: #0076d2;
+  --tt-on-tertiary: #ffffff;
+  --tt-tertiary-container: #0076d2;
+  --tt-tertiary-fixed: #d4e3ff;
+  --tt-tertiary-fixed-dim: #a4c9ff;
+  --tt-on-tertiary-fixed: #001c39;
+  --tt-on-tertiary-container: #fdfcff;
+  --tt-error: #ba1a1a;
+  --tt-on-error: #ffffff;
+  --tt-error-container: #ffdad6;
+  --tt-outline: #8e7166;
+  --tt-outline-variant: #e2bfb2;
+  --tt-border-subtle: #E2E8F0;
+  --tt-success-green: #10B981;
+  --tt-inverse-surface: #283044;
+  --tt-inverse-on-surface: #eef0ff;
+  --tt-surface-variant: #dae2fd;
+  color-scheme: light;
+
+  /* ── Font ── */
+  font-family: var(--font-hanken), 'Hanken Grotesk', sans-serif;
+
+  /* ── Border Radius (TiiBnTick: tiny radii) ── */
+  --tt-radius: 0.125rem;     /* 2px */
+  --tt-radius-lg: 0.25rem;   /* 4px */
+  --tt-radius-xl: 0.5rem;    /* 8px */
+  --tt-radius-full: 0.75rem; /* 12px */
+
+  /* ── Spacing ── */
+  --tt-gutter: 24px;
+  --tt-container: 1280px;
+  --tt-margin-m: 16px;
+  --tt-margin-d: 40px;
+}
+
+/* ── Typography Scale ── */
+.tiibtick .tt-headline-xl  { font-size: 48px; line-height: 56px; font-weight: 800; letter-spacing: -0.02em; }
+.tiibtick .tt-headline-lg  { font-size: 32px; line-height: 40px; font-weight: 700; letter-spacing: -0.01em; }
+.tiibtick .tt-headline-md  { font-size: 24px; line-height: 32px; font-weight: 600; }
+.tiibtick .tt-body-lg      { font-size: 18px; line-height: 28px; font-weight: 400; }
+.tiibtick .tt-body-md      { font-size: 16px; line-height: 24px; font-weight: 400; }
+.tiibtick .tt-label-bold   { font-size: 14px; line-height: 20px; font-weight: 700; }
+.tiibtick .tt-label-sm     { font-size: 12px; line-height: 16px; font-weight: 500; }
+
+/* ── Sidebar ── */
+.tiibtick .tt-sidebar-link {
+  transition: all 0.2s ease;
+  border-right: 4px solid transparent;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+.tiibtick .tt-sidebar-link:hover {
+  background-color: var(--tt-surface-container);
+}
+.tiibtick .tt-sidebar-link.active {
+  background-color: var(--tt-primary-fixed);
+  color: var(--tt-on-primary-fixed-variant);
+  border-right: 4px solid var(--tt-on-primary-fixed-variant);
+  font-weight: 700;
+}
+
+/* ── Content Card ── */
+.tiibtick .tt-content-card {
+  border: 1px solid var(--tt-border-subtle);
+  transition: box-shadow 0.2s ease;
+}
+.tiibtick .tt-content-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ── Glass Nav ── */
+.tiibtick .tt-glass-nav {
+  background: rgba(250, 248, 255, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+/* ── Checkbox override ── */
+.tiibtick input[type="checkbox"] {
+  border-radius: var(--tt-radius);
+  border-color: var(--tt-outline);
+  accent-color: var(--tt-primary);
+}
+.tiibtick input[type="checkbox"]:checked {
+  background-color: var(--tt-primary);
+  border-color: var(--tt-primary);
+}
+
+/* ── Parcel type cards ── */
+.tiibtick .tt-parcel-card {
+  transition: all 0.2s ease;
+}
+.tiibtick .tt-parcel-card:hover {
+  border-color: var(--tt-primary) !important;
+}
+
+/* ── Input fields ── */
+.tiibtick input[type="time"],
+.tiibtick input[type="number"],
+.tiibtick input[type="text"] {
+  font-family: 'Hanken Grotesk', sans-serif;
+}
+.tiibtick input[type="time"]:focus,
+.tiibtick input[type="number"]:focus,
+.tiibtick input[type="text"]:focus {
+  border-color: var(--tt-primary) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tt-primary) 30%, transparent);
+}
+
+/* ── Switch override ── */
+.tiibtick [data-slot="switch"] {
+  height: 1.5rem !important;
+  width: 2.75rem !important;
+  border-radius: 9999px !important;
+}
+.tiibtick [data-slot="switch"][data-state="checked"] {
+  background-color: var(--tt-primary) !important;
+}
+.tiibtick [data-slot="switch-thumb"] {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
 }

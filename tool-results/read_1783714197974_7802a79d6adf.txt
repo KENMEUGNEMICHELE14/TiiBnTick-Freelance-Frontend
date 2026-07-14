@@ -1,0 +1,2002 @@
+     1→'use client'
+     2→
+     3→import { useState } from 'react'
+     4→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+     5→import { Button } from '@/components/ui/button'
+     6→import { Badge } from '@/components/ui/badge'
+     7→import { Input } from '@/components/ui/input'
+     8→import { Label } from '@/components/ui/label'
+     9→import { useToast } from '@/hooks/use-toast'
+    10→import {
+    11→  Package,
+    12→  MapPin,
+    13→  Clock,
+    14→  DollarSign,
+    15→  Star,
+    16→  CheckCircle2,
+    17→  Navigation,
+    18→  Bell,
+    19→  User,
+    20→  Settings,
+    21→  LogOut,
+    22→  Menu,
+    23→  X,
+    24→  Phone,
+    25→  Map as MapIcon,
+    26→  AlertCircle,
+    27→  TrendingUp,
+    28→  CreditCard,
+    29→  Calendar,
+    30→  LayoutDashboard,
+    31→  Megaphone,
+    32→  Truck,
+    33→  Home,
+    34→  Crown,
+    35→  Award,
+    36→  Target,
+    37→  Zap,
+    38→  BarChart3,
+    39→  ArrowUpRight,
+    40→  TrendingDown,
+    41→  ArrowDownLeft,
+    42→  Wallet as WalletIcon,
+    43→  Smartphone,
+    44→  Building2,
+    45→  Send,
+    46→  Download,
+    47→  XCircle,
+    48→  Info,
+    49→  Plus,
+    50→  ChevronRight,
+    51→  Shield,
+    52→  Edit,
+    53→  Lock,
+    54→  Eye,
+    55→  EyeOff,
+    56→  Trash2,
+    57→  AlertTriangle,
+    58→  Loader2,
+    59→  ArrowLeft,
+    60→  Search,
+    61→  Calendar as CalendarIcon,
+    62→} from 'lucide-react'
+    63→import { withAuth } from '@/components/hoc/withAuth'
+    64→import { useAuth } from '@/context/AuthContext'
+    65→import { useRouter, useSearchParams } from 'next/navigation'
+    66→import { acceptDelivery as acceptDeliveryService } from '@/services/deliveryService'
+    67→import dynamic from 'next/dynamic'
+    68→import { getRoute } from '@/services/routing'
+    69→import { useEffect, useCallback } from 'react'
+    70→import {
+    71→  getPublishedAnnouncements,
+    72→  getDeliveryPersonSubscriptions,
+    73→  AnnouncementResponseDTO
+    74→} from '@/services/announcementService'
+    75→
+    76→const MapLeaflet = dynamic(() => import('@/components/MapLeaflet'), {
+    77→  ssr: false,
+    78→  loading: () => <div className="w-full h-64 bg-gray-100 animate-pulse rounded-xl" />
+    79→});
+    80→
+    81→import {
+    82→  Dialog,
+    83→  DialogContent,
+    84→  DialogHeader,
+    85→  DialogTitle,
+    86→  DialogDescription,
+    87→  DialogFooter,
+    88→  DialogClose,
+    89→} from '@/components/ui/dialog'
+    90→import {
+    91→  Sheet,
+    92→  SheetContent,
+    93→  SheetHeader,
+    94→  SheetTitle,
+    95→  SheetTrigger,
+    96→} from '@/components/ui/sheet'
+    97→import { ThumbsUp, MessageCircle, Mail, ImageIcon, Heart, History, ClipboardList, UserCircle, ScrollText } from 'lucide-react'
+    98→import { Switch } from '@/components/ui/switch'
+    99→import { Checkbox } from '@/components/ui/checkbox'
+   100→import apiClient from '@/lib/axios'
+   101→import { cn } from '@/lib/utils'
+   102→
+   103→// Google Wallet-style icon
+   104→function GoogleWalletIcon({ className = 'w-5 h-5' }: { className?: string }) {
+   105→  return (
+   106→    <svg className={className} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+   107→      {/* Back card - orange */}
+   108→      <rect x="4" y="10" width="28" height="28" rx="5" fill="#F97316" />
+   109→      {/* Front card - with orange/white stripes */}
+   110→      <rect x="16" y="6" width="28" height="28" rx="5" fill="#fff" stroke="#FDBA74" strokeWidth="1" />
+   111→      {/* Colored stripes on front card */}
+   112→      <rect x="16" y="6" width="28" height="7" rx="5" fill="#FFF7ED" />
+   113→      <rect x="16" y="6" width="28" height="7" rx="5" fill="url(#wallet-gradient-top)" />
+   114→      <rect x="16" y="27" width="28" height="7" rx="0" fill="#FED7AA" />
+   115→      <rect x="16" y="27" width="28" height="7" rx="5" fill="url(#wallet-gradient-bottom)" />
+   116→      {/* W letter */}
+   117→      <path d="M26 20L23 26L20 20H18L22.5 28L21 31H23L29 20H26Z" fill="#F97316" />
+   118→      <path d="M32 20L29 26L26 20H24L28.5 28L27 31H29L35 20H32Z" fill="#F97316" opacity="0.7" />
+   119→      <defs>
+   120→        <linearGradient id="wallet-gradient-top" x1="16" y1="6" x2="44" y2="13">
+   121→          <stop offset="0" stopColor="#FDBA74" />
+   122→          <stop offset="0.5" stopColor="#FFFFFF" />
+   123→          <stop offset="1" stopColor="#FED7AA" />
+   124→        </linearGradient>
+   125→        <linearGradient id="wallet-gradient-bottom" x1="16" y1="27" x2="44" y2="34">
+   126→          <stop offset="0" stopColor="#FDBA74" />
+   127→          <stop offset="1" stopColor="#F97316" />
+   128→        </linearGradient>
+   129→      </defs>
+   130→    </svg>
+   131→  )
+   132→}
+   133→
+   134→// Deterministic number formatter (avoids hydration mismatch between server and client)
+   135→function fmt(n: number | undefined): string {
+   136→  if (n == null) return '0'
+   137→  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0')
+   138→}
+   139→
+   140→export function FreelancerDashboard() {
+   141→  const router = useRouter()
+   142→  const searchParams = useSearchParams()
+   143→  const { toast } = useToast()
+   144→  const { user, logout, login, refreshUser } = useAuth()
+   145→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+   146→  const [activeTab, setActiveTab] = useState(() => {
+   147→    const tab = searchParams.get('tab')
+   148→    return (tab === 'profil' || tab === 'historique' || tab === 'annonces' || tab === 'livraisons' || tab === 'wallet' || tab === 'politiques' || tab === 'missions' || tab === 'augmenter') ? tab : 'accueil'
+   149→  })
+   150→
+   151→  // Freelancer info from context
+   152→  const freelancerInfo = {
+   153→    firstName: user?.firstName || 'Freelancer',
+   154→    lastName: user?.lastName || '',
+   155→    rating: user?.rating || 4.8,
+   156→    totalDeliveries: user?.totalDeliveries || 156,
+   157→    totalEarnings: 245000,
+   158→    phone: user?.phone || '+225 07 00 00 00 00'
+   159→  }
+   160→
+   161→
+   162→  // Available announcements from API
+   163→  const [availableDeliveries, setAvailableDeliveries] = useState<AnnouncementResponseDTO[]>([])
+   164→  const [availableLoading, setAvailableLoading] = useState(false)
+   165→
+   166→  // Active deliveries (subscribed announcements) from API
+   167→  const [activeDeliveries, setActiveDeliveries] = useState<AnnouncementResponseDTO[]>([])
+   168→  const [activeLoading, setActiveLoading] = useState(false)
+   169→
+   170→  const [selectedDelivery, setSelectedDelivery] = useState<any>(null)
+   171→  const [detailsOpen, setDetailsOpen] = useState(false)
+   172→  const [activeRoute, setActiveRoute] = useState<any>(null)
+   173→  const [selectedMission, setSelectedMission] = useState<any>(null)
+   174→  const [missionDetailsOpen, setMissionDetailsOpen] = useState(false)
+   175→  const [missionRoute, setMissionRoute] = useState<any>(null)
+   176→  const [pendingSubscriptions, setPendingSubscriptions] = useState<Set<string>>(new Set())
+   177→  const [subscribedIds, setSubscribedIds] = useState<Set<string>>(() => {
+   178→    // Restore from localStorage on mount
+   179→    if (typeof window !== 'undefined') {
+   180→      try {
+   181→        const saved = localStorage.getItem('freelancer_subscribed_ids');
+   182→        if (saved) return new Set(JSON.parse(saved));
+   183→      } catch (e) { /* ignore */ }
+   184→    }
+   185→    return new Set();
+   186→  })
+   187→
+   188→  // Profil tab state
+   189→  const [isEditing, setIsEditing] = useState(false)
+   190→  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+   191→  const [showPassword, setShowPassword] = useState(false)
+   192→  const [isProfileLoading, setIsProfileLoading] = useState(false)
+   193→  const [hasMounted, setHasMounted] = useState(false)
+   194→  const [editedData, setEditedData] = useState({
+   195→    firstName: '',
+   196→    lastName: '',
+   197→    email: '',
+   198→    phone: '',
+   199→    password: '********'
+   200→  })
+   201→
+   202→  // Wallet tab state
+   203→  const [showRetraitDialog, setShowRetraitDialog] = useState(false)
+   204→  const [retraitMethod, setRetraitMethod] = useState<'momo' | 'bank' | null>(null)
+   205→  const [retraitAmount, setRetraitAmount] = useState('')
+   206→  const [showBalance, setShowBalance] = useState(true)
+   207→  const [activeFilter, setActiveFilter] = useState<'all' | 'credit' | 'debit'>('all')
+   208→
+   209→  const walletData = {
+   210→    totalEarnings: 245000,
+   211→    available: 38500,
+   212→    pending: 6500,
+   213→    thisMonth: 45000,
+   214→    lastMonth: 40200,
+   215→  }
+   216→
+   217→  const mockTransactions = [
+   218→    { id: 'TXN001', type: 'credit' as const, label: 'Livraison Abidjan → Cocody', amount: 3500, date: '2025-01-15 14:30', status: 'completed' as const },
+   219→    { id: 'TXN002', type: 'credit' as const, label: 'Livraison Plateau → Marcory', amount: 2000, date: '2025-01-15 11:15', status: 'completed' as const },
+   220→    { id: 'TXN003', type: 'debit' as const, label: 'Retrait Mobile Money', amount: 15000, date: '2025-01-14 18:00', status: 'completed' as const },
+   221→    { id: 'TXN004', type: 'credit' as const, label: 'Livraison Yopougon → Zone 4', amount: 4000, date: '2025-01-14 09:45', status: 'completed' as const },
+   222→    { id: 'TXN005', type: 'credit' as const, label: 'Livraison Treichville → Bouaké', amount: 8000, date: '2025-01-13 16:20', status: 'completed' as const },
+   223→    { id: 'TXN006', type: 'debit' as const, label: 'Retrait Mobile Money', amount: 10000, date: '2025-01-12 12:00', status: 'completed' as const },
+   224→    { id: 'TXN007', type: 'credit' as const, label: 'Livraison Bingerville → Abidjan', amount: 2500, date: '2025-01-12 08:30', status: 'pending' as const },
+   225→    { id: 'TXN008', type: 'credit' as const, label: 'Bonus performance', amount: 5000, date: '2025-01-11 20:00', status: 'completed' as const },
+   226→    { id: 'TXN009', type: 'credit' as const, label: 'Livraison Adjamé → Plateau', amount: 3000, date: '2025-01-10 15:10', status: 'completed' as const },
+   227→    { id: 'TXN010', type: 'debit' as const, label: 'Retrait vers compte bancaire', amount: 20000, date: '2025-01-09 10:00', status: 'failed' as const },
+   228→  ]
+   229→
+   230→  const filteredTransactions = mockTransactions.filter(t =>
+   231→    activeFilter === 'all' ? true : t.type === activeFilter
+   232→  )
+   233→
+   234→  const handleRetrait = () => {
+   235→    const amount = parseInt(retraitAmount)
+   236→    if (!amount || amount <= 0) {
+   237→      toast({ title: 'Erreur', description: 'Entrez un montant valide', variant: 'destructive' })
+   238→      return
+   239→    }
+   240→    if (amount > walletData.available) {
+   241→      toast({ title: 'Solde insuffisant', description: 'Le montant dépasse votre solde disponible', variant: 'destructive' })
+   242→      return
+   243→    }
+   244→    if (amount < 500) {
+   245→      toast({ title: 'Montant minimum', description: 'Le retrait minimum est de 500 FCFA', variant: 'destructive' })
+   246→      return
+   247→    }
+   248→    toast({ title: 'Demande envoyée', description: `Votre retrait de ${amount.toLocaleString()} FCFA est en cours de traitement.` })
+   249→    setShowRetraitDialog(false)
+   250→    setRetraitAmount('')
+   251→    setRetraitMethod(null)
+   252→  }
+   253→
+   254→  // Historique tab state
+   255→  const [searchTerm, setSearchTerm] = useState('')
+   256→  const [filterPeriod, setFilterPeriod] = useState('all')
+   257→
+   258→  // Politiques form state
+   259→  const [availability, setAvailability] = useState([
+   260→    { day: 'Lundi', start: '08:00', end: '18:00' },
+   261→    { day: 'Mardi', start: '08:00', end: '18:00' },
+   262→    { day: 'Mercredi', start: '08:00', end: '18:00' },
+   263→    { day: 'Jeudi', start: '08:00', end: '18:00' },
+   264→    { day: 'Vendredi', start: '08:00', end: '18:00' },
+   265→    { day: 'Samedi', start: '09:00', end: '13:00' },
+   266→    { day: 'Dimanche', start: '09:00', end: '13:00' },
+   267→  ])
+   268→  const [pricePerKm, setPricePerKm] = useState('250')
+   269→  const [pricePerM3, setPricePerM3] = useState('1500')
+   270→  const [waitingTimeEnabled, setWaitingTimeEnabled] = useState(false)
+   271→  const [waitingRate, setWaitingRate] = useState('50')
+   272→  const [weightMin, setWeightMin] = useState('0')
+   273→  const [weightMax, setWeightMax] = useState('50')
+   274→  const [packageStyles, setPackageStyles] = useState<string[]>(['Standard', 'Électronique', 'Fragile', 'Documents'])
+   275→
+   276→  const togglePackageStyle = (style: string) => {
+   277→    setPackageStyles(prev =>
+   278→      prev.includes(style)
+   279→        ? prev.filter(s => s !== style)
+   280→        : [...prev, style]
+   281→    )
+   282→  }
+   283→  const updateAvailability = (index: number, field: 'start' | 'end', value: string) => {
+   284→    setAvailability(prev => {
+   285→      const updated = [...prev]
+   286→      updated[index] = { ...updated[index], [field]: value }
+   287→      return updated
+   288→    })
+   289→  }
+   290→  const handleSavePolitiques = () => {
+   291→    toast({ title: 'Paramètres enregistrés', description: 'Vos paramètres de profil ont été mis à jour avec succès.' })
+   292→  }
+   293→
+   294→  // Fetch published announcements
+   295→  const fetchAvailableDeliveries = useCallback(async () => {
+   296→    setAvailableLoading(true)
+   297→    try {
+   298→      const data = await getPublishedAnnouncements()
+   299→      // Only show PUBLISHED announcements (not ASSIGNED)
+   300→      setAvailableDeliveries(data.filter(a => a.status === 'PUBLISHED'))
+   301→    } catch (error) {
+   302→      console.error('Error fetching announcements:', error)
+   303→    } finally {
+   304→      setAvailableLoading(false)
+   305→    }
+   306→  }, [])
+   307→
+   308→  // Stable user ID for dependency (avoids re-fetching on every user object change)
+   309→  const deliveryPersonIdRef = user?.deliveryPersonId || user?.id
+   310→
+   311→  // Fetch delivery person's subscriptions (active deliveries)
+   312→  const fetchMyDeliveries = useCallback(async () => {
+   313→    if (!deliveryPersonIdRef) return
+   314→    setActiveLoading(true)
+   315→    try {
+   316→      const data = await getDeliveryPersonSubscriptions(deliveryPersonIdRef)
+   317→      setActiveDeliveries(data)
+   318→      // Merge API subscription IDs into existing set (don't overwrite locally-added IDs)
+   319→      const apiIds = data.map(a => a.id)
+   320→      setSubscribedIds(prev => {
+   321→        const merged = new Set(prev)
+   322→        apiIds.forEach(id => merged.add(id))
+   323→        // Persist to localStorage
+   324→        try { localStorage.setItem('freelancer_subscribed_ids', JSON.stringify([...merged])); } catch (e) { /* ignore */ }
+   325→        return merged
+   326→      })
+   327→    } catch (error) {
+   328→      console.error('Error fetching my deliveries:', error)
+   329→    } finally {
+   330→      setActiveLoading(false)
+   331→    }
+   332→  }, [deliveryPersonIdRef])
+   333→
+   334→  useEffect(() => {
+   335→    fetchAvailableDeliveries()
+   336→    fetchMyDeliveries()
+   337→  }, [fetchAvailableDeliveries, fetchMyDeliveries])
+   338→
+   339→  // Real-time notifications via SSE
+   340→  useEffect(() => {
+   341→    if (!user?.id) return;
+   342→
+   343→    // Use relative path to go through Gateway and add token for authentication
+   344→    const token = localStorage.getItem('token');
+   345→    const eventSource = new EventSource(`/api/notifications/stream/${user.id}${token ? `?token=${token}` : ''}`);
+   346→
+   347→    eventSource.onmessage = (event) => {
+   348→      try {
+   349→        if (!event.data) return;
+   350→        const matchingEvent = JSON.parse(event.data);
+   351→        if (!matchingEvent.announcementId) return;
+   352→        console.info('Received real-time matching notification:', matchingEvent);
+   353→
+   354→        // Fetch announcement details to add to available deliveries
+   355→        apiClient.get(`/api/announcements/${matchingEvent.announcementId}`)
+   356→          .then(res => {
+   357→            const announcement = res.data;
+   358→            setAvailableDeliveries(prev => {
+   359→              if (prev.find(d => d.id === announcement.id)) return prev;
+   360→              return [announcement as AnnouncementResponseDTO, ...prev];
+   361→            });
+   362→
+   363→            toast({
+   364→              title: "Nouvelle course disponible !",
+   365→              description: announcement.title || "Une nouvelle course correspond à votre position.",
+   366→            });
+   367→          });
+   368→      } catch (err) {
+   369→        console.error('Error parsing SSE event:', err);
+   370→      }
+   371→    };
+   372→
+   373→    eventSource.onerror = () => {
+   374→      eventSource.close();
+   375→    };
+   376→
+   377→    return () => {
+   378→      eventSource.close();
+   379→    };
+   380→  }, [user?.id]);
+   381→
+   382→  useEffect(() => {
+   383→    if (
+   384→      selectedDelivery?.pickupAddress?.latitude &&
+   385→      selectedDelivery?.pickupAddress?.longitude &&
+   386→      selectedDelivery?.deliveryAddress?.latitude &&
+   387→      selectedDelivery?.deliveryAddress?.longitude
+   388→    ) {
+   389→      const fetchRoute = async () => {
+   390→        try {
+   391→          const route = await getRoute(
+   392→            selectedDelivery.pickupAddress.latitude,
+   393→            selectedDelivery.pickupAddress.longitude,
+   394→            selectedDelivery.deliveryAddress.latitude,
+   395→            selectedDelivery.deliveryAddress.longitude,
+   396→            selectedDelivery.transportMethod === 'bike' ? 'bike' : 'driving'
+   397→          );
+   398→          setActiveRoute(route);
+   399→        } catch (e) {
+   400→          console.error("Failed to fetch route", e);
+   401→          setActiveRoute(null);
+   402→        }
+   403→      };
+   404→      fetchRoute();
+   405→    } else {
+   406→      setActiveRoute(null);
+   407→    }
+   408→  }, [selectedDelivery]);
+   409→
+   410→  useEffect(() => {
+   411→    if (
+   412→      selectedMission?.pickupAddress?.latitude &&
+   413→      selectedMission?.pickupAddress?.longitude &&
+   414→      selectedMission?.deliveryAddress?.latitude &&
+   415→      selectedMission?.deliveryAddress?.longitude
+   416→    ) {
+   417→      const fetchRoute = async () => {
+   418→        try {
+   419→          const route = await getRoute(
+   420→            selectedMission.pickupAddress.latitude,
+   421→            selectedMission.pickupAddress.longitude,
+   422→            selectedMission.deliveryAddress.latitude,
+   423→            selectedMission.deliveryAddress.longitude,
+   424→            selectedMission.transportMethod === 'bike' ? 'bike' : 'driving'
+   425→          );
+   426→          setMissionRoute(route);
+   427→        } catch (e) {
+   428→          console.error("Failed to fetch mission route", e);
+   429→          setMissionRoute(null);
+   430→        }
+   431→      };
+   432→      fetchRoute();
+   433→    } else {
+   434→      setMissionRoute(null);
+   435→    }
+   436→  }, [selectedMission]);
+   437→
+   438→
+   439→  // availability toggle removed per UI request
+   440→
+   441→  const handleAcceptDelivery = async (deliveryId: string) => {
+   442→    if (!user?.id) {
+   443→      toast({
+   444→        title: "Erreur",
+   445→        description: "Vous devez être connecté pour souscrire à une annonce.",
+   446→        variant: "destructive"
+   447→      });
+   448→      return;
+   449→    }
+   450→
+   451→    setPendingSubscriptions(prev => {
+   452→      const next = new Set(prev);
+   453→      next.add(deliveryId);
+   454→      return next;
+   455→    });
+   456→
+   457→    try {
+   458→      const response = await apiClient.post(`/api/announcements/${deliveryId}/subscribe`, {
+   459→        deliveryPersonId: user.deliveryPersonId || user.id
+   460→      });
+   461→
+   462→      if (response.status === 200 || response.status === 201 || response.status === 202) {
+   463→        setSubscribedIds(prev => {
+   464→          const next = new Set(prev);
+   465→          next.add(deliveryId);
+   466→          // Persist to localStorage
+   467→          try { localStorage.setItem('freelancer_subscribed_ids', JSON.stringify([...next])); } catch (e) { /* ignore */ }
+   468→          return next;
+   469→        });
+   470→        // Clean up pending state
+   471→        setPendingSubscriptions(prev => {
+   472→          const next = new Set(prev);
+   473→          next.delete(deliveryId);
+   474→          return next;
+   475→        });
+   476→        toast({
+   477→          title: "Demande envoyée",
+   478→          description: "Votre demande de souscription est en cours de traitement.",
+   479→        })
+   480→      } else {
+   481→        setPendingSubscriptions(prev => {
+   482→          const next = new Set(prev);
+   483→          next.delete(deliveryId);
+   484→          return next;
+   485→        });
+   486→        toast({
+   487→          title: "Erreur",
+   488→          description: "Impossible d'envoyer la demande de souscription.",
+   489→          variant: "destructive",
+   490→        })
+   491→      }
+   492→    } catch (error) {
+   493→      setPendingSubscriptions(prev => {
+   494→        const next = new Set(prev);
+   495→        next.delete(deliveryId);
+   496→        return next;
+   497→      });
+   498→      toast({
+   499→        title: "Erreur",
+   500→        description: "Une erreur réseau est survenue.",
+   501→        variant: "destructive",
+   502→      })
+   503→    }
+   504→  }
+   505→
+   506→  const handleStartDelivery = (deliveryId: string) => {
+   507→    // TODO: Implémenter la logique de démarrage de livraison
+   508→    console.log('Démarrage de la livraison:', deliveryId)
+   509→  }
+   510→
+   511→  const getUrgencyBadge = (urgency: string) => {
+   512→    switch (urgency) {
+   513→      case 'urgent':
+   514→      case 'high':
+   515→        return <Badge variant="destructive" className="bg-red-500">Urgent</Badge>
+   516→      case 'normal':
+   517→        return <Badge variant="outline" className="border-blue-500 text-blue-700">Normal</Badge>
+   518→      default:
+   519→        return <Badge variant="outline">Standard</Badge>
+   520→    }
+   521→  }
+   522→
+   523→  const getStatusBadge = (status: string) => {
+   524→    switch (status) {
+   525→      case 'pickup':
+   526→        return <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300"><MapPin className="w-3 h-3 mr-1" /> En attente retrait</Badge>
+   527→      case 'delivery':
+   528→        return <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-300"><Navigation className="w-3 h-3 mr-1" /> En livraison</Badge>
+   529→      case 'completed':
+   530→        return <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300"><CheckCircle2 className="w-3 h-3 mr-1" /> Livré</Badge>
+   531→      default:
+   532→        return <Badge variant="outline">{status}</Badge>
+   533→    }
+   534→  }
+   535→
+   536→  // Profil effects
+   537→  useEffect(() => { setHasMounted(true) }, [])
+   538→
+   539→  useEffect(() => {
+   540→    if (user && !isEditing) {
+   541→      setEditedData({
+   542→        firstName: user.firstName || '',
+   543→        lastName: user.lastName || '',
+   544→        email: user.email || '',
+   545→        phone: user.phone || '',
+   546→        password: '********'
+   547→      })
+   548→    }
+   549→  }, [user, isEditing])
+   550→
+   551→  const handleEdit = () => { setIsEditing(true) }
+   552→  const handleCancel = () => {
+   553→    setIsEditing(false)
+   554→    if (user) {
+   555→      setEditedData({
+   556→        firstName: user.firstName || '',
+   557→        lastName: user.lastName || '',
+   558→        email: user.email || '',
+   559→        phone: user.phone || '',
+   560→        password: '********'
+   561→      })
+   562→    }
+   563→  }
+   564→
+   565→  const handleSave = async () => {
+   566→    const missingFields = []
+   567→    if (!editedData.firstName) missingFields.push('Prénom')
+   568→    if (!editedData.lastName) missingFields.push('Nom')
+   569→    if (!editedData.email) missingFields.push('Email')
+   570→    if (!editedData.phone) missingFields.push('Téléphone')
+   571→    if (missingFields.length > 0) {
+   572→      toast({ title: 'Champs obligatoires', description: `Veuillez remplir : ${missingFields.join(', ')}.`, variant: 'destructive' })
+   573→      return
+   574→    }
+   575→    setIsProfileLoading(true)
+   576→    try {
+   577→      if (user?.deliveryPersonId) {
+   578→        const updateData = { ...editedData }
+   579→        if (updateData.password === '********') { delete (updateData as any).password }
+   580→        const { updateDeliveryPerson } = await import('@/services/deliveryPersonService')
+   581→        await updateDeliveryPerson(user.deliveryPersonId, updateData)
+   582→        const updatedLocalUser = { ...user, ...editedData, password: updateData.password || user.password }
+   583→        login(updatedLocalUser)
+   584→        await refreshUser()
+   585→        setIsEditing(false)
+   586→        toast({ title: 'Succès ! ✅', description: 'Votre profil a été mis à jour avec succès.' })
+   587→      }
+   588→    } catch (error: any) {
+   589→      toast({ title: 'Échec de la mise à jour', description: error.response?.data?.message || 'Une erreur est survenue.', variant: 'destructive' })
+   590→    } finally { setIsProfileLoading(false) }
+   591→  }
+   592→
+   593→  const handleDeleteAccount = async () => {
+   594→    if (!user?.deliveryPersonId) return
+   595→    setIsProfileLoading(true)
+   596→    try {
+   597→      const { deleteDeliveryPerson } = await import('@/services/deliveryPersonService')
+   598→      await deleteDeliveryPerson(user.deliveryPersonId)
+   599→      toast({ title: 'Compte supprimé ✅', description: 'Votre compte a été supprimé.' })
+   600→      logout()
+   601→    } catch (error: any) {
+   602→      toast({ title: 'Erreur', description: error.response?.data?.message || 'Impossible de supprimer le compte.', variant: 'destructive' })
+   603→      setIsProfileLoading(false)
+   604→      setShowDeleteDialog(false)
+   605→    }
+   606→  }
+   607→
+   608→  // Historique data
+   609→  const allDeliveries = [
+   610→    { id: 'TBP-2024-156', customerName: 'Kouassi Mariam', deliveryAddress: 'Marcory, Rue 12', distance: 4.5, earnings: 1200, completedAt: '09:45', completedDate: '27/01/2025', rating: 5, tip: 500, packageType: 'Repas à domicile', pickupAddress: 'Cocody, Rue des Jardins' },
+   611→    { id: 'TBP-2024-155', customerName: 'Diop Abib', deliveryAddress: 'Cocody, Deux-Plateaux', distance: 7.2, earnings: 1800, completedAt: '08:30', completedDate: '27/01/2025', rating: 4, tip: 0, packageType: 'Documents urgents', pickupAddress: 'Plateau, Avenue de la République' },
+   612→    { id: 'TBP-2024-154', customerName: 'Yao Esther', deliveryAddress: 'Yopougon, Zone 4', distance: 10.5, earnings: 2500, completedAt: '19:20', completedDate: '26/01/2025', rating: 5, tip: 1000, packageType: 'Courses urgentes', pickupAddress: 'Abobo, Baoulé' },
+   613→    { id: 'TBP-2024-153', customerName: 'Koffi Aya', deliveryAddress: 'Plateau, Stade Général De Gaulle', distance: 3.8, earnings: 1000, completedAt: '17:45', completedDate: '26/01/2025', rating: 5, tip: 200, packageType: 'Pharmacie & Santé', pickupAddress: 'Marcory, Biétry' },
+   614→    { id: 'TBP-2024-152', customerName: 'Amani Yao', deliveryAddress: 'Treichville, Boulevard Mitterrand', distance: 8.3, earnings: 2000, completedAt: '15:30', completedDate: '26/01/2025', rating: 4, tip: 0, packageType: 'Colis', pickupAddress: 'Cocody, Angre' },
+   615→    { id: 'TBP-2024-151', customerName: 'Kouame Paul', deliveryAddress: 'Abobo, Derrière le pont', distance: 12.7, earnings: 3000, completedAt: '12:15', completedDate: '26/01/2025', rating: 5, tip: 500, packageType: 'Courses urgentes', pickupAddress: 'Yopougon, Sicogi' },
+   616→    { id: 'TBP-2024-150', customerName: 'Touré Aminata', deliveryAddress: 'Marcory, Rue 18', distance: 6.2, earnings: 1500, completedAt: '10:50', completedDate: '25/01/2025', rating: 4, tip: 300, packageType: 'Repas à domicile', pickupAddress: 'Plateau, Rue 12' },
+   617→    { id: 'TBP-2024-149', customerName: 'Koné Ibrahim', deliveryAddress: 'Cocody, Riviera', distance: 9.5, earnings: 2200, completedAt: '18:20', completedDate: '25/01/2025', rating: 5, tip: 800, packageType: 'Documents urgents', pickupAddress: 'Treichville, Marché Central' },
+   618→    { id: 'TBP-2024-148', customerName: 'Diallo Fatou', deliveryAddress: 'Yopougon, Andokoi', distance: 5.8, earnings: 1400, completedAt: '14:10', completedDate: '25/01/2025', rating: 4, tip: 0, packageType: 'Pharmacie & Santé', pickupAddress: 'Cocody, Ivoire' },
+   619→    { id: 'TBP-2024-147', customerName: 'Bakayoko Souleymane', deliveryAddress: 'Plateau, Ministère de la Santé', distance: 7.1, earnings: 1700, completedAt: '11:30', completedDate: '24/01/2025', rating: 5, tip: 400, packageType: 'Documents urgents', pickupAddress: 'Marcory, Rue 22' }
+   620→  ]
+   621→
+   622→  const filteredDeliveries = allDeliveries.filter(delivery => {
+   623→    const matchesSearch = delivery.id.toLowerCase().includes(searchTerm.toLowerCase()) || delivery.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || delivery.deliveryAddress.toLowerCase().includes(searchTerm.toLowerCase())
+   624→    let matchesPeriod = true
+   625→    const today = new Date()
+   626→    const deliveryDate = new Date(delivery.completedDate.split('/').reverse().join('-'))
+   627→    if (filterPeriod === 'today') { matchesPeriod = deliveryDate.toDateString() === today.toDateString() }
+   628→    else if (filterPeriod === 'week') { const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000); matchesPeriod = deliveryDate >= weekAgo }
+   629→    else if (filterPeriod === 'month') { const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000); matchesPeriod = deliveryDate >= monthAgo }
+   630→    return matchesSearch && matchesPeriod
+   631→  })
+   632→
+   633→  return (
+   634→    <div className="min-h-screen flex flex-col bg-gray-50">
+   635→      {/* Header */}
+   636→      <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
+   637→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   638→          <div className="flex items-center justify-between h-16">
+   639→            {/* Logo */}
+   640→            <div className="flex items-center gap-2">
+   641→              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
+   642→                <Package className="w-6 h-6 text-white" />
+   643→              </div>
+   644→              <div>
+   645→                <h1 className="text-xl font-bold">
+   646→                  TiiB<span className="text-orange-500">n</span>Tick
+   647→                </h1>
+   648→                <p className="text-xs text-gray-500">Espace Freelancer</p>
+   649→              </div>
+   650→            </div>
+   651→
+   652→            {/* Desktop Navigation */}
+   653→            <nav className="hidden md:flex items-center gap-4">
+   654→              {/* Notification Bell */}
+   655→              <Button variant="ghost" size="icon" className="relative opacity-50 cursor-not-allowed" disabled>
+   656→                <Bell className="w-5 h-5" />
+   657→              </Button>
+   658→
+   659→              {/* Profile Menu */}
+   660→              <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 rounded-lg border border-orange-200">
+   661→                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
+   662→                  <User className="w-4 h-4 text-white" />
+   663→                </div>
+   664→                <div className="hidden lg:block">
+   665→                  <p className="text-sm font-semibold text-gray-900">{freelancerInfo.lastName} {freelancerInfo.firstName}</p>
+   666→                  <div className="flex items-center gap-1">
+   667→                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
+   668→                    <span className="text-xs text-gray-600">{freelancerInfo.rating}</span>
+   669→                  </div>
+   670→                </div>
+   671→              </div>
+   672→
+   673→              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
+   674→                <Settings className="w-5 h-5" />
+   675→              </Button>
+   676→
+   677→              <Button variant="ghost" size="icon" className="text-red-600" onClick={logout}>
+   678→                <LogOut className="w-5 h-5" />
+   679→              </Button>
+   680→            </nav>
+   681→
+   682→            {/* Mobile Menu */}
+   683→            <div className="md:hidden flex items-center gap-2">
+   684→              <Button variant="ghost" size="icon" className="relative opacity-50 cursor-not-allowed" disabled>
+   685→                <Bell className="w-5 h-5" />
+   686→              </Button>
+   687→
+   688→              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+   689→                <SheetTrigger asChild>
+   690→                  <Button
+   691→                    variant="outline"
+   692→                    size="icon-lg"
+   693→                    className="border-gray-200 active:scale-95 transition-transform"
+   694→                    aria-label="Ouvrir le menu"
+   695→                  >
+   696→                    <Menu className="w-6 h-6" />
+   697→                  </Button>
+   698→                </SheetTrigger>
+   699→                <SheetContent side="right" className="w-[300px] sm:w-[360px] p-0">
+   700→                  <SheetHeader className="px-6 pt-6 pb-4">
+   701→                    <SheetTitle className="text-left">Menu</SheetTitle>
+   702→                  </SheetHeader>
+   703→                  <div className="flex flex-col h-[calc(100%-80px)]">
+   704→                    {/* User profile card */}
+   705→                    <div className="flex items-center gap-3 px-6 py-3 mx-4 mb-2 bg-orange-50 rounded-xl">
+   706→                      <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
+   707→                        <User className="w-5 h-5 text-white" />
+   708→                      </div>
+   709→                      <div className="flex-1">
+   710→                        <p className="text-sm font-bold text-gray-900">{freelancerInfo.lastName} {freelancerInfo.firstName}</p>
+   711→                        <div className="flex items-center gap-1">
+   712→                          <Star className="w-3 h-3 text-yellow-500 fill-current" />
+   713→                          <span className="text-xs text-gray-600">{freelancerInfo.rating}</span>
+   714→                        </div>
+   715→                      </div>
+   716→                      <Badge className="bg-green-100 text-green-700 border-green-300 text-[10px]">En ligne</Badge>
+   717→                    </div>
+   718→
+   719→                    {/* Navigation items */}
+   720→                    <nav className="flex-1 px-4 py-3 space-y-1 overflow-y-auto">
+   721→                      <Button
+   722→                        variant="ghost"
+   723→                        className={cn(
+   724→                          'w-full justify-start gap-3 rounded-lg h-12',
+   725→                          activeTab === 'accueil' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   726→                        )}
+   727→                        onClick={() => { setActiveTab('accueil'); setMobileMenuOpen(false); }}
+   728→                      >
+   729→                        <LayoutDashboard className="w-5 h-5" />
+   730→                        Dashboard
+   731→                      </Button>
+   732→
+   733→                      <Button
+   734→                        variant="ghost"
+   735→                        className={cn(
+   736→                          'w-full justify-start gap-3 rounded-lg h-12',
+   737→                          activeTab === 'annonces' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   738→                        )}
+   739→                        onClick={() => { setActiveTab('annonces'); setMobileMenuOpen(false); }}
+   740→                      >
+   741→                        <Megaphone className="w-5 h-5" />
+   742→                        Annonces
+   743→                      </Button>
+   744→
+   745→                      <Button
+   746→                        variant="ghost"
+   747→                        className={cn(
+   748→                          'w-full justify-start gap-3 rounded-lg h-12',
+   749→                          activeTab === 'livraisons' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   750→                        )}
+   751→                        onClick={() => { setActiveTab('livraisons'); setMobileMenuOpen(false); }}
+   752→                      >
+   753→                        <Truck className="w-5 h-5" />
+   754→                        Livraisons
+   755→                      </Button>
+   756→
+   757→                      <Button
+   758→                        variant="ghost"
+   759→                        className={cn(
+   760→                          'w-full justify-start gap-3 rounded-lg h-12',
+   761→                          activeTab === 'historique' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   762→                        )}
+   763→                        onClick={() => { setActiveTab('historique'); setMobileMenuOpen(false); }}
+   764→                      >
+   765→                        <History className="w-5 h-5" />
+   766→                        Historique
+   767→                      </Button>
+   768→
+   769→                      <Button
+   770→                        variant="ghost"
+   771→                        className={cn(
+   772→                          'w-full justify-start gap-3 rounded-lg h-12',
+   773→                          activeTab === 'wallet' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   774→                        )}
+   775→                        onClick={() => { setActiveTab('wallet'); setMobileMenuOpen(false); }}
+   776→                      >
+   777→                        <WalletIcon className="w-5 h-5" />
+   778→                        Mon Wallet
+   779→                      </Button>
+   780→
+   781→                      <Button
+   782→                        variant="ghost"
+   783→                        className={cn(
+   784→                          'w-full justify-start gap-3 rounded-lg h-12',
+   785→                          activeTab === 'profil' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   786→                        )}
+   787→                        onClick={() => { setActiveTab('profil'); setMobileMenuOpen(false); }}
+   788→                      >
+   789→                        <UserCircle className="w-5 h-5" />
+   790→                        Mon profil
+   791→                      </Button>
+   792→
+   793→                      <Button
+   794→                        variant="ghost"
+   795→                        className={cn(
+   796→                          'w-full justify-start gap-3 rounded-lg h-12',
+   797→                          activeTab === 'missions' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   798→                        )}
+   799→                        onClick={() => { setActiveTab('missions'); setMobileMenuOpen(false); }}
+   800→                      >
+   801→                        <ClipboardList className="w-5 h-5" />
+   802→                        Missions
+   803→                      </Button>
+   804→
+   805→                      <Button
+   806→                        variant="ghost"
+   807→                        className={cn(
+   808→                          'w-full justify-start gap-3 rounded-lg h-12',
+   809→                          activeTab === 'politiques' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   810→                        )}
+   811→                        onClick={() => { setActiveTab('politiques'); setMobileMenuOpen(false); }}
+   812→                      >
+   813→                        <ScrollText className="w-5 h-5" />
+   814→                        Politiques
+   815→                      </Button>
+   816→
+   817→                      <Button
+   818→                        variant="ghost"
+   819→                        className="w-full justify-start gap-3 rounded-lg h-12 text-gray-700 opacity-50 cursor-not-allowed"
+   820→                        disabled
+   821→                      >
+   822→                        <Settings className="w-5 h-5" />
+   823→                        Paramètres
+   824→                      </Button>
+   825→                    </nav>
+   826→
+   827→                    <div className="px-4 py-4">
+   828→                      <Button
+   829→                        variant="ghost"
+   830→                        className="w-full justify-start gap-3 rounded-lg h-12 text-red-600 hover:bg-red-50 hover:text-red-700"
+   831→                        onClick={logout}
+   832→                      >
+   833→                        <LogOut className="w-5 h-5" />
+   834→                        Déconnexion
+   835→                      </Button>
+   836→                    </div>
+   837→                  </div>
+   838→                </SheetContent>
+   839→              </Sheet>
+   840→            </div>
+   841→          </div>
+   842→        </div>
+   843→      </header>
+   844→
+   845→      {/* Main Content */}
+   846→      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+   847→        <div className="max-w-7xl mx-auto space-y-6">
+   848→          {activeTab === 'accueil' && (
+   849→            <div className="space-y-6">
+   850→              {/* Welcome Section */}
+   851→              <div className="mb-2">
+   852→                <h2 className="text-2xl md:text-3xl font-bold">
+   853→                  Bienvenue, <span className="text-orange-600">{freelancerInfo.lastName} {freelancerInfo.firstName}</span>
+   854→                </h2>
+   855→                <p className="text-sm text-gray-500 mt-1">Voici un aperçu de votre activité</p>
+   856→                <Button
+   857→                  className="mt-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+   858→                  size="sm"
+   859→                  onClick={() => setActiveTab('augmenter')}
+   860→                >
+   861→                  <ArrowUpRight className="w-4 h-4 mr-2" />
+   862→                  Augmenter votre profil
+   863→                </Button>
+   864→              </div>
+   865→
+   866→              {/* Stats Cards */}
+   867→              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+   868→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   869→                  <CardHeader className="pb-3 px-4 py-3">
+   870→                    <CardDescription className="text-[10px] md:text-xs text-black">En cours</CardDescription>
+   871→                    <CardTitle className="text-xl md:text-2xl text-orange-600">{activeLoading ? '…' : activeDeliveries.length}</CardTitle>
+   872→                  </CardHeader>
+   873→                  <CardContent className="px-4 pb-4 mt-auto">
+   874→                    <div className="flex items-center text-xs text-muted-foreground">
+   875→                      <Truck className="w-3 h-3 mr-1" />
+   876→                      Livraisons actives
+   877→                    </div>
+   878→                  </CardContent>
+   879→                </Card>
+   880→
+   881→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   882→                  <CardHeader className="pb-3 px-4 py-3">
+   883→                    <CardDescription className="text-[10px] md:text-xs text-black">Terminées</CardDescription>
+   884→                    <CardTitle className="text-xl md:text-2xl text-green-600">{freelancerInfo.totalDeliveries}</CardTitle>
+   885→                  </CardHeader>
+   886→                  <CardContent className="px-4 pb-4 mt-auto">
+   887→                    <div className="flex items-center text-xs text-muted-foreground">
+   888→                      <CheckCircle2 className="w-3 h-3 mr-1" />
+   889→                      Livraisons effectuées
+   890→                    </div>
+   891→                  </CardContent>
+   892→                </Card>
+   893→
+   894→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   895→                  <CardHeader className="pb-3 px-4 py-3">
+   896→                    <CardDescription className="text-[10px] md:text-xs text-black">Disponibles</CardDescription>
+   897→                    <CardTitle className="text-xl md:text-2xl text-blue-600">{availableLoading ? '…' : availableDeliveries.length}</CardTitle>
+   898→                  </CardHeader>
+   899→                  <CardContent className="px-4 pb-4 mt-auto">
+   900→                    <div className="flex items-center text-xs text-muted-foreground">
+   901→                      <Megaphone className="w-3 h-3 mr-1" />
+   902→                      Annonces ouvertes
+   903→                    </div>
+   904→                  </CardContent>
+   905→                </Card>
+   906→
+   907→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   908→                  <CardHeader className="pb-3 px-4 py-3">
+   909→                    <CardDescription className="text-[10px] md:text-xs text-black">Restantes</CardDescription>
+   910→                    <CardTitle className="text-xl md:text-2xl text-amber-600">{Math.max(0, 30 - activeDeliveries.length)}</CardTitle>
+   911→                  </CardHeader>
+   912→                  <CardContent className="px-4 pb-4 mt-auto">
+   913→                    <div className="flex items-center text-xs text-muted-foreground">
+   914→                      <Target className="w-3 h-3 mr-1" />
+   915→                      Places offre en cours
+   916→                    </div>
+   917→                  </CardContent>
+   918→                </Card>
+   919→              </div>
+   920→
+   921→              {/* Wallet Section */}
+   922→              <Card className="relative overflow-hidden border-2 border-orange-100 bg-gradient-to-br from-orange-50 via-white to-orange-50/30">
+   923→                <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
+   924→                  <GoogleWalletIcon className="w-full h-full" />
+   925→                </div>
+   926→                <CardHeader className="pb-2">
+   927→                  <div className="flex items-center justify-between">
+   928→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+   929→                      <GoogleWalletIcon className="w-6 h-6" />
+   930→                      Mon Wallet
+   931→                    </CardTitle>
+   932→                    <Badge className="bg-orange-100 text-orange-700 border-orange-300 hover:bg-orange-100">
+   933→                      <DollarSign className="w-3 h-3 mr-1" />
+   934→                      Actif
+   935→                    </Badge>
+   936→                  </div>
+   937→                  <CardDescription className="text-xs md:text-sm">Vos gains et votre solde disponible</CardDescription>
+   938→                </CardHeader>
+   939→                <CardContent>
+   940→                  <div className="flex items-end gap-2">
+   941→                    <span className="text-3xl md:text-4xl font-bold text-gray-900">{fmt(freelancerInfo.totalEarnings)}</span>
+   942→                    <span className="text-sm text-gray-500 mb-1">FCFA</span>
+   943→                  </div>
+   944→                  <div className="flex items-center gap-1 mt-1 text-xs text-green-600">
+   945→                    <TrendingUp className="w-3 h-3" />
+   946→                    <span>+12% ce mois</span>
+   947→                  </div>
+   948→                  <div className="grid grid-cols-2 gap-3 mt-4">
+   949→                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-gray-100">
+   950→                      <p className="text-xs text-gray-500">Ce mois</p>
+   951→                      <p className="text-lg font-bold text-gray-900">45,000 <span className="text-xs font-normal text-gray-500">FCFA</span></p>
+   952→                    </div>
+   953→                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-gray-100">
+   954→                      <p className="text-xs text-gray-500">Disponible</p>
+   955→                      <p className="text-lg font-bold text-green-600">38,500 <span className="text-xs font-normal text-gray-500">FCFA</span></p>
+   956→                    </div>
+   957→                  </div>
+   958→                  <Button className="mt-4 w-full bg-gradient-to-r from-orange-500 to-white text-orange-600 font-medium border border-orange-200 hover:from-orange-500 hover:to-orange-50" size="sm" onClick={() => setActiveTab('wallet')}>
+   959→                    <GoogleWalletIcon className="w-4 h-4 mr-2" />
+   960→                    Ouvrir mon Wallet
+   961→                  </Button>
+   962→                </CardContent>
+   963→              </Card>
+   964→
+   965→              {/* Quick Actions */}
+   966→              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+   967→                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('annonces')}>
+   968→                  <CardHeader>
+   969→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+   970→                      <Megaphone className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+   971→                      Voir les annonces
+   972→                    </CardTitle>
+   973→                    <CardDescription className="text-xs md:text-sm">Consultez les annonces disponibles et souscrivez aux livraisons</CardDescription>
+   974→                  </CardHeader>
+   975→                </Card>
+   976→
+   977→                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('livraisons')}>
+   978→                  <CardHeader>
+   979→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+   980→                      <Truck className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+   981→                      Mes livraisons
+   982→                    </CardTitle>
+   983→                    <CardDescription className="text-xs md:text-sm">Suivez vos livraisons en cours et gérez vos tournées</CardDescription>
+   984→                  </CardHeader>
+   985→                </Card>
+   986→
+   987→                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('historique')}>
+   988→                  <CardHeader>
+   989→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+   990→                      <History className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+   991→                      Historique
+   992→                    </CardTitle>
+   993→                    <CardDescription className="text-xs md:text-sm">Consultez l'historique de vos livraisons effectuées</CardDescription>
+   994→                  </CardHeader>
+   995→                </Card>
+   996→
+   997→                <Card className="cursor-pointer hover:shadow-md transition-shadow border-2 border-orange-100 hover:border-orange-300 bg-gradient-to-br from-orange-50/50 to-white" onClick={() => setActiveTab('wallet')}>
+   998→                  <CardHeader>
+   999→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+  1000→                      <GoogleWalletIcon className="w-5 h-5 md:w-6 md:h-6" />
+  1001→                      Mon Wallet
+  1002→                    </CardTitle>
+  1003→                    <CardDescription className="text-xs md:text-sm">Consultez votre solde, vos gains et retirez vos fonds</CardDescription>
+  1004→                  </CardHeader>
+  1005→                </Card>
+  1006→
+  1007→                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('profil')}>
+  1008→                  <CardHeader>
+  1009→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+  1010→                      <UserCircle className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+  1011→                      Mon profil
+  1012→                    </CardTitle>
+  1013→                    <CardDescription className="text-xs md:text-sm">Gérez vos informations personnelles et paramètres</CardDescription>
+  1014→                  </CardHeader>
+  1015→                </Card>
+  1016→              </div>
+  1017→
+  1018→              {/* Active Deliveries Preview */}
+  1019→              <Card>
+  1020→                <CardHeader className="flex items-center justify-between">
+  1021→                  <CardTitle className="text-lg">Livraisons en cours</CardTitle>
+  1022→                  <Button
+  1023→                    variant="ghost"
+  1024→                    size="sm"
+  1025→                    onClick={() => setActiveTab('livraisons')}
+  1026→                    className="text-orange-600 hover:text-orange-700"
+  1027→                  >
+  1028→                    Voir tout
+  1029→                  </Button>
+  1030→                </CardHeader>
+  1031→                <CardContent>
+  1032→                  <div className="space-y-3">
+  1033→                    {activeDeliveries.length === 0 ? (
+  1034→                      <div className="text-center py-8">
+  1035→                        <Truck className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+  1036→                        <p className="text-sm text-gray-500">Aucune livraison en cours</p>
+  1037→                        <p className="text-xs text-gray-400 mt-1">Souscrivez à une annonce pour commencer</p>
+  1038→                      </div>
+  1039→                    ) : (
+  1040→                      activeDeliveries.slice(0, 2).map((delivery) => (
+  1041→                        <div key={delivery.id} className="p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors">
+  1042→                          <div className="flex items-start justify-between">
+  1043→                            <div className="flex-1">
+  1044→                              <div className="flex items-center gap-2 mb-2">
+  1045→                                <span className="text-sm font-semibold text-gray-900">{delivery.title}</span>
+  1046→                                <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
+  1047→                                  <Package className="w-3 h-3 mr-1" />
+  1048→                                  {delivery.status === 'ASSIGNED' ? 'Assignée' : 'Souscrit'}
+  1049→                                </Badge>
+  1050→                              </div>
+  1051→                              <div className="flex items-start gap-2">
+  1052→                                <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+  1053→                                <div className="space-y-1 flex-1">
+  1054→                                  <p className="text-xs text-gray-700">
+  1055→                                    <span className="font-medium">Retrait:</span> {delivery.pickupAddress?.city || 'N/A'}
+  1056→                                  </p>
+  1057→                                  <p className="text-xs text-gray-700">
+  1058→                                    <span className="font-medium">Livraison:</span> {delivery.deliveryAddress?.city || 'N/A'}
+  1059→                                  </p>
+  1060→                                </div>
+  1061→                              </div>
+  1062→                            </div>
+  1063→                          </div>
+  1064→                        </div>
+  1065→                      ))
+  1066→                    )}
+  1067→                  </div>
+  1068→                </CardContent>
+  1069→              </Card>
+  1070→            </div>
+  1071→          )}
+  1072→
+  1073→          {activeTab === 'annonces' && (
+  1074→            <>
+  1075→              <div className="grid lg:grid-cols-2 gap-4">
+  1076→                {availableLoading ? (
+  1077→                  <div className="col-span-2 flex items-center justify-center py-16">
+  1078→                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+  1079→                  </div>
+  1080→                ) : availableDeliveries.length === 0 ? (
+  1081→                  <div className="col-span-2 text-center py-16">
+  1082→                    <Megaphone className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+  1083→                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Aucune annonce disponible</h3>
+  1084→                    <p className="text-sm text-gray-500">Revenez plus tard pour voir les nouvelles annonces</p>
+  1085→                  </div>
+  1086→                ) : availableDeliveries.map((delivery) => (
+  1087→                  <Card key={delivery.id} className="bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl">
+  1088→                    <CardHeader className="pb-3">
+  1089→                      <div className="flex items-start justify-between">
+  1090→                        <div className="space-y-1">
+  1091→                          <CardTitle className="text-base">{delivery.title}</CardTitle>
+  1092→                          <p className="text-[10px] text-orange-600 font-medium italic">
+  1093→                            {delivery.pickupAddress?.city || 'N/A'} → {delivery.deliveryAddress?.city || 'N/A'}
+  1094→                          </p>
+  1095→                        </div>
+  1096→                        {delivery.amount && (
+  1097→                          <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded">
+  1098→                            <DollarSign className="w-3 h-3 text-green-600" />
+  1099→                            <span className="text-sm font-semibold text-green-700">{fmt(delivery.amount)} FCFA</span>
+  1100→                          </div>
+  1101→                        )}
+  1102→                      </div>
+  1103→                    </CardHeader>
+  1104→                    <CardContent className="space-y-3">
+  1105→                      {delivery.description && (
+  1106→                        <p className="text-sm text-gray-500 line-clamp-2">{delivery.description}</p>
+  1107→                      )}
+  1108→                      <div className="flex items-start gap-2">
+  1109→                        <MapPin className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+  1110→                        <div className="space-y-2 flex-1">
+  1111→                          <div className="flex items-center gap-2">
+  1112→                            <div className="w-2 h-2 bg-green-500 rounded-full" />
+  1113→                            <p className="text-sm text-gray-700">
+  1114→                              <span className="font-medium">Retrait:</span> {delivery.pickupAddress?.street || delivery.pickupAddress?.city || 'N/A'}
+  1115→                            </p>
+  1116→                          </div>
+  1117→                          <div className="flex items-center gap-2">
+  1118→                            <div className="w-2 h-2 bg-red-500 rounded-full" />
+  1119→                            <p className="text-sm text-gray-700">
+  1120→                              <span className="font-medium">Livraison:</span> {delivery.deliveryAddress?.street || delivery.deliveryAddress?.city || 'N/A'}
+  1121→                            </p>
+  1122→                          </div>
+  1123→                        </div>
+  1124→                      </div>
+  1125→
+  1126→                      <div className="flex items-center justify-between text-sm text-gray-600 pt-2 border-t">
+  1127→                        {delivery.distance && (
+  1128→                          <div className="flex items-center gap-2">
+  1129→                            <Navigation className="w-4 h-4" />
+  1130→                            <span>{delivery.distance.toFixed(1)} km</span>
+  1131→                          </div>
+  1132→                        )}
+  1133→                        {delivery.amount && (
+  1134→                          <div className="flex items-center gap-1">
+  1135→                            <DollarSign className="w-4 h-4 text-green-600" />
+  1136→                            <span className="font-semibold text-green-600">{fmt(delivery.amount)} FCFA</span>
+  1137→                          </div>
+  1138→                        )}
+  1139→                      </div>
+  1140→
+  1141→                      <div className="flex gap-2 pt-2">
+  1142→                        <Button
+  1143→                          size="sm"
+  1144→                          variant="outline"
+  1145→                          className="flex-1 border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+  1146→                          onClick={() => { setSelectedDelivery(delivery); setDetailsOpen(true) }}
+  1147→                        >
+  1148→                          Voir les détails
+  1149→                        </Button>
+  1150→                        <Button
+  1151→                          size="sm"
+  1152→                          disabled={pendingSubscriptions.has(delivery.id) || subscribedIds.has(delivery.id)}
+  1153→                          className={cn(
+  1154→                            "flex-1 shadow-md transform active:scale-95 transition-all text-white font-medium",
+  1155→                            (pendingSubscriptions.has(delivery.id) || subscribedIds.has(delivery.id))
+  1156→                              ? "bg-gray-400 cursor-not-allowed"
+  1157→                              : "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+  1158→                          )}
+  1159→                          onClick={() => handleAcceptDelivery(delivery.id)}
+  1160→                        >
+  1161→                          {(pendingSubscriptions.has(delivery.id) || subscribedIds.has(delivery.id))
+  1162→                            ? "En attente de traitement"
+  1163→                            : "Souscrire à l'annonce"}
+  1164→                        </Button>
+  1165→                      </div>
+  1166→                    </CardContent>
+  1167→                  </Card>
+  1168→                ))}
+  1169→              </div>
+  1170→
+  1171→              <Dialog open={detailsOpen} onOpenChange={(o) => { setDetailsOpen(o); if (!o) { setSelectedDelivery(null); } }}>
+  1172→                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+  1173→                  <DialogHeader className="border-b pb-4">
+  1174→                    <div className="flex items-center gap-3">
+  1175→                      <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+  1176→                        <Package className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+  1177→                      </div>
+  1178→                      <div>
+  1179→                        <DialogTitle className="text-xl">{selectedDelivery?.title || "Détails de l'annonce"}</DialogTitle>
+  1180→                        <DialogDescription className="text-xs font-mono text-orange-600">{selectedDelivery?.id}</DialogDescription>
+  1181→                      </div>
+  1182→                    </div>
+  1183→                  </DialogHeader>
+  1184→
+  1185→                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+  1186→                    {/* Left Column: Route Info & Map */}
+  1187→                    <div className="space-y-4">
+  1188→                      <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-4">
+  1189→                        <div className="flex items-start gap-3">
+  1190→                          <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
+  1191→                          <div>
+  1192→                            <p className="text-xs text-gray-500 uppercase font-bold">Lieu de Retrait</p>
+  1193→                            <p className="text-sm text-gray-700">
+  1194→                              {selectedDelivery?.pickupAddress?.street && `${selectedDelivery.pickupAddress.street}, `}
+  1195→                              {selectedDelivery?.pickupAddress?.district && `${selectedDelivery.pickupAddress.district}, `}
+  1196→                              {selectedDelivery?.pickupAddress?.city || 'N/A'}
+  1197→                            </p>
+  1198→                          </div>
+  1199→                        </div>
+  1200→                        <div className="flex items-start gap-3">
+  1201→                          <div className="w-2 h-2 bg-red-500 rounded-full mt-2" />
+  1202→                          <div>
+  1203→                            <p className="text-xs text-gray-500 uppercase font-bold">Lieu de Livraison</p>
+  1204→                            <p className="text-sm text-gray-700">
+  1205→                              {selectedDelivery?.deliveryAddress?.street && `${selectedDelivery.deliveryAddress.street}, `}
+  1206→                              {selectedDelivery?.deliveryAddress?.district && `${selectedDelivery.deliveryAddress.district}, `}
+  1207→                              {selectedDelivery?.deliveryAddress?.city || 'N/A'}
+  1208→                            </p>
+  1209→                          </div>
+  1210→                        </div>
+  1211→                      </div>
+  1212→
+  1213→                      {/* Map */}
+  1214→                      <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm h-64 relative z-0">
+  1215→                        {selectedDelivery?.pickupAddress?.latitude && selectedDelivery?.deliveryAddress?.latitude && (
+  1216→                          <MapLeaflet
+  1217→                            center={[
+  1218→                              (selectedDelivery.pickupAddress.latitude + selectedDelivery.deliveryAddress.latitude) / 2,
+  1219→                              (selectedDelivery.pickupAddress.longitude + selectedDelivery.deliveryAddress.longitude) / 2
+  1220→                            ]}
+  1221→                            zoom={12}
+  1222→                            markers={[
+  1223→                              { position: [selectedDelivery.pickupAddress.latitude, selectedDelivery.pickupAddress.longitude], label: "Retrait", color: "#f97316" },
+  1224→                              { position: [selectedDelivery.deliveryAddress.latitude, selectedDelivery.deliveryAddress.longitude], label: "Livraison", color: "#10b981" }
+  1225→                            ]}
+  1226→                            route={activeRoute}
+  1227→                          />
+  1228→                        )}
+  1229→                      </div>
+  1230→
+  1231→                      <div className="flex justify-between items-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+  1232→                        {selectedDelivery?.distance && (
+  1233→                          <div className="flex items-center gap-2">
+  1234→                            <Navigation className="w-5 h-5 text-orange-600" />
+  1235→                            <span className="font-bold">{selectedDelivery.distance.toFixed(1)} km</span>
+  1236→                          </div>
+  1237→                        )}
+  1238→                        {selectedDelivery?.duration && (
+  1239→                          <div className="flex items-center gap-2">
+  1240→                            <Clock className="w-5 h-5 text-orange-600" />
+  1241→                            <span className="font-bold">{Math.round(selectedDelivery.duration)} min</span>
+  1242→                          </div>
+  1243→                        )}
+  1244→                        {selectedDelivery?.amount && (
+  1245→                          <div className="text-lg font-black text-orange-600">
+  1246→                            {fmt(selectedDelivery.amount)} FCFA
+  1247→                          </div>
+  1248→                        )}
+  1249→                      </div>
+  1250→
+  1251→                      {/* Transport & Payment info */}
+  1252→                      <div className="grid grid-cols-2 gap-3 text-sm">
+  1253→                        {selectedDelivery?.transportMethod && (
+  1254→                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+  1255→                            <p className="text-xs text-gray-500">Mode de transport</p>
+  1256→                            <p className="font-medium capitalize">{selectedDelivery.transportMethod}</p>
+  1257→                          </div>
+  1258→                        )}
+  1259→                        {selectedDelivery?.paymentMethod && (
+  1260→                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+  1261→                            <p className="text-xs text-gray-500">Paiement</p>
+  1262→                            <p className="font-medium capitalize">{selectedDelivery.paymentMethod}</p>
+  1263→                          </div>
+  1264→                        )}
+  1265→                      </div>
+  1266→                    </div>
+  1267→
+  1268→                    {/* Right Column: Description, Packet & Recipient */}
+  1269→                    <div className="space-y-4">
+  1270→                      {selectedDelivery?.description && (
+  1271→                        <div>
+  1272→                          <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-2">Description</h4>
+  1273→                          <p className="text-sm text-gray-600">{selectedDelivery.description}</p>
+  1274→                        </div>
+  1275→                      )}
+  1276→
+  1277→                      {/* Packet Details */}
+  1278→                      {selectedDelivery?.packet && (
+  1279→                        <div>
+  1280→                          <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-3 border-b pb-1">Détails du Colis</h4>
+  1281→                          <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
+  1282→                            {selectedDelivery.packet.designation && (
+  1283→                              <div>
+  1284→                                <p className="text-xs text-gray-500">Désignation</p>
+  1285→                                <p className="font-medium">{selectedDelivery.packet.designation}</p>
+  1286→                              </div>
+  1287→                            )}
+  1288→                            {selectedDelivery.packet.weight && (
+  1289→                              <div>
+  1290→                                <p className="text-xs text-gray-500">Poids</p>
+  1291→                                <p className="font-medium">{selectedDelivery.packet.weight} kg</p>
+  1292→                              </div>
+  1293→                            )}
+  1294→                            {selectedDelivery.packet.length && selectedDelivery.packet.width && selectedDelivery.packet.height && (
+  1295→                              <div className="col-span-2">
+  1296→                                <p className="text-xs text-gray-500">Dimensions (L × l × H)</p>
+  1297→                                <p className="font-medium">{selectedDelivery.packet.length} × {selectedDelivery.packet.width} × {selectedDelivery.packet.height} cm</p>
+  1298→                              </div>
+  1299→                            )}
+  1300→                            {selectedDelivery.packet.description && (
+  1301→                              <div className="col-span-2">
+  1302→                                <p className="text-xs text-gray-500">Description du colis</p>
+  1303→                                <p className="text-sm italic text-gray-600">{selectedDelivery.packet.description}</p>
+  1304→                              </div>
+  1305→                            )}
+  1306→                          </div>
+  1307→                        </div>
+  1308→                      )}
+  1309→
+  1310→                      {/* Recipient Info */}
+  1311→                      <div className="border-t pt-4">
+  1312→                        <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-3">Destinataire</h4>
+  1313→                        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl space-y-2">
+  1314→                          {(selectedDelivery?.recipientFirstName || selectedDelivery?.recipientLastName) && (
+  1315→                            <div className="flex items-center gap-3">
+  1316→                              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+  1317→                                {selectedDelivery?.recipientFirstName?.charAt(0) || '?'}
+  1318→                              </div>
+  1319→                              <p className="font-bold text-gray-900">{selectedDelivery?.recipientFirstName} {selectedDelivery?.recipientLastName}</p>
+  1320→                            </div>
+  1321→                          )}
+  1322→                          {selectedDelivery?.recipientPhone && (
+  1323→                            <div className="flex items-center gap-2 text-sm text-gray-600">
+  1324→                              <Phone className="w-4 h-4" />
+  1325→                              <span>{selectedDelivery.recipientPhone}</span>
+  1326→                            </div>
+  1327→                          )}
+  1328→                          {selectedDelivery?.recipientEmail && (
+  1329→                            <div className="flex items-center gap-2 text-sm text-gray-600">
+  1330→                              <Mail className="w-4 h-4" />
+  1331→                              <span>{selectedDelivery.recipientEmail}</span>
+  1332→                            </div>
+  1333→                          )}
+  1334→                        </div>
+  1335→                      </div>
+  1336→                    </div>
+  1337→                  </div>
+  1338→                </DialogContent>
+  1339→              </Dialog>
+  1340→            </>
+  1341→          )}
+  1342→
+  1343→          {activeTab === 'livraisons' && (
+  1344→            <>
+  1345→              {activeLoading ? (
+  1346→                <div className="flex items-center justify-center py-16">
+  1347→                  <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+  1348→                </div>
+  1349→              ) : activeDeliveries.length === 0 ? (
+  1350→                <div className="text-center py-16">
+  1351→                  <Truck className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+  1352→                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Aucune livraison</h3>
+  1353→                  <p className="text-sm text-gray-500">Souscrivez à une annonce pour voir vos livraisons ici</p>
+  1354→                  <Button
+  1355→                    className="mt-4 bg-gradient-to-r from-orange-500 to-amber-500"
+  1356→                    onClick={() => setActiveTab('annonces')}
+  1357→                  >
+  1358→                    Voir les annonces
+  1359→                  </Button>
+  1360→                </div>
+  1361→              ) : (
+  1362→                <div className="grid gap-4 mb-6">
+  1363→                  {activeDeliveries.map((delivery) => (
+  1364→                    <Card key={delivery.id} className="bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl">
+  1365→                      <CardHeader className="pb-3">
+  1366→                        <div className="flex items-start justify-between">
+  1367→                          <div className="space-y-1">
+  1368→                            <CardTitle className="text-base">{delivery.title}</CardTitle>
+  1369→                            <p className="text-[10px] text-gray-400 italic">
+  1370→                              {delivery.pickupAddress?.city || 'N/A'} → {delivery.deliveryAddress?.city || 'N/A'}
+  1371→                            </p>
+  1372→                          </div>
+  1373→                          <Badge variant="outline" className={cn(
+  1374→                            delivery.status === 'ASSIGNED'
+  1375→                              ? 'bg-green-100 text-green-700 border-green-300'
+  1376→                              : 'bg-orange-100 text-orange-700 border-orange-300'
+  1377→                          )}>
+  1378→                            {delivery.status === 'ASSIGNED' ? (
+  1379→                              <><CheckCircle2 className="w-3 h-3 mr-1" /> Assignée</>
+  1380→                            ) : (
+  1381→                              <><Package className="w-3 h-3 mr-1" /> Souscrit</>
+  1382→                            )}
+  1383→                          </Badge>
+  1384→                        </div>
+  1385→                      </CardHeader>
+  1386→                      <CardContent className="space-y-3">
+  1387→                        {delivery.description && (
+  1388→                          <p className="text-sm text-gray-500 line-clamp-2">{delivery.description}</p>
+  1389→                        )}
+  1390→                        <div className="flex items-start gap-2">
+  1391→                          <MapPin className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+  1392→                          <div className="space-y-2 flex-1">
+  1393→                            <div className="flex items-center gap-2">
+  1394→                              <div className="w-2 h-2 bg-green-500 rounded-full" />
+  1395→                              <p className="text-sm text-gray-700">
+  1396→                                <span className="font-medium">Retrait:</span> {delivery.pickupAddress?.street || delivery.pickupAddress?.city || 'N/A'}
+  1397→                              </p>
+  1398→                            </div>
+  1399→                            <div className="flex items-center gap-2">
+  1400→                              <div className="w-2 h-2 bg-red-500 rounded-full" />
+  1401→                              <p className="text-sm text-gray-700">
+  1402→                                <span className="font-medium">Livraison:</span> {delivery.deliveryAddress?.street || delivery.deliveryAddress?.city || 'N/A'}
+  1403→                              </p>
+  1404→                            </div>
+  1405→                          </div>
+  1406→                        </div>
+  1407→
+  1408→                        <div className="flex items-center justify-between text-sm text-gray-600 pt-2 border-t">
+  1409→                          {delivery.distance && (
+  1410→                            <div className="flex items-center gap-2">
+  1411→                              <Navigation className="w-4 h-4" />
+  1412→                              <span>{delivery.distance.toFixed(1)} km</span>
+  1413→                            </div>
+  1414→                          )}
+  1415→                          {delivery.amount && (
+  1416→                            <div className="flex items-center gap-2">
+  1417→                              <DollarSign className="w-4 h-4 text-green-600" />
+  1418→                              <span className="font-semibold text-green-600">{fmt(delivery.amount)} FCFA</span>
+  1419→                            </div>
+  1420→                          )}
+  1421→                        </div>
+  1422→                      </CardContent>
+  1423→                    </Card>
+  1424→                  ))}
+  1425→                </div>
+  1426→              )}
+  1427→            </>
+  1428→          )}
+  1429→
+  1430→          {activeTab === 'profil' && (
+  1431→            <div className="space-y-6">
+  1432→              {/* Profile Overview Card */}
+  1433→              <Card className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 shadow-lg">
+  1434→                <CardContent className="p-6">
+  1435→                  <div className="flex items-center gap-6">
+  1436→                    <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-4 border-white/30">
+  1437→                      <User className="w-10 h-10 text-white" />
+  1438→                    </div>
+  1439→                    <div className="flex-1">
+  1440→                      <h2 className="text-2xl font-bold mb-1">{user?.lastName || ''} {user?.firstName || 'Freelancer'}</h2>
+  1441→                      <div className="flex items-center gap-4 text-sm opacity-90">
+  1442→                        <div className="flex items-center gap-1">
+  1443→                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+  1444→                          <span className="font-semibold">{user?.rating || 5.0}</span>
+  1445→                        </div>
+  1446→                        <span>•</span>
+  1447→                        <span>{user?.totalDeliveries || 0} livraisons</span>
+  1448→                        <span>•</span>
+  1449→                        <span>Membre depuis {user?.memberSince ? new Date(user.memberSince).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : '...'}</span>
+  1450→                      </div>
+  1451→                    </div>
+  1452→                  </div>
+  1453→                </CardContent>
+  1454→              </Card>
+  1455→
+  1456→              {/* Personal Information Card */}
+  1457→              <Card>
+  1458→                <CardHeader>
+  1459→                  <CardTitle className="flex items-center gap-2">
+  1460→                    <User className="w-5 h-5 text-orange-600" />
+  1461→                    Informations personnelles
+  1462→                  </CardTitle>
+  1463→                </CardHeader>
+  1464→                <CardContent className="space-y-4">
+  1465→                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  1466→                    <div>
+  1467→                      <Label>Nom {isEditing && <span className="text-red-500">*</span>}</Label>
+  1468→                      {isEditing ? (
+  1469→                        <Input value={editedData.lastName} onChange={(e) => setEditedData({ ...editedData, lastName: e.target.value })} className="mt-1" />
+  1470→                      ) : (
+  1471→                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+  1472→                          <User className="w-5 h-5 text-gray-400" />
+  1473→                          <span className="font-medium">{user?.lastName || '...'}</span>
+  1474→                        </div>
+  1475→                      )}
+  1476→                    </div>
+  1477→                    <div>
+  1478→                      <Label>Prénom {isEditing && <span className="text-red-500">*</span>}</Label>
+  1479→                      {isEditing ? (
+  1480→                        <Input value={editedData.firstName} onChange={(e) => setEditedData({ ...editedData, firstName: e.target.value })} className="mt-1" />
+  1481→                      ) : (
+  1482→                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+  1483→                          <User className="w-5 h-5 text-gray-400" />
+  1484→                          <span className="font-medium">{user?.firstName || '...'}</span>
+  1485→                        </div>
+  1486→                      )}
+  1487→                    </div>
+  1488→                    <div>
+  1489→                      <Label>Email {isEditing && <span className="text-red-500">*</span>}</Label>
+  1490→                      {isEditing ? (
+  1491→                        <Input type="email" value={editedData.email} onChange={(e) => setEditedData({ ...editedData, email: e.target.value })} className="mt-1" />
+  1492→                      ) : (
+  1493→                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+  1494→                          <Mail className="w-5 h-5 text-gray-400" />
+  1495→                          <span className="font-medium">{user?.email || '...'}</span>
+  1496→                        </div>
+  1497→                      )}
+  1498→                    </div>
+  1499→                    <div>
+  1500→                      <Label>Téléphone {isEditing && <span className="text-red-500">*</span>}</Label>
+  1501→                      {isEditing ? (
+  1502→                        <Input type="tel" value={editedData.phone} onChange={(e) => setEditedData({ ...editedData, phone: e.target.value })} className="mt-1" />
+  1503→                      ) : (
+  1504→                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+  1505→                          <Phone className="w-5 h-5 text-gray-400" />
+  1506→                          <span className="font-medium">{user?.phone || '...'}</span>
+  1507→                        </div>
+  1508→                      )}
+  1509→                    </div>
+  1510→                    <div className="md:col-span-2">
+  1511→                      <Label>Mot de passe {isEditing && <span className="text-red-500">*</span>}</Label>
+  1512→                      {isEditing ? (
+  1513→                        <div className="relative mt-1">
+  1514→                          <Input type={showPassword ? "text" : "password"} value={editedData.password} onChange={(e) => setEditedData({ ...editedData, password: e.target.value })} className="pr-10" />
+  1515→                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 hover:text-orange-600">
+  1516→                            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+  1517→                          </button>
+  1518→                        </div>
+  1519→                      ) : (
+  1520→                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1 relative pr-10 min-h-[52px]">
+  1521→                          <Lock className="w-5 h-5 text-gray-400 shrink-0" />
+  1522→                          <span className="font-medium">{'*'.repeat(8)}</span>
+  1523→                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500">
+  1524→                            {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+  1525→                          </button>
+  1526→                        </div>
+  1527→                      )}
+  1528→                    </div>
+  1529→                  </div>
+  1530→                  {isEditing && (
+  1531→                    <div className="flex gap-3 pt-4">
+  1532→                      <Button onClick={handleSave} disabled={isProfileLoading} className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white">
+  1533→                        {isProfileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
+  1534→                        Enregistrer
+  1535→                      </Button>
+  1536→                      <Button onClick={handleCancel} variant="outline" className="flex-1">Annuler</Button>
+  1537→                    </div>
+  1538→                  )}
+  1539→                </CardContent>
+  1540→              </Card>
+  1541→
+  1542→              {/* Account Actions Card */}
+  1543→              <Card>
+  1544→                <CardHeader>
+  1545→                  <CardTitle className="flex items-center gap-2">
+  1546→                    <Settings className="w-5 h-5 text-orange-600" />
+  1547→                    Actions du compte
+  1548→                  </CardTitle>
+  1549→                </CardHeader>
+  1550→                <CardContent className="space-y-4">
+  1551→                  <Button onClick={handleEdit} variant="outline" className="w-full justify-start h-12 border-2 border-orange-200 hover:bg-orange-50 hover:border-orange-300 text-orange-700">
+  1552→                    <Edit className="w-5 h-5 mr-3" />
+  1553→                    <span className="font-medium">Modifier mon compte</span>
+  1554→                  </Button>
+  1555→                  <Button onClick={logout} variant="outline" className="w-full justify-start h-12 border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-blue-700">
+  1556→                    <LogOut className="w-5 h-5 mr-3" />
+  1557→                    <span className="font-medium">Déconnexion</span>
+  1558→                  </Button>
+  1559→                  <Button onClick={() => setShowDeleteDialog(true)} variant="outline" className="w-full justify-start h-12 border-2 border-red-200 hover:bg-red-50 hover:border-red-300 text-red-600">
+  1560→                    <Trash2 className="w-5 h-5 mr-3" />
+  1561→                    <span className="font-medium">Supprimer le compte</span>
+  1562→                  </Button>
+  1563→                </CardContent>
+  1564→              </Card>
+  1565→
+  1566→              {/* Delete Confirmation Dialog */}
+  1567→              {showDeleteDialog && (
+  1568→                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+  1569→                  <Card className="max-w-md w-full border-2 border-orange-200">
+  1570→                    <CardHeader>
+  1571→                      <div className="flex items-center gap-3">
+  1572→                        <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+  1573→                          <AlertTriangle className="w-6 h-6 text-orange-600" />
+  1574→                        </div>
+  1575→                        <div>
+  1576→                          <CardTitle className="text-xl text-orange-900">Supprimer le compte ?</CardTitle>
+  1577→                          <p className="text-sm text-orange-700 mt-1">Cette action est irréversible</p>
+  1578→                        </div>
+  1579→                      </div>
+  1580→                    </CardHeader>
+  1581→                    <CardContent>
+  1582→                      <p className="text-gray-600 mb-6">Êtes-vous sûr de vouloir supprimer votre compte ? Toutes vos données seront définitivement perdues.</p>
+  1583→                      <div className="flex gap-3">
+  1584→                        <Button onClick={() => setShowDeleteDialog(false)} variant="outline" className="flex-1">Annuler</Button>
+  1585→                        <Button onClick={handleDeleteAccount} disabled={isProfileLoading} className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white">
+  1586→                          {isProfileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
+  1587→                          Oui, supprimer
+  1588→                        </Button>
+  1589→                      </div>
+  1590→                    </CardContent>
+  1591→                  </Card>
+  1592→                </div>
+  1593→              )}
+  1594→            </div>
+  1595→          )}
+  1596→
+  1597→          {activeTab === 'historique' && (
+  1598→            <div className="space-y-6">
+  1599→              {/* Search and Filter */}
+  1600→              <Card>
+  1601→                <CardContent className="p-6">
+  1602→                  <div className="flex flex-col md:flex-row gap-4">
+  1603→                    <div className="flex-1">
+  1604→                      <Label className="text-sm font-semibold text-gray-800 mb-2">Rechercher une livraison</Label>
+  1605→                      <div className="relative">
+  1606→                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+  1607→                        <Input placeholder="Numéro, client ou adresse..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+  1608→                      </div>
+  1609→                    </div>
+  1610→                    <div className="md:w-64">
+  1611→                      <Label className="text-sm font-semibold text-gray-800 mb-2">Période</Label>
+  1612→                      <select value={filterPeriod} onChange={(e) => setFilterPeriod(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white">
+  1613→                        <option value="all">Toutes les livraisons</option>
+  1614→                        <option value="month">30 derniers jours</option>
+  1615→                        <option value="week">7 derniers jours</option>
+  1616→                        <option value="today">Aujourd'hui</option>
+  1617→                      </select>
+  1618→                    </div>
+  1619→                  </div>
+  1620→                </CardContent>
+  1621→              </Card>
+  1622→
+  1623→              {/* Deliveries List */}
+  1624→              {filteredDeliveries.length > 0 && (
+  1625→                <div className="space-y-4">
+  1626→                  <div className="flex items-center justify-between">
+  1627→                    <h2 className="text-xl font-bold text-gray-900">Liste des livraisons</h2>
+  1628→                    <p className="text-sm text-gray-500">{filteredDeliveries.length} livraison{filteredDeliveries.length > 1 ? 's' : ''}</p>
+  1629→                  </div>
+  1630→                  {filteredDeliveries.map((delivery) => (
+  1631→                    <Card key={delivery.id} className="hover:shadow-lg transition-shadow">
+  1632→                      <CardContent className="p-4 sm:p-6">
+  1633→                        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+  1634→                          <div className="flex-1 space-y-3">
+  1635→                            <div className="flex items-center gap-3 mb-2 flex-wrap">
+  1636→                              <h3 className="font-bold text-lg text-gray-900">{delivery.id}</h3>
+  1637→                              <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+  1638→                                <CheckCircle2 className="w-3 h-3 mr-1" /> Livré
+  1639→                              </Badge>
+  1640→                              <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
+  1641→                                {delivery.packageType}
+  1642→                              </Badge>
+  1643→                            </div>
+  1644→                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-gray-600">
+  1645→                              <div className="flex items-center gap-2"><Phone className="w-3 h-3" /><span className="font-medium">Client:</span> {delivery.customerName}</div>
+  1646→                              <div className="flex items-center gap-2"><CalendarIcon className="w-3 h-3" /><span>{delivery.completedDate}</span></div>
+  1647→                              <div className="flex items-center gap-2"><Clock className="w-3 h-3" /><span>{delivery.completedAt}</span></div>
+  1648→                            </div>
+  1649→                            <div className="space-y-2">
+  1650→                              <div className="flex items-start gap-2 text-sm">
+  1651→                                <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5 shrink-0" />
+  1652→                                <p className="text-gray-700"><span className="font-medium">Retrait:</span> {delivery.pickupAddress}</p>
+  1653→                              </div>
+  1654→                              <div className="flex items-start gap-2 text-sm">
+  1655→                                <div className="w-2 h-2 bg-red-500 rounded-full mt-1.5 shrink-0" />
+  1656→                                <p className="text-gray-700"><span className="font-medium">Livraison:</span> {delivery.deliveryAddress}</p>
+  1657→                              </div>
+  1658→                            </div>
+  1659→                            <div className="flex flex-wrap gap-4 text-sm">
+  1660→                              <div className="flex items-center gap-1 text-gray-600"><MapIcon className="w-3 h-3" />{delivery.distance} km</div>
+  1661→                              <div className="flex items-center gap-1 text-green-600 font-semibold"><CreditCard className="w-3 h-3" />{delivery.earnings.toLocaleString()} FCFA</div>
+  1662→                              {delivery.tip > 0 && (
+  1663→                                <div className="flex items-center gap-1 text-purple-600 font-semibold"><TrendingUp className="w-3 h-3" />+{delivery.tip.toLocaleString()} FCFA (pourboire)</div>
+  1664→                              )}
+  1665→                            </div>
+  1666→                          </div>
+  1667→                          <div className="flex items-center gap-2 bg-yellow-50 px-4 py-3 rounded-lg shrink-0">
+  1668→                            <span className="text-sm font-semibold text-gray-700">Note:</span>
+  1669→                            <div className="flex items-center gap-1">
+  1670→                              {[...Array(5)].map((_, i) => (
+  1671→                                <Star key={i} className={cn("w-5 h-5", i < delivery.rating ? "text-yellow-500 fill-current" : "text-gray-300")} />
+  1672→                              ))}
+  1673→                            </div>
+  1674→                            <span className="text-2xl font-bold text-yellow-600 ml-1">{delivery.rating}</span>
+  1675→                          </div>
+  1676→                        </div>
+  1677→                      </CardContent>
+  1678→                    </Card>
+  1679→                  ))}
+  1680→                </div>
+  1681→              )}
+  1682→
+  1683→              {filteredDeliveries.length === 0 && (
+  1684→                <div className="text-center py-12">
+  1685→                  <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+  1686→                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucune livraison trouvée</h3>
+  1687→                  <p className="text-gray-500">Essayez de modifier vos critères de recherche ou de filtre</p>
+  1688→                </div>
+  1689→              )}
+  1690→            </div>
+  1691→          )}
+  1692→
+  1693→          {activeTab === 'wallet' && (
+  1694→            <div className="max-w-3xl mx-auto space-y-6">
+  1695→              {/* Solde principal */}
+  1696→              <Card className="relative overflow-hidden border-2 border-orange-100 bg-gradient-to-br from-orange-500 via-orange-400 to-amber-400 text-white">
+  1697→                <div className="absolute top-0 right-0 w-40 h-40 opacity-10">
+  1698→                  <GoogleWalletIcon className="w-full h-full" />
+  1699→                </div>
+  1700→                <CardHeader className="pb-2">
+  1701→                  <div className="flex items-center justify-between">
+  1702→                    <CardTitle className="text-sm font-medium text-orange-100 flex items-center gap-2">
+  1703→                      <WalletIcon className="w-4 h-4" />
+  1704→                      Solde disponible
+  1705→                    </CardTitle>
+  1706→                    <Button
+  1707→                      variant="ghost"
+  1708→                      size="icon"
+  1709→                      className="text-white/80 hover:text-white hover:bg-white/10"
+  1710→                      onClick={() => setShowBalance(!showBalance)}
+  1711→                    >
+  1712→                      {showBalance ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+  1713→                    </Button>
+  1714→                  </div>
+  1715→                </CardHeader>
+  1716→                <CardContent>
+  1717→                  <div className="flex items-end gap-2 mb-1">
+  1718→                    <span className="text-4xl md:text-5xl font-bold">
+  1719→                      {showBalance ? walletData.available.toLocaleString() : '•••••'}
+  1720→                    </span>
+  1721→                    <span className="text-sm text-orange-100 mb-2">FCFA</span>
+  1722→                  </div>
+  1723→                  <div className="flex items-center gap-4 mt-4">
+  1724→                    <div className="flex-1">
+  1725→                      <p className="text-xs text-orange-100">Ce mois</p>
+  1726→                      <p className="text-lg font-bold">{showBalance ? walletData.thisMonth.toLocaleString() : '••••'} <span className="text-xs font-normal text-orange-100">FCFA</span></p>
+  1727→                    </div>
+  1728→                    <div className="flex-1">
+  1729→                      <p className="text-xs text-orange-100">En attente</p>
+  1730→                      <p className="text-lg font-bold">{showBalance ? walletData.pending.toLocaleString() : '••••'} <span className="text-xs font-normal text-orange-100">FCFA</span></p>
+  1731→                    </div>
+  1732→                    <div className="flex items-center gap-1 text-xs text-green-200">
+  1733→                      <TrendingUp className="w-3 h-3" />
+  1734→                      <span>+{showBalance ? '12' : '•'}% vs mois dernier</span>
+  1735→                    </div>
+  1736→                  </div>
+  1737→                </CardContent>
+  1738→              </Card>
+  1739→
+  1740→              {/* Actions rapides */}
+  1741→              <div className="grid grid-cols-2 gap-3">
+  1742→                <Button
+  1743→                  className="h-auto py-4 flex flex-col items-center gap-2 bg-gradient-to-br from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0"
+  1744→                  onClick={() => { setRetraitMethod('momo'); setShowRetraitDialog(true) }}
+  1745→                >
+  1746→                  <Download className="w-6 h-6" />
+  1747→                  <span className="text-sm font-semibold">Retirer</span>
+  1748→                  <span className="text-[10px] text-orange-100">Mobile Money</span>
+  1749→                </Button>
+  1750→
+  1751→                <Button
+  1752→                  className="h-auto py-4 flex flex-col items-center gap-2 bg-white border-2 border-orange-200 text-orange-600 hover:bg-orange-50"
+  1753→                  onClick={() => { setRetraitMethod('bank'); setShowRetraitDialog(true) }}
+  1754→                >
+  1755→                  <Building2 className="w-6 h-6" />
+  1756→                  <span className="text-sm font-semibold">Retirer</span>
+  1757→                  <span className="text-[10px]">Vers compte bancaire</span>
+  1758→                </Button>
+  1759→              </div>
+  1760→
+  1761→              {/* Statistiques */}
+  1762→              <div className="grid grid-cols-3 gap-3">
+  1763→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+  1764→                  <CardHeader className="pb-2 px-3 py-3">
+  1765→                    <CardDescription className="text-[10px] text-gray-500">Total gains</CardDescription>
+  1766→                    <CardTitle className="text-lg text-gray-900">{walletData.totalEarnings.toLocaleString()}</CardTitle>
+  1767→                  </CardHeader>
+  1768→                  <CardContent className="px-3 pb-3 mt-auto">
+  1769→                    <div className="flex items-center text-[10px] text-green-600">
+  1770→                      <TrendingUp className="w-3 h-3 mr-1" />
+  1771→                      <span>+{Math.round((walletData.thisMonth - walletData.lastMonth) / walletData.lastMonth * 100)}%</span>
+  1772→                    </div>
+  1773→                  </CardContent>
+  1774→                </Card>
+  1775→
+  1776→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+  1777→                  <CardHeader className="pb-2 px-3 py-3">
+  1778→                    <CardDescription className="text-[10px] text-gray-500">Mois dernier</CardDescription>
+  1779→                    <CardTitle className="text-lg text-gray-900">{walletData.lastMonth.toLocaleString()}</CardTitle>
+  1780→                  </CardHeader>
+  1781→                  <CardContent className="px-3 pb-3 mt-auto">
+  1782→                    <div className="flex items-center text-[10px] text-muted-foreground">
+  1783→                      <Clock className="w-3 h-3 mr-1" />
+  1784→                      <span>Déc 2024</span>
+  1785→                    </div>
+  1786→                  </CardContent>
+  1787→                </Card>
+  1788→
+  1789→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+  1790→                  <CardHeader className="pb-2 px-3 py-3">
+  1791→                    <CardDescription className="text-[10px] text-gray-500">En attente</CardDescription>
+  1792→                    <CardTitle className="text-lg text-amber-600">{walletData.pending.toLocaleString()}</CardTitle>
+  1793→                  </CardHeader>
+  1794→                  <CardContent className="px-3 pb-3 mt-auto">
+  1795→                    <div className="flex items-center text-[10px] text-amber-600">
+  1796→                      <Clock className="w-3 h-3 mr-1" />
+  1797→                      <span>FCFA</span>
+  1798→                    </div>
+  1799→                  </CardContent>
+  1800→                </Card>
+  1801→              </div>
+  1802→
+  1803→              {/* Historique des transactions */}
+  1804→              <Card>
+  1805→                <CardHeader>
+  1806→                  <div className="flex items-center justify-between">
+  1807→                    <CardTitle className="text-lg flex items-center gap-2">
+  1808→                      <Clock className="w-5 h-5 text-orange-500" />
+  1809→                      Transactions
+  1810→                    </CardTitle>
+  1811→                  </div>
+  1812→                  <div className="flex gap-2 mt-2">
+  1813→                    {[
+  1814→                      { key: 'all' as const, label: 'Toutes' },
+  1815→                      { key: 'credit' as const, label: 'Gains' },
+  1816→                      { key: 'debit' as const, label: 'Retraits' },
+  1817→                    ].map(f => (
+  1818→                      <button
+  1819→                        key={f.key}
+  1820→                        onClick={() => setActiveFilter(f.key)}
+  1821→                        className={cn(
+  1822→                          'px-3 py-1.5 rounded-full text-xs font-medium transition-colors',
+  1823→                          activeFilter === f.key
+  1824→                            ? 'bg-orange-500 text-white'
+  1825→                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+  1826→                        )}
+  1827→                      >
+  1828→                        {f.label}
+  1829→                      </button>
+  1830→                    ))}
+  1831→                  </div>
+  1832→                </CardHeader>
+  1833→                <CardContent>
+  1834→                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+  1835→                    {filteredTransactions.length === 0 ? (
+  1836→                      <div className="text-center py-8">
+  1837→                        <WalletIcon className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+  1838→                        <p className="text-sm text-gray-500">Aucune transaction</p>
+  1839→                      </div>
+  1840→                    ) : (
+  1841→                      filteredTransactions.map((txn) => (
+  1842→                        <div
+  1843→                          key={txn.id}
+  1844→                          className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+  1845→                        >
+  1846→                          <div className="flex items-center gap-3">
+  1847→                            <div className={cn(
+  1848→                              'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
+  1849→                              txn.type === 'credit' ? 'bg-green-100' : 'bg-red-100'
+  1850→                            )}>
+  1851→                              {txn.type === 'credit'
+  1852→                                ? <ArrowDownLeft className="w-5 h-5 text-green-600" />
+  1853→                                : <ArrowUpRight className="w-5 h-5 text-red-500" />
+  1854→                              }
+  1855→                            </div>
+  1856→                            <div className="min-w-0">
+  1857→                              <p className="text-sm font-medium text-gray-900 truncate">{txn.label}</p>
+  1858→                              <p className="text-xs text-gray-500">{txn.date}</p>
+  1859→                            </div>
+  1860→                          </div>
+  1861→                          <div className="text-right flex-shrink-0 ml-3">
+  1862→                            <p className={cn(
+  1863→                              'text-sm font-bold',
+  1864→                              txn.type === 'credit' ? 'text-green-600' : 'text-red-500'
+  1865→                            )}>
+  1866→                              {txn.type === 'credit' ? '+' : '-'}{txn.amount.toLocaleString()} FCFA
+  1867→                            </p>
+  1868→                            <Badge
+  1869→                              variant="outline"
+  1870→                              className={cn(
+  1871→                                'text-[9px] px-1.5 py-0',
+  1872→                                txn.status === 'completed' && 'bg-green-50 text-green-600 border-green-200',
+  1873→                                txn.status === 'pending' && 'bg-amber-50 text-amber-600 border-amber-200',
+  1874→                                txn.status === 'failed' && 'bg-red-50 text-red-500 border-red-200'
+  1875→                              )}
+  1876→                            >
+  1877→                              {txn.status === 'completed' ? <><CheckCircle2 className="w-2.5 h-2.5 mr-0.5" />Terminé</> : null}
+  1878→                              {txn.status === 'pending' ? <><Clock className="w-2.5 h-2.5 mr-0.5" />En attente</> : null}
+  1879→                              {txn.status === 'failed' ? <><XCircle className="w-2.5 h-2.5 mr-0.5" />Échoué</> : null}
+  1880→                            </Badge>
+  1881→                          </div>
+  1882→                        </div>
+  1883→                      ))
+  1884→                    )}
+  1885→                  </div>
+  1886→                </CardContent>
+  1887→              </Card>
+  1888→
+  1889→              {/* Info sécurité */}
+  1890→              <Card className="border-orange-100 bg-orange-50/50">
+  1891→                <CardContent className="p-4">
+  1892→                  <div className="flex items-start gap-3">
+  1893→                    <Shield className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+  1894→                    <div>
+  1895→                      <p className="text-sm font-semibold text-gray-900">Sécurité de votre Wallet</p>
+  1896→                      <p className="text-xs text-gray-600 mt-1">
+  1897→                        Vos fonds sont protégés. Les retraits sont traités sous 24h ouvrables.
+  1898→                        Le montant minimum de retrait est de 500 FCFA.
+  1899→                      </p>
+  1900→                    </div>
+  1901→                  </div>
+  1902→                </CardContent>
+  1903→              </Card>
+  1904→            </div>
+  1905→          )}
+  1906→
+  1907→          {activeTab === 'missions' && (
+  1908→            <>
+  1909→              <div className="grid lg:grid-cols-2 gap-4">
+  1910→                {activeLoading ? (
+  1911→                  <div className="col-span-2 flex items-center justify-center py-16">
+  1912→                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+  1913→                  </div>
+  1914→                ) : activeDeliveries.length === 0 ? (
+  1915→                  <div className="col-span-2 text-center py-16">
+  1916→                    <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+  1917→                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Aucune mission active</h3>
+  1918→                    <p className="text-sm text-gray-500">Souscrivez à une annonce pour voir vos missions ici</p>
+  1919→                    <Button
+  1920→                      className="mt-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white"
+  1921→                      onClick={() => setActiveTab('annonces')}
+  1922→                    >
+  1923→                      <Megaphone className="w-4 h-4 mr-2" />
+  1924→                      Voir les annonces
+  1925→                    </Button>
+  1926→                  </div>
+  1927→                ) : activeDeliveries.map((delivery) => (
+  1928→                  <Card key={delivery.id} className="bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl">
+  1929→                    <CardHeader className="pb-3">
+  1930→                      <div className="flex items-start justify-between">
+  1931→                        <div className="space-y-1">
+  1932→                          <CardTitle className="text-base">{delivery.title}</CardTitle>
+  1933→                          <p className="text-[10px] text-orange-600 font-medium italic">
+  1934→                            {delivery.pickupAddress?.city || 'N/A'} → {delivery.deliveryAddress?.city || 'N/A'}
+  1935→                          </p>
+  1936→                        </div>
+  1937→                        <div className="flex items-center gap-2">
+  1938→                          {delivery.amount && (
+  1939→                            <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded">
+  1940→                              <DollarSign className="w-3 h-3 text-green-600" />
+  1941→                              <span className="text-sm font-semibold text-green-700">{fmt(delivery.amount)} FCFA</span>
+  1942→                            </div>
+  1943→                          )}
+  1944→                          <Badge variant="outline" className={cn(
+  1945→                            delivery.status === 'ASSIGNED'
+  1946→                              ? 'bg-green-100 text-green-700 border-green-300'
+  1947→                              : 'bg-orange-100 text-orange-700 border-orange-300'
+  1948→                          )}>
+  1949→                            {delivery.status === 'ASSIGNED' ? (
+  1950→                              <><CheckCircle2 className="w-3 h-3 mr-1" /> Assignée</>
+  1951→                            ) : (
+  1952→                              <><Package className="w-3 h-3 mr-1" /> En cours</>
+  1953→                            )}
+  1954→                          </Badge>
+  1955→                        </div>
+  1956→                      </div>
+  1957→                    </CardHeader>
+  1958→                    <CardContent className="space-y-3">
+  1959→                      {delivery.description && (
+  1960→                        <p className="text-sm text-gray-500 line-clamp-2">{delivery.description}</p>
+  1961→                      )}
+  1962→                      <div className="flex items-start gap-2">
+  1963→                        <MapPin className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+  1964→                        <div className="space-y-2 flex-1">
+  1965→                          <div className="flex items-center gap-2">
+  1966→                            <div className="w-2 h-2 bg-green-500 rounded-full" />
+  1967→                            <p className="text-sm text-gray-700">
+  1968→                              <span className="font-medium">Retrait:</span> {delivery.pickupAddress?.street || delivery.pickupAddress?.city || 'N/A'}
+  1969→                            </p>
+  1970→                          </div>
+  1971→                          <div className="flex items-center gap-2">
+  1972→                            <div className="w-2 h-2 bg-red-500 rounded-full" />
+  1973→                            <p className="text-sm text-gray-700">
+  1974→                              <span className="font-medium">Livraison:</span> {delivery.deliveryAddress?.street || delivery.deliveryAddress?.city || 'N/A'}
+  1975→                            </p>
+  1976→                          </div>
+  1977→                        </div>
+  1978→                      </div>
+  1979→
+  1980→                      <div className="flex items-center justify-between text-sm text-gray-600 pt-2 border-t">
+  1981→                        {delivery.distance && (
+  1982→                          <div className="flex items-center gap-2">
+  1983→                            <Navigation className="w-4 h-4" />
+  1984→                            <span>{delivery.distance.toFixed(1)} km</span>
+  1985→                          </div>
+  1986→                        )}
+  1987→                        {delivery.amount && (
+  1988→                          <div className="flex items-center gap-1">
+  1989→                            <DollarSign className="w-4 h-4 text-green-600" />
+  1990→                            <span className="font-semibold text-green-600">{fmt(delivery.amount)} FCFA</span>
+  1991→                          </div>
+  1992→                        )}
+  1993→                      </div>
+  1994→
+  1995→                      <div className="flex gap-2 pt-2">
+  1996→                        <Button
+  1997→                          size="sm"
+  1998→                          variant="outline"
+  1999→                          className="flex-1 border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+  2000→                          onClick={() => { setSelectedMission(delivery); setMissionDetailsOpen(true) }}
+
+[showing lines 1-2000 of 2627; use offset=2001 with limit to continue reading]
