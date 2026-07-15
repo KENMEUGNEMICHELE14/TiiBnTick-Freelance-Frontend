@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
-import { Hanken_Grotesk } from 'next/font/google'
+import { Geist } from 'next/font/google'
 import './globals.css'
 
-const hanken = Hanken_Grotesk({
+const geist = Geist({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-hanken',
+  variable: '--font-geist',
   display: 'swap',
 })
 import { ThemeProvider } from '@/components/theme-provider'
@@ -16,6 +15,7 @@ import { cookies } from 'next/headers'
 import ThemeCookieSync from '@/components/theme-cookie-sync'
 import { Toaster } from '@/components/ui/toaster'
 import LocationTracker from '@/components/LocationTracker'
+import FloatingChatWidget from '@/components/chat/FloatingChatWidget'
 
 export const metadata: Metadata = {
   title: 'TiiBnTick',
@@ -53,8 +53,8 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${hanken.variable} ${themeCookie === 'dark' ? 'dark' : 'light'}`} style={{ colorScheme: themeCookie as any }}>
-      <body className={`font-sans antialiased`} style={{ fontFamily: "var(--font-hanken), 'Hanken Grotesk', sans-serif" }}>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${themeCookie === 'dark' ? 'dark' : 'light'}`} style={{ colorScheme: themeCookie as any }}>
+      <body className={`font-sans antialiased`} style={{ fontFamily: "var(--font-geist), sans-serif" }}>
         <ThemeProvider attribute="class">
           <AuthProvider>
             <NotificationProvider>
@@ -67,6 +67,7 @@ export default async function RootLayout({
           </AuthProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        <FloatingChatWidget />
       </body>
     </html>
   )

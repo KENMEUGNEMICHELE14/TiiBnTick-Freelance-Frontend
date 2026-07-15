@@ -291,7 +291,7 @@ export function FreelancerDashboard() {
 
             {/* Desktop right: profil pill + settings + logout */}
             <div className="hidden md:flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
+              <Button variant="ghost" size="icon" className="text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-colors">
                 <Bell className="w-5 h-5" />
               </Button>
               <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 rounded-lg border border-orange-200">
@@ -316,7 +316,7 @@ export function FreelancerDashboard() {
 
             {/* Mobile hamburger */}
             <div className="md:hidden flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled><Bell className="w-5 h-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-colors"><Bell className="w-5 h-5" /></Button>
               <Button variant="outline" size="icon-lg" className="border-gray-200 active:scale-95 transition-transform"
                 aria-label={mobileMenuOpen ? 'Fermer' : 'Menu'} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 <Menu className="w-6 h-6" />

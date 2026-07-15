@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 import {
+  Package,
   Truck,
   Shield,
   DollarSign,
@@ -40,35 +42,36 @@ export default function TiiBnTickFreelancerLandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 via-white to-orange-100">
+    <div className="min-h-screen flex flex-col bg-[#f5f0e6]">
       {/* Navigation */}
       <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 transition-shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-                  <Truck className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-[#e67e22] rounded-xl flex items-center justify-center">
+                  <Package className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-orange-700 bg-clip-text text-transparent">
-                  TiiBnTick
+                <span className="text-2xl font-bold text-[#1e2a4a]">
+                  TiiB<span className="text-orange-500">n</span>Tick
                 </span>
                 <Badge className="ml-2 bg-orange-100 text-orange-700 hover:bg-orange-200 hidden sm:inline-flex">Freelancer</Badge>
               </div>
               <div className="hidden md:flex items-center gap-6">
                 <a href="#" className="text-orange-600 font-bold border-b-2 border-orange-600 pb-1 text-sm">Freelancer</a>
-                <a href="#" className="text-slate-600 hover:text-orange-600 font-medium transition-colors text-sm">Solutions</a>
-                <a href="#" className="text-slate-600 hover:text-orange-600 font-medium transition-colors text-sm">Resources</a>
+                <a href="#" className="text-[#5a6b8a] hover:text-orange-600 font-medium transition-colors text-sm">Solutions</a>
+                <a href="#" className="text-[#5a6b8a] hover:text-orange-600 font-medium transition-colors text-sm">Resources</a>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button className="text-slate-600 hover:text-orange-600 font-medium transition-colors px-4 py-2 hidden sm:block">Connexion</button>
+              <Link href="/inscription" className="text-gray-700 hover:text-orange-600 font-medium transition-colors px-4 py-2 hidden sm:block">Connexion</Link>
+              <Link href="/inscription" className="hidden sm:flex bg-[#e67e22] hover:bg-[#d35400] text-white font-medium px-5 py-2.5 rounded-lg transition-all shadow-md items-center justify-center">S&apos;inscrire</Link>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
                 {mobileMenuOpen ? <span className="w-6 h-6 flex items-center justify-center text-2xl leading-none">&times;</span> : (
-                  <svg className="w-6 h-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                  <svg className="w-6 h-6 text-[#5a6b8a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                 )}
               </button>
             </div>
@@ -78,10 +81,12 @@ export default function TiiBnTickFreelancerLandingPage() {
           <div className="md:hidden bg-white border-t border-slate-200 px-4 py-4">
             <div className="flex flex-col gap-3">
               <a href="#" className="text-orange-600 font-bold py-2">Freelancer</a>
-              <a href="#" className="text-slate-600 hover:text-orange-600 font-medium py-2">Solutions</a>
-              <a href="#" className="text-slate-600 hover:text-orange-600 font-medium py-2">Resources</a>
-              <button className="text-slate-600 font-medium py-2 text-left">Connexion</button>
-              <Button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium rounded-xl">S&apos;inscrire</Button>
+              <a href="#" className="text-[#5a6b8a] hover:text-orange-600 font-medium py-2">Solutions</a>
+              <a href="#" className="text-[#5a6b8a] hover:text-orange-600 font-medium py-2">Resources</a>
+              <Link href="/inscription" className="text-[#5a6b8a] font-medium py-2 text-left">Connexion</Link>
+              <Link href="/inscription" className="w-full">
+                <Button className="w-full bg-[#e67e22] hover:bg-[#d35400] text-white font-medium rounded-lg">S&apos;inscrire</Button>
+              </Link>
             </div>
           </div>
         )}
@@ -96,19 +101,19 @@ export default function TiiBnTickFreelancerLandingPage() {
                 <Shield className="w-4 h-4 mr-2" />
                 Solution pour Livreurs Indépendants
               </Badge>
-              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-slate-900 mb-4 leading-tight">
-                TiiBnTick{' '}
-                <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-[#1e2a4a] mb-4 leading-tight">
+                TiiB<span className="text-orange-500">n</span>Tick{' '}
+                <span className="text-[#e67e22]">
                   Freelancer.
                 </span>
               </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-lg">
+              <p className="text-base sm:text-lg lg:text-xl text-[#5a6b8a] max-w-lg">
                 L&apos;application dédiée pour professionnaliser les benskinneurs et transporteurs individuels. Gagnez en crédibilité avec un profil pro et des revenus sécurisés.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                  className="bg-[#e67e22] hover:bg-[#d35400] text-white text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
                 >
                   Devenir Freelancer
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -136,8 +141,8 @@ export default function TiiBnTickFreelancerLandingPage() {
                     style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD7WpQs6UpM17tjlcXMdK2XJ7sjCWxx4SDp5rj4oJoOnVTKBXSCslJl28Zcjbyd25k-nGTddYIF5u4eBskGnSuSEVA5JFDIrt_jJdIeEV_6kvBohLhTQAp64r-_lmJnt2w3VU4sa7E46KC5QiPIiXio4w1b2mPnarxRgvGp65wTheWFsmNw8cFyuFZkiKUMCfNrJOg2hjXEHTL2_VNJgxhPRYC6HwocR5wj2PwRr66Wci_zIq-fSDte')" }}
                   />
                 </div>
-                <p className="text-sm text-slate-600">
-                  <span className="font-bold text-slate-900">+15,000</span> livreurs nous font confiance
+                <p className="text-sm text-[#5a6b8a]">
+                  <span className="font-bold text-[#1e2a4a]">+15,000</span> livreurs nous font confiance
                 </p>
               </div>
             </div>
@@ -159,41 +164,41 @@ export default function TiiBnTickFreelancerLandingPage() {
               <Badge className="mb-4 bg-orange-100 text-orange-700 hover:bg-orange-200">
                 Avantages
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#1e2a4a] mb-4">
                 Pourquoi rejoindre le réseau ?
               </h2>
-              <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              <p className="text-lg text-[#5a6b8a] max-w-2xl mx-auto">
                 Nous construisons l&apos;infrastructure qui transforme la logistique informelle en un métier d&apos;avenir structuré et respecté.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Benefit 1 */}
               <div className="p-8 rounded-2xl border-2 border-slate-100 hover:border-orange-300 bg-white transition-all hover:shadow-lg group">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Shield className="w-8 h-8 text-orange-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">Profil Pro &amp; Réputation</h3>
-                <p className="text-slate-600">
+                <h3 className="text-xl font-semibold text-[#1e2a4a] mb-3">Profil Pro &amp; Réputation</h3>
+                <p className="text-[#5a6b8a]">
                   Construisez votre crédibilité avec un profil vérifié, un historique de courses complet et des avis clients qui boostent vos opportunités.
                 </p>
               </div>
               {/* Benefit 2 */}
               <div className="p-8 rounded-2xl border-2 border-slate-100 hover:border-orange-300 bg-white transition-all hover:shadow-lg group">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <DollarSign className="w-8 h-8 text-orange-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">Revenus Structurés</h3>
-                <p className="text-slate-600">
+                <h3 className="text-xl font-semibold text-[#1e2a4a] mb-3">Revenus Structurés</h3>
+                <p className="text-[#5a6b8a]">
                   Recevez vos paiements de manière sécurisée et instantanée. Suivez vos gains journaliers et hebdomadaires directement sur votre tableau de bord.
                 </p>
               </div>
               {/* Benefit 3 */}
               <div className="p-8 rounded-2xl border-2 border-slate-100 hover:border-orange-300 bg-white transition-all hover:shadow-lg group">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Route className="w-8 h-8 text-green-600" />
+                <div className="w-16 h-16 bg-[#e67e22] hover:bg-[#d35400] text-whited-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Route className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">Optimisation Trajets</h3>
-                <p className="text-slate-600">
+                <h3 className="text-xl font-semibold text-[#1e2a4a] mb-3">Optimisation Trajets</h3>
+                <p className="text-[#5a6b8a]">
                   Notre algorithme intelligent optimise vos itinéraires pour réduire votre consommation de carburant et maximiser le nombre de livraisons.
                 </p>
               </div>
@@ -202,7 +207,7 @@ export default function TiiBnTickFreelancerLandingPage() {
         </section>
 
         {/* Mission Management */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#ffffff]">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 relative h-[500px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
               <img
@@ -220,11 +225,11 @@ export default function TiiBnTickFreelancerLandingPage() {
                     <Truck className="w-4 h-4 text-orange-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-900 leading-tight">Colis Express</p>
+                    <p className="text-xs font-bold text-[#1e2a4a] leading-tight">Colis Express</p>
                     <p className="text-[10px] text-slate-500">Distance: 3.2 km</p>
                   </div>
                 </div>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-xs sm:text-sm font-semibold rounded-lg">
+                <Button className="w-full bg-[#e67e22] hover:bg-[#d35400] text-white text-xs sm:text-sm font-semibold rounded-lg">
                   Accepter la mission
                 </Button>
               </div>
@@ -233,38 +238,38 @@ export default function TiiBnTickFreelancerLandingPage() {
               <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200">
                 Gestion des missions
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#1e2a4a]">
                 Gestion intelligente des missions
               </h2>
-              <p className="text-lg text-slate-600">
+              <p className="text-lg text-[#5a6b8a]">
                 Plus besoin de chercher des clients. TiiBnTick Go vous connecte en temps réel avec des opportunités proches de vous.
               </p>
               <ul className="space-y-5">
                 <li className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                     <CheckCircle className="w-6 h-6 text-orange-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-slate-900 mb-1">Matching Intelligent</h4>
-                    <p className="text-slate-600">Recevez des propositions adaptées à votre véhicule et votre position actuelle.</p>
+                    <h4 className="text-lg font-semibold text-[#1e2a4a] mb-1">Matching Intelligent</h4>
+                    <p className="text-[#5a6b8a]">Recevez des propositions adaptées à votre véhicule et votre position actuelle.</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                     <Navigation className="w-6 h-6 text-orange-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-slate-900 mb-1">Visibilité Temps Réel</h4>
-                    <p className="text-slate-600">Suivez votre progression et informez vos clients instantanément de votre arrivée.</p>
+                    <h4 className="text-lg font-semibold text-[#1e2a4a] mb-1">Visibilité Temps Réel</h4>
+                    <p className="text-[#5a6b8a]">Suivez votre progression et informez vos clients instantanément de votre arrivée.</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                     <Shield className="w-6 h-6 text-orange-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-slate-900 mb-1">Paiement Garanti</h4>
-                    <p className="text-slate-600">L&apos;argent est bloqué par la plateforme au début de la course et libéré à la livraison.</p>
+                    <h4 className="text-lg font-semibold text-[#1e2a4a] mb-1">Paiement Garanti</h4>
+                    <p className="text-[#5a6b8a]">L&apos;argent est bloqué par la plateforme au début de la course et libéré à la livraison.</p>
                   </div>
                 </li>
               </ul>
@@ -281,7 +286,7 @@ export default function TiiBnTickFreelancerLandingPage() {
         {/* CTA Banner */}
         <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 border-0 text-white text-center p-6 sm:p-8 md:p-12 rounded-2xl">
+            <div className="bg-[#e67e22] border-0 text-white text-center p-6 sm:p-8 md:p-12 rounded-2xl">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
                 Prêt à rejoindre la révolution logistique ?
               </h2>
@@ -299,7 +304,7 @@ export default function TiiBnTickFreelancerLandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-white/50 text-white hover:bg-white/10 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-xl font-semibold w-full sm:w-auto"
+                  className="border-2 border-white bg-white/20 text-white hover:bg-white hover:text-[#e67e22] text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-xl font-semibold w-full sm:w-auto backdrop-blur-sm"
                 >
                   Consulter les tarifs
                 </Button>
@@ -315,10 +320,10 @@ export default function TiiBnTickFreelancerLandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-                  <Truck className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-[#e67e22] rounded-xl flex items-center justify-center">
+                  <Package className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold">TiiBnTick</span>
+                <span className="text-2xl font-bold text-white">TiiB<span className="text-orange-500">n</span>Tick</span>
               </div>
               <p className="text-slate-400 text-sm">
                 La solution simple et fiable pour tous vos envois de colis au Cameroun. Connectant les quartiers et les villages.
@@ -375,21 +380,15 @@ export default function TiiBnTickFreelancerLandingPage() {
             </div>
           </div>
 
-          <div className="border-t border-slate-800 pt-8">
+          <div className="border-t border-slate-800 pt-8 flex justify-center items-center">
             <p className="text-sm text-slate-400 text-center">
-              &copy; 2026 TiiBnTick Logistics. All rights reserved.
+              &copy; 2026 TiiBnTick. Tous droits réservés.
             </p>
           </div>
         </div>
       </footer>
 
-      {/* Floating Action Button */}
-      <button className="fixed bottom-8 right-8 bg-gradient-to-br from-orange-500 to-orange-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform group">
-        <Headphones className="w-7 h-7" />
-        <span className="absolute right-18 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          Besoin d&apos;aide ?
-        </span>
-      </button>
+
     </div>
   );
 }
