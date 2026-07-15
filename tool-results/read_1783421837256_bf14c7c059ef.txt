@@ -1,0 +1,1571 @@
+     1→'use client'
+     2→
+     3→import { useState, useEffect, useCallback } from 'react'
+     4→import { useRouter } from 'next/navigation'
+     5→import { useAuth } from '@/context/AuthContext'
+     6→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+     7→import { Button } from '@/components/ui/button'
+     8→import { Badge } from '@/components/ui/badge'
+     9→import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+    10→import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+    11→import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+    12→import { useToast } from '@/hooks/use-toast'
+    13→import { cn } from '@/lib/utils'
+    14→import axiosInstance from '@/lib/axios'
+    15→import {
+    16→  Package,
+    17→  Users,
+    18→  ShieldCheck,
+    19→  AlertTriangle,
+    20→  CheckCircle,
+    21→  XCircle,
+    22→  Ban,
+    23→  RefreshCw,
+    24→  Clock,
+    25→  Phone,
+    26→  Mail,
+    27→  LayoutDashboard,
+    28→  UserCheck,
+    29→  LogOut,
+    30→  X,
+    31→  MoreHorizontal,
+    32→  MapPin,
+    33→  Bike,
+    34→  Car,
+    35→  CreditCard,
+    36→  Loader2,
+    37→  Calendar as CalendarIcon,
+    38→} from 'lucide-react'
+    39→import { TruckIcon } from '@heroicons/react/24/outline'
+    40→import { MdDeliveryDining } from 'react-icons/md'
+    41→import { BsBicycle } from 'react-icons/bs'
+    42→import { format } from 'date-fns'
+    43→import { Calendar } from '@/components/ui/calendar'
+    44→import {
+    45→  Popover,
+    46→  PopoverContent,
+    47→  PopoverTrigger,
+    48→} from '@/components/ui/popover'
+    49→import { withAuth } from '@/components/hoc/withAuth'
+    50→
+    51→// Types
+    52→interface DeliveryPersonRequest {
+    53→  id: string
+    54→  name: string
+    55→  email: string
+    56→  phone: string
+    57→  location: string
+    58→  vehicleType: string
+    59→  vehicleBrand: string
+    60→  vehicleModel: string
+    61→  vehicleRegNumber: string
+    62→  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+    63→  idCardVerified: boolean
+    64→  vehicleRegVerified: boolean
+    65→  insuranceVerified: boolean
+    66→  createdAt: string
+    67→  updatedAt: string
+    68→  profilePhoto?: string
+    69→  idCardRectoPhoto?: string
+    70→  idCardVersoPhoto?: string
+    71→  idCardPhoto?: string
+    72→  idCardNumber?: string
+    73→  nineNumber?: string
+    74→  niuPhoto?: string
+    75→  vehicleFrontPhoto?: string
+    76→  vehicleBackPhoto?: string
+    77→  vehicleColor?: string
+    78→}
+    79→
+    80→interface Account {
+    81→  id: string
+    82→  name: string
+    83→  email: string
+    84→  phone: string
+    85→  role: 'DELIVERY' | 'AGENCY' | 'POINT' | 'CLIENT'
+    86→  status: 'ACTIVE' | 'SUSPENDED' | 'REVOKED'
+    87→  deliveriesCount: number
+    88→  lastActivityAt: string | null
+    89→  createdAt: string
+    90→  updatedAt: string
+    91→  subscriptionStatus?: 'ACTIVE' | 'INACTIVE' | 'EXPIRED'
+    92→  subscriptionEndDate?: string | null
+    93→  photoCard?: string
+    94→}
+    95→
+    96→type ActiveView = 'dashboard' | 'registrations' | 'accounts' | 'subscriptions'
+    97→
+    98→// Ensure photo path starts with / for Next.js rewrite proxy
+    99→const photoUrl = (path?: string | null): string => {
+   100→  if (!path) return ''
+   101→  if (path.startsWith('/') || path.startsWith('data:') || path.startsWith('http')) return path
+   102→  return '/' + path
+   103→}
+   104→
+   105→function SuperAdminDashboard() {
+   106→  const { toast } = useToast()
+   107→  const router = useRouter()
+   108→  const [loading, setLoading] = useState(true)
+   109→  const [selectedRequest, setSelectedRequest] = useState<DeliveryPersonRequest | null>(null)
+   110→  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
+   111→  const [actionDialog, setActionDialog] = useState<'approve' | 'reject' | 'suspend' | 'revoke' | 'restore' | null>(null)
+   112→  const [suspensionEndDate, setSuspensionEndDate] = useState<Date | undefined>(undefined)
+   113→  const [activeView, setActiveView] = useState<ActiveView>('dashboard')
+   114→  const [sidebarOpen, setSidebarOpen] = useState(true)
+   115→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+   116→
+   117→  const [registrationRequests, setRegistrationRequests] = useState<DeliveryPersonRequest[]>([])
+   118→  const [accounts, setAccounts] = useState<Account[]>([])
+   119→  const [accountDetailData, setAccountDetailData] = useState<any>(null)
+   120→  const [showAccountDetail, setShowAccountDetail] = useState(false)
+   121→
+   122→  // Filtres pour la page comptes
+   123→  const [accountTypeFilter, setAccountTypeFilter] = useState<'all' | 'DELIVERY' | 'CLIENT'>('all')
+   124→  const [searchQuery, setSearchQuery] = useState('')
+   125→
+   126→  // Super admin info - from auth context
+   127→  const { user, loading: authLoading, logout } = useAuth()
+   128→  const adminName = user ? `${user.firstName} ${user.lastName}` : 'Admin'
+   129→  const adminEmail = user?.email || 'admin@tiibntick.com'
+   130→
+   131→  // Auth verification state - prevents rendering dashboard until auth is confirmed
+   132→  const [authVerified, setAuthVerified] = useState(false)
+   133→
+   134→  // Authentification désactivée : la page est accessible sans connexion/backend.
+   135→  // (Ancienne redirection vers '/' si !user || user.userType !== 'ADMIN' retirée.)
+   136→  useEffect(() => {
+   137→    setAuthVerified(true)
+   138→  }, [])
+   139→
+   140→  // Dashboard stats from backend
+   141→  const [stats, setStats] = useState({
+   142→    pendingRegistrations: 0,
+   143→    activeDeliveryPersons: 0,
+   144→    suspendedAccounts: 0,
+   145→    revokedAccounts: 0
+   146→  })
+   147→
+   148→  // Fetch dashboard stats from backend
+   149→  const fetchDashboardStats = useCallback(async () => {
+   150→    try {
+   151→      const response = await axiosInstance.get('/api/admin/dashboard-stats')
+   152→      const data = response.data
+   153→      setStats({
+   154→        pendingRegistrations: data.pendingCount || 0,
+   155→        activeDeliveryPersons: data.activeCount || 0,
+   156→        suspendedAccounts: data.suspendedCount || 0,
+   157→        revokedAccounts: data.revokedCount || 0
+   158→      })
+   159→    } catch (error) {
+   160→      console.error('Error fetching dashboard stats:', error)
+   161→    }
+   162→  }, [])
+   163→
+   164→  // Fetch registration requests from backend (PENDING delivery persons)
+   165→  const fetchRegistrations = useCallback(async () => {
+   166→    try {
+   167→      console.log('[Admin] Fetching registrations from /api/admin/delivery-persons?status=PENDING')
+   168→      const response = await axiosInstance.get('/api/admin/delivery-persons', {
+   169→        params: { status: 'PENDING' }
+   170→      })
+   171→      const data = response.data
+   172→      console.log('[Admin] Registrations response:', JSON.stringify(data).substring(0, 500))
+   173→      console.log('[Admin] Is array?', Array.isArray(data), 'Length:', Array.isArray(data) ? data.length : 'N/A')
+   174→      // Map backend DeliveryPersonDetailsResponse to frontend DeliveryPersonRequest
+   175→      const mapped: DeliveryPersonRequest[] = (Array.isArray(data) ? data : []).map((dp: any) => ({
+   176→        id: dp.id,
+   177→        name: `${dp.firstName || ''} ${dp.lastName || ''}`.trim(),
+   178→        email: dp.email || '',
+   179→        phone: dp.phone || '',
+   180→        location: dp.commercialName || '',
+   181→        vehicleType: dp.vehicleType || '',
+   182→        vehicleBrand: dp.vehicleBrand || '',
+   183→        vehicleModel: dp.vehicleModel || '',
+   184→        vehicleRegNumber: dp.vehicleRegNumber || '',
+   185→        status: dp.status as 'PENDING' | 'APPROVED' | 'REJECTED',
+   186→        idCardVerified: dp.idCardVerified || false,
+   187→        vehicleRegVerified: dp.vehicleRegVerified || false,
+   188→        insuranceVerified: dp.insuranceVerified || false,
+   189→        createdAt: dp.createdAt || new Date().toISOString(),
+   190→        updatedAt: dp.updatedAt || new Date().toISOString(),
+   191→        idCardNumber: dp.nationalId || '',
+   192→        nineNumber: dp.nuiNumber || '',
+   193→        niuPhoto: dp.nuiPhoto || undefined,
+   194→        idCardRectoPhoto: dp.cniRecto || undefined,
+   195→        idCardVersoPhoto: dp.cniVerso || undefined,
+   196→        vehicleFrontPhoto: dp.vehicleFrontPhoto || undefined,
+   197→        vehicleBackPhoto: dp.vehicleBackPhoto || undefined,
+   198→        vehicleColor: dp.vehicleColor || undefined,
+   199→        profilePhoto: dp.photoCard || undefined,
+   200→      })).sort((a: DeliveryPersonRequest, b: DeliveryPersonRequest) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+   201→      console.log('[Admin] Mapped registrations count:', mapped.length)
+   202→      setRegistrationRequests(mapped)
+   203→    } catch (error: any) {
+   204→      console.error('[Admin] Error fetching registrations:', error?.response?.status, error?.response?.data, error?.message)
+   205→      setRegistrationRequests([])
+   206→    }
+   207→  }, [])
+   208→
+   209→  // Fetch accounts from backend (non-PENDING delivery persons + clients)
+   210→  const fetchAccounts = useCallback(async () => {
+   211→    try {
+   212→      // Fetch delivery persons (all except PENDING)
+   213→      console.log('[Admin] Fetching delivery persons from /api/admin/delivery-persons')
+   214→      const dpResponse = await axiosInstance.get('/api/admin/delivery-persons')
+   215→      console.log('[Admin] Delivery persons response:', JSON.stringify(dpResponse.data).substring(0, 500))
+   216→      const dpData = Array.isArray(dpResponse.data) ? dpResponse.data : []
+   217→      const deliveryAccounts: Account[] = dpData
+   218→        .filter((dp: any) => dp.status !== 'PENDING')
+   219→        .map((dp: any) => ({
+   220→          id: dp.id,
+   221→          name: `${dp.firstName || ''} ${dp.lastName || ''}`.trim(),
+   222→          email: dp.email || '',
+   223→          phone: dp.phone || '',
+   224→          role: 'DELIVERY' as const,
+   225→          status: dp.status === 'APPROVED' ? 'ACTIVE' as const :
+   226→            dp.status === 'SUSPENDED' ? 'SUSPENDED' as const :
+   227→              dp.status === 'REVOKED' ? 'REVOKED' as const : 'ACTIVE' as const,
+   228→          deliveriesCount: 0,
+   229→          lastActivityAt: dp.updatedAt || null,
+   230→          createdAt: dp.createdAt || new Date().toISOString(),
+   231→          updatedAt: dp.updatedAt || new Date().toISOString(),
+   232→          photoCard: dp.photoCard || undefined,
+   233→        }))
+   234→      console.log('[Admin] Delivery accounts (non-PENDING):', deliveryAccounts.length)
+   235→
+   236→      // Fetch clients
+   237→      console.log('[Admin] Fetching clients from /api/admin/clients')
+   238→      const clientResponse = await axiosInstance.get('/api/admin/clients')
+   239→      console.log('[Admin] Clients response:', JSON.stringify(clientResponse.data).substring(0, 500))
+   240→      const clientData = Array.isArray(clientResponse.data) ? clientResponse.data : []
+   241→      const clientAccounts: Account[] = clientData.map((client: any) => ({
+   242→        id: client.id,
+   243→        name: `${client.firstName || ''} ${client.lastName || ''}`.trim(),
+   244→        email: client.email || '',
+   245→        phone: client.phone || '',
+   246→        role: 'CLIENT' as const,
+   247→        status: client.status === 'SUSPENDED' ? 'SUSPENDED' as const :
+   248→          client.status === 'REVOKED' ? 'REVOKED' as const : 'ACTIVE' as const,
+   249→        deliveriesCount: client.totalDeliveries || 0,
+   250→        lastActivityAt: null,
+   251→        createdAt: new Date().toISOString(),
+   252→        updatedAt: new Date().toISOString(),
+   253→        photoCard: client.photoCard || undefined,
+   254→      }))
+   255→      console.log('[Admin] Client accounts:', clientAccounts.length)
+   256→
+   257→      setAccounts([...deliveryAccounts, ...clientAccounts])
+   258→      console.log('[Admin] Total accounts set:', deliveryAccounts.length + clientAccounts.length)
+   259→    } catch (error: any) {
+   260→      console.error('[Admin] Error fetching accounts:', error?.response?.status, error?.response?.data, error?.message)
+   261→      setAccounts([])
+   262→    }
+   263→  }, [])
+   264→
+   265→  // Fetch data on component mount
+   266→  useEffect(() => {
+   267→    fetchRegistrations()
+   268→    fetchAccounts()
+   269→    fetchDashboardStats()
+   270→    setLoading(false)
+   271→  }, [fetchRegistrations, fetchAccounts, fetchDashboardStats])
+   272→
+   273→  // Show loading screen until auth is verified - prevents dashboard flash
+   274→  // IMPORTANT: This guard must be AFTER all hooks to comply with Rules of Hooks
+   275→  if (authLoading || !authVerified) {
+   276→    return (
+   277→      <div className="min-h-screen flex items-center justify-center bg-background">
+   278→        <div className="text-center space-y-4">
+   279→          <Loader2 className="w-10 h-10 animate-spin text-orange-600 mx-auto" />
+   280→          <p className="text-muted-foreground">Vérification de l'authentification...</p>
+   281→        </div>
+   282→      </div>
+   283→    )
+   284→  }
+   285→
+   286→  const handleLogout = () => {
+   287→    logout()
+   288→    router.push('/')
+   289→  }
+   290→
+   291→  const sidebarItems = [
+   292→    { id: 'dashboard' as const, icon: LayoutDashboard, label: 'Dashboard' },
+   293→    { id: 'registrations' as const, icon: UserCheck, label: 'Inscriptions' },
+   294→    { id: 'accounts' as const, icon: ShieldCheck, label: 'Comptes' },
+   295→    { id: 'subscriptions' as const, icon: CreditCard, label: 'Abonnements' },
+   296→  ]
+   297→
+   298→  // Handler functions
+   299→  const handleApproveRegistration = (request: DeliveryPersonRequest) => {
+   300→    setSelectedRequest(request)
+   301→    setActionDialog('approve')
+   302→  }
+   303→
+   304→  const handleRejectRegistration = (request: DeliveryPersonRequest) => {
+   305→    setSelectedRequest(request)
+   306→    setActionDialog('reject')
+   307→  }
+   308→
+   309→  const handleSuspendAccount = (account: Account) => {
+   310→    setSelectedAccount(account)
+   311→    setSuspensionEndDate(undefined)
+   312→    setActionDialog('suspend')
+   313→  }
+   314→
+   315→  const handleRevokeAccount = (account: Account) => {
+   316→    setSelectedAccount(account)
+   317→    setActionDialog('revoke')
+   318→  }
+   319→
+   320→  const handleRestoreAccount = (account: Account) => {
+   321→    setSelectedAccount(account)
+   322→    setActionDialog('restore')
+   323→  }
+   324→
+   325→  const handleActivateSubscription = (account: Account) => {
+   326→    // Subscription not yet implemented - greyed out
+   327→    toast({
+   328→      title: 'Fonctionnalité à venir',
+   329→      description: 'La gestion des abonnements sera disponible prochainement.',
+   330→    })
+   331→  }
+   332→
+   333→  // Fetch account details when clicking an account in the table
+   334→  const handleAccountClick = async (account: Account) => {
+   335→    setSelectedAccount(account)
+   336→    if (account.role === 'DELIVERY') {
+   337→      try {
+   338→        const response = await axiosInstance.get(`/api/admin/delivery-persons/${account.id}`)
+   339→        setAccountDetailData(response.data)
+   340→      } catch (error) {
+   341→        console.error('[Admin] Error fetching account details:', error)
+   342→        setAccountDetailData(null)
+   343→      }
+   344→    } else {
+   345→      // For non-delivery accounts, use photoCard from account data
+   346→      setAccountDetailData(account.photoCard ? { photoCard: account.photoCard } : null)
+   347→    }
+   348→    setShowAccountDetail(true)
+   349→  }
+   350→
+   351→  const confirmAction = async () => {
+   352→    try {
+   353→      if (actionDialog === 'approve' && selectedRequest) {
+   354→        await axiosInstance.put('/api/admin/delivery-persons/validate', {
+   355→          deliveryPersonId: selectedRequest.id,
+   356→          approved: true
+   357→        })
+   358→        toast({
+   359→          title: 'Inscription approuvée',
+   360→          description: `Le livreur ${selectedRequest.name} a été approuvé avec succès.`
+   361→        })
+   362→        // Remove from registrations list immediately
+   363→        setRegistrationRequests(prev => prev.filter(r => r.id !== selectedRequest.id))
+   364→        await fetchAccounts()
+   365→        await fetchDashboardStats()
+   366→      } else if (actionDialog === 'reject' && selectedRequest) {
+   367→        await axiosInstance.put('/api/admin/delivery-persons/validate', {
+   368→          deliveryPersonId: selectedRequest.id,
+   369→          approved: false,
+   370→          reason: 'Rejeté par l\'administrateur'
+   371→        })
+   372→        toast({
+   373→          title: 'Inscription rejetée',
+   374→          description: `La demande de ${selectedRequest.name} a été rejetée.`,
+   375→          variant: 'destructive'
+   376→        })
+   377→        // Remove from registrations list immediately
+   378→        setRegistrationRequests(prev => prev.filter(r => r.id !== selectedRequest.id))
+   379→        await fetchDashboardStats()
+   380→      } else if (actionDialog === 'suspend' && selectedAccount) {
+   381→        const endpoint = selectedAccount.role === 'CLIENT'
+   382→          ? `/api/admin/clients/${selectedAccount.id}/suspend`
+   383→          : `/api/admin/delivery-persons/${selectedAccount.id}/suspend`
+   384→        await axiosInstance.put(endpoint)
+   385→        toast({
+   386→          title: 'Compte suspendu',
+   387→          description: `Le compte de ${selectedAccount.name} a été suspendu.`
+   388→        })
+   389→        setAccounts(accounts.map(a => a.id === selectedAccount.id ? { ...a, status: 'SUSPENDED' as const } : a))
+   390→        await fetchDashboardStats()
+   391→      } else if (actionDialog === 'revoke' && selectedAccount) {
+   392→        const endpoint = selectedAccount.role === 'CLIENT'
+   393→          ? `/api/admin/clients/${selectedAccount.id}/revoke`
+   394→          : `/api/admin/delivery-persons/${selectedAccount.id}/revoke`
+   395→        await axiosInstance.put(endpoint)
+   396→        toast({
+   397→          title: 'Compte révoqué',
+   398→          description: `Le compte de ${selectedAccount.name} a été révoqué définitivement.`,
+   399→          variant: 'destructive'
+   400→        })
+   401→        setAccounts(accounts.map(a => a.id === selectedAccount.id ? { ...a, status: 'REVOKED' as const } : a))
+   402→        await fetchDashboardStats()
+   403→      } else if (actionDialog === 'restore' && selectedAccount) {
+   404→        const endpoint = selectedAccount.role === 'CLIENT'
+   405→          ? `/api/admin/clients/${selectedAccount.id}/activate`
+   406→          : `/api/admin/delivery-persons/${selectedAccount.id}/activate`
+   407→        await axiosInstance.put(endpoint)
+   408→        toast({
+   409→          title: 'Compte restauré',
+   410→          description: `Le compte de ${selectedAccount.name} a été restauré avec succès.`
+   411→        })
+   412→        setAccounts(accounts.map(a => a.id === selectedAccount.id ? { ...a, status: 'ACTIVE' as const } : a))
+   413→        await fetchDashboardStats()
+   414→      }
+   415→    } catch (error) {
+   416→      console.error('Error performing action:', error)
+   417→      toast({
+   418→        title: 'Erreur',
+   419→        description: 'Une erreur est survenue lors de l\'opération.',
+   420→        variant: 'destructive'
+   421→      })
+   422→    }
+   423→    setActionDialog(null)
+   424→    setSelectedRequest(null)
+   425→    setSelectedAccount(null)
+   426→  }
+   427→
+   428→  const getStatusBadge = (status: string) => {
+   429→    switch (status) {
+   430→      case 'PENDING':
+   431→        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200"><Clock className="w-3 h-3 mr-1" /> En attente</Badge>
+   432→      case 'APPROVED':
+   433→      case 'ACTIVE':
+   434→        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle className="w-3 h-3 mr-1" /> Actif</Badge>
+   435→      case 'REJECTED':
+   436→        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" /> Rejeté</Badge>
+   437→      case 'SUSPENDED':
+   438→        return <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200"><AlertTriangle className="w-3 h-3 mr-1" /> Suspendu</Badge>
+   439→      case 'REVOKED':
+   440→        return <Badge variant="destructive"><Ban className="w-3 h-3 mr-1" /> Révoqué</Badge>
+   441→      default:
+   442→        return <Badge>{status}</Badge>
+   443→    }
+   444→  }
+   445→
+   446→  const getRoleBadge = (role: string) => {
+   447→    switch (role) {
+   448→      case 'DELIVERY':
+   449→        return <Badge variant="secondary" className="bg-orange-600 text-white border-orange-600">Livreur</Badge>
+   450→      case 'CLIENT':
+   451→        return <Badge variant="secondary" className="bg-white text-orange-700 border-orange-300">Client</Badge>
+   452→      case 'AGENCY':
+   453→        return <Badge variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200">Agence</Badge>
+   454→      case 'POINT':
+   455→        return <Badge variant="secondary" className="bg-teal-50 text-teal-700 border-teal-200">Point Relais</Badge>
+   456→      default:
+   457→        return <Badge>{role}</Badge>
+   458→    }
+   459→  }
+   460→
+   461→  // Fonction pour filtrer les comptes
+   462→  const getFilteredAccounts = () => {
+   463→    let filtered = accounts
+   464→
+   465→    // Filtre par type de compte
+   466→    if (accountTypeFilter !== 'all') {
+   467→      filtered = filtered.filter(account => account.role === accountTypeFilter)
+   468→    }
+   469→
+   470→    // Filtre par recherche (nom, prénom, email)
+   471→    if (searchQuery.trim()) {
+   472→      const query = searchQuery.toLowerCase()
+   473→      filtered = filtered.filter(account =>
+   474→        account.name.toLowerCase().includes(query) ||
+   475→        account.email.toLowerCase().includes(query)
+   476→      )
+   477→    }
+   478→
+   479→    return filtered
+   480→  }
+   481→
+   482→  // Vehicle icon component matching backend LogisticsType enum values
+   483→  const VehicleIcon = ({ type }: { type: string }) => {
+   484→    const vehicleType = type.toUpperCase()
+   485→
+   486→    switch (vehicleType) {
+   487→      case 'MOTORBIKE':
+   488→        return <Bike className="w-6 h-6 text-orange-500" />
+   489→      case 'SCOOTER':
+   490→        return <MdDeliveryDining className="w-6 h-6 text-orange-500" />
+   491→      case 'TRUCK':
+   492→        return <TruckIcon className="w-6 h-6 text-orange-500" />
+   493→      case 'VAN':
+   494→        return <TruckIcon className="w-6 h-6 text-orange-500" />
+   495→      case 'CAR':
+   496→        return <Car className="w-6 h-6 text-orange-500" />
+   497→      case 'BIKE':
+   498→        return <BsBicycle className="w-6 h-6 text-orange-500" />
+   499→      default:
+   500→        return <Car className="w-6 h-6 text-orange-500" />
+   501→    }
+   502→  }
+   503→
+   504→  const getVehicleIcon = (vehicleType: string) => {
+   505→    return (
+   506→      <div className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-orange-500">
+   507→        <VehicleIcon type={vehicleType} />
+   508→      </div>
+   509→    )
+   510→  }
+   511→
+   512→  const formatDate = (dateString: string) => {
+   513→    const date = new Date(dateString)
+   514→    return date.toLocaleDateString('fr-FR', {
+   515→      day: '2-digit',
+   516→      month: '2-digit',
+   517→      year: 'numeric'
+   518→    })
+   519→  }
+   520→
+   521→  return (
+   522→    <div className="min-h-screen flex bg-background">
+   523→      {/* Sidebar - Vertical à gauche, toujours visible */}
+   524→      <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-orange-600 dark:bg-orange-700 flex flex-col border-r border-orange-700">
+   525→        {/* Logo */}
+   526→        <div className="h-20 flex items-center justify-center px-4 border-b border-orange-700">
+   527→          <div className="flex items-center gap-3">
+   528→            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+   529→              <Package className="w-6 h-6 text-orange-600" />
+   530→            </div>
+   531→            <div className="text-white">
+   532→              <h1 className="text-lg font-bold leading-tight">
+   533→                TiiB<span className="text-orange-200">n</span>Tick
+   534→              </h1>
+   535→              <p className="text-xs text-orange-100">Super Admin</p>
+   536→            </div>
+   537→          </div>
+   538→        </div>
+   539→
+   540→        {/* Navigation */}
+   541→        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+   542→          {sidebarItems.map((item) => {
+   543→            const Icon = item.icon
+   544→            const isActive = activeView === item.id
+   545→            return (
+   546→              <button
+   547→                key={item.id}
+   548→                onClick={() => setActiveView(item.id)}
+   549→                className={cn(
+   550→                  'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all',
+   551→                  isActive
+   552→                    ? 'bg-white text-orange-600 font-semibold shadow-md'
+   553→                    : 'text-white hover:bg-orange-500/50 hover:text-white'
+   554→                )}
+   555→              >
+   556→                <Icon className="w-5 h-5 flex-shrink-0" />
+   557→                <span>{item.label}</span>
+   558→              </button>
+   559→            )
+   560→          })}
+   561→        </nav>
+   562→
+   563→        {/* User Section */}
+   564→        <div className="p-4 border-t border-orange-700">
+   565→          <div className="flex items-center gap-3 text-white">
+   566→            <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center font-semibold flex-shrink-0">
+   567→              {adminName.split(' ').map(n => n[0]).join('')}
+   568→            </div>
+   569→            <div className="flex-1 min-w-0">
+   570→              <p className="font-medium truncate text-sm">{adminName}</p>
+   571→              <p className="text-xs text-orange-100 truncate">{adminEmail}</p>
+   572→            </div>
+   573→            <Button
+   574→              variant="ghost"
+   575→              size="icon"
+   576→              className="flex-shrink-0 text-white hover:text-white hover:bg-orange-500/50"
+   577→              onClick={handleLogout}
+   578→            >
+   579→              <LogOut className="w-4 h-4" />
+   580→            </Button>
+   581→          </div>
+   582→        </div>
+   583→      </aside>
+   584→
+   585→      {/* Main Content */}
+   586→      <div className="flex-1 flex flex-col min-h-screen ml-64">
+   587→        {/* Top Bar */}
+   588→        <header className="h-16 border-b bg-white dark:bg-gray-800 sticky top-0 z-30 flex items-center justify-between px-6">
+   589→          <div>
+   590→            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+   591→              {activeView === 'dashboard' && 'Dashboard'}
+   592→              {activeView === 'registrations' && 'Demandes d\'inscription'}
+   593→              {activeView === 'accounts' && 'Gestion des comptes'}
+   594→              {activeView === 'subscriptions' && 'Gestion des Abonnements'}
+   595→            </h2>
+   596→          </div>
+   597→          <Button
+   598→            onClick={() => { fetchRegistrations(); fetchAccounts() }}
+   599→            variant="outline"
+   600→            size="sm"
+   601→          >
+   602→            <RefreshCw className="w-4 h-4 mr-2" />
+   603→            Actualiser
+   604→          </Button>
+   605→        </header>
+   606→
+   607→        {/* Content */}
+   608→        <main className="flex-1 p-6 overflow-auto">
+   609→          {/* Dashboard View */}
+   610→          {activeView === 'dashboard' && (
+   611→            <div className="space-y-6">
+   612→              {/* Welcome Section */}
+   613→              <div className="mb-6">
+   614→                <h2 className="text-2xl md:text-3xl font-bold">
+   615→                  Bienvenue, <span className="text-orange-600">{adminName}</span>
+   616→                </h2>
+   617→              </div>
+   618→
+   619→              {/* Stats Cards */}
+   620→              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+   621→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   622→                  <CardHeader className="pb-3 px-4 py-3">
+   623→                    <CardDescription className="text-[10px] md:text-xs text-black">En attente</CardDescription>
+   624→                    <CardTitle className="text-xl md:text-2xl text-orange-600">{stats.pendingRegistrations}</CardTitle>
+   625→                  </CardHeader>
+   626→                  <CardContent className="px-4 pb-4 mt-auto">
+   627→                    <div className="flex items-center text-xs text-muted-foreground">
+   628→                      <Clock className="w-3 h-3 mr-1" />
+   629→                      Inscriptions
+   630→                    </div>
+   631→                  </CardContent>
+   632→                </Card>
+   633→
+   634→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   635→                  <CardHeader className="pb-3 px-4 py-3">
+   636→                    <CardDescription className="text-[10px] md:text-xs text-black">Livreurs</CardDescription>
+   637→                    <CardTitle className="text-xl md:text-2xl text-green-600">{stats.activeDeliveryPersons}</CardTitle>
+   638→                  </CardHeader>
+   639→                  <CardContent className="px-4 pb-4 mt-auto">
+   640→                    <div className="flex items-center text-xs text-muted-foreground">
+   641→                      <Users className="w-3 h-3 mr-1" />
+   642→                      Actifs
+   643→                    </div>
+   644→                  </CardContent>
+   645→                </Card>
+   646→
+   647→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   648→                  <CardHeader className="pb-3 px-4 py-3">
+   649→                    <CardDescription className="text-[10px] md:text-xs text-black">Suspendus</CardDescription>
+   650→                    <CardTitle className="text-xl md:text-2xl text-orange-600">{stats.suspendedAccounts}</CardTitle>
+   651→                  </CardHeader>
+   652→                  <CardContent className="px-4 pb-4 mt-auto">
+   653→                    <div className="flex items-center text-xs text-muted-foreground">
+   654→                      <AlertTriangle className="w-4 h-4 mr-1" />
+   655→                      Comptes
+   656→                    </div>
+   657→                  </CardContent>
+   658→                </Card>
+   659→
+   660→                <Card className="hover:shadow-md transition-shadow flex flex-col">
+   661→                  <CardHeader className="pb-3 px-4 py-3">
+   662→                    <CardDescription className="text-[10px] md:text-xs text-black">Révoqués</CardDescription>
+   663→                    <CardTitle className="text-xl md:text-2xl text-red-600">{stats.revokedAccounts}</CardTitle>
+   664→                  </CardHeader>
+   665→                  <CardContent className="px-4 pb-4 mt-auto">
+   666→                    <div className="flex items-center text-xs text-muted-foreground">
+   667→                      <Ban className="w-3 h-3 mr-1" />
+   668→                      Comptes
+   669→                    </div>
+   670→                  </CardContent>
+   671→                </Card>
+   672→              </div>
+   673→
+   674→              {/* Quick Actions */}
+   675→              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+   676→                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveView('registrations')}>
+   677→                  <CardHeader>
+   678→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+   679→                      <UserCheck className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+   680→                      Voir les inscriptions
+   681→                    </CardTitle>
+   682→                    <CardDescription className="text-xs md:text-sm">Consultez et validez les nouvelles demandes d'inscription</CardDescription>
+   683→                  </CardHeader>
+   684→                </Card>
+   685→
+   686→                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveView('accounts')}>
+   687→                  <CardHeader>
+   688→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+   689→                      <ShieldCheck className="w-4 h-4 md:w-5 md:h-5 text-blue-500" />
+   690→                      Gérer les comptes
+   691→                    </CardTitle>
+   692→                    <CardDescription className="text-xs md:text-sm">Suspendez ou révoquez les comptes utilisateurs</CardDescription>
+   693→                  </CardHeader>
+   694→                </Card>
+   695→
+   696→                <Card className="cursor-pointer hover:shadow-md transition-shadow relative opacity-50 pointer-events-none" onClick={() => setActiveView('subscriptions')}>
+   697→                  <CardHeader>
+   698→                    <CardTitle className="text-base md:text-lg flex items-center gap-2">
+   699→                      <CreditCard className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
+   700→                      Gérer les abonnements
+   701→                    </CardTitle>
+   702→                    <CardDescription className="text-xs md:text-sm">Activez les abonnements des livreurs</CardDescription>
+   703→                  </CardHeader>
+   704→                  <div className="absolute inset-0 flex items-center justify-center bg-white/60 rounded-lg">
+   705→                    <Badge variant="outline" className="bg-gray-100 text-gray-500 border-gray-300 text-xs">Bientôt disponible</Badge>
+   706→                  </div>
+   707→                </Card>
+   708→              </div>
+   709→            </div>
+   710→          )}
+   711→
+   712→          {/* Registrations View */}
+   713→          {activeView === 'registrations' && (
+   714→            <div className="space-y-4">
+   715→              {loading ? (
+   716→                <div className="flex items-center justify-center py-16">
+   717→                  <div className="text-center text-muted-foreground">
+   718→                    Chargement...
+   719→                  </div>
+   720→                </div>
+   721→              ) : registrationRequests.length === 0 ? (
+   722→                <div className="flex items-center justify-center py-16">
+   723→                  <div className="text-center">
+   724→                    <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
+   725→                      <CheckCircle className="w-8 h-8 text-muted-foreground" />
+   726→                    </div>
+   727→                    <h3 className="text-lg font-medium">Aucune demande d'inscription</h3>
+   728→                    <p className="text-muted-foreground mt-2">
+   729→                      Il n'y a pour l'instant aucune demande d'inscription en attente de validation.
+   730→                    </p>
+   731→                  </div>
+   732→                </div>
+   733→              ) : (
+   734→                <div className="space-y-2">
+   735→                  {registrationRequests.map((request) => (
+   736→                    <Card
+   737→                      key={request.id}
+   738→                      onClick={() => setSelectedRequest(request)}
+   739→                      className="hover:shadow-md transition-colors cursor-pointer"
+   740→                    >
+   741→                      <CardContent className="p-4">
+   742→                        <div className="flex items-center justify-between gap-4">
+   743→                          {/* Left side - Vehicle icon and info */}
+   744→                          <div className="flex items-center gap-3 flex-1 min-w-0">
+   745→                            {/* Vehicle Icon */}
+   746→                            <div className="flex-shrink-0">
+   747→                              {getVehicleIcon(request.vehicleType)}
+   748→                            </div>
+   749→
+   750→                            {/* Name and Vehicle Info */}
+   751→                            <div className="flex-1 min-w-0">
+   752→                              <div className="font-semibold text-sm truncate">{request.name}</div>
+   753→                              <div className="text-xs text-gray-600 truncate">
+   754→                                {request.vehicleBrand} {request.vehicleModel}
+   755→                              </div>
+   756→                            </div>
+   757→                          </div>
+   758→
+   759→                          {/* Right side - Creation date */}
+   760→                          <div className="flex-shrink-0 text-right">
+   761→                            <div className="text-xs text-gray-500">
+   762→                              {formatDate(request.createdAt)}
+   763→                            </div>
+   764→                          </div>
+   765→                        </div>
+   766→                      </CardContent>
+   767→                    </Card>
+   768→                  ))}
+   769→                </div>
+   770→              )}
+   771→            </div>
+   772→          )}
+   773→
+   774→          {/* Accounts View */}
+   775→          {activeView === 'accounts' && (
+   776→            <div className="space-y-4">
+   777→              {/* Filtres */}
+   778→              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 space-y-4">
+   779→                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+   780→                  {/* Filtre par type de compte */}
+   781→                  <div>
+   782→                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+   783→                      Type de compte
+   784→                    </label>
+   785→                    <div className="flex gap-2">
+   786→                      <button
+   787→                        onClick={() => setAccountTypeFilter('all')}
+   788→                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${accountTypeFilter === 'all'
+   789→                          ? 'bg-orange-600 text-white'
+   790→                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+   791→                          }`}
+   792→                      >
+   793→                        Tous ({accounts.length})
+   794→                      </button>
+   795→                      <button
+   796→                        onClick={() => setAccountTypeFilter('DELIVERY')}
+   797→                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${accountTypeFilter === 'DELIVERY'
+   798→                          ? 'bg-orange-600 text-white'
+   799→                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+   800→                          }`}
+   801→                      >
+   802→                        Livreurs ({accounts.filter(a => a.role === 'DELIVERY').length})
+   803→                      </button>
+   804→                      <button
+   805→                        onClick={() => setAccountTypeFilter('CLIENT')}
+   806→                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${accountTypeFilter === 'CLIENT'
+   807→                          ? 'bg-orange-600 text-white'
+   808→                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+   809→                          }`}
+   810→                      >
+   811→                        Clients ({accounts.filter(a => a.role === 'CLIENT').length})
+   812→                      </button>
+   813→                    </div>
+   814→                  </div>
+   815→
+   816→                  {/* Barre de recherche */}
+   817→                  <div>
+   818→                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+   819→                      Rechercher
+   820→                    </label>
+   821→                    <input
+   822→                      type="text"
+   823→                      placeholder="Nom, email..."
+   824→                      value={searchQuery}
+   825→                      onChange={(e) => setSearchQuery(e.target.value)}
+   826→                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+   827→                    />
+   828→                  </div>
+   829→                </div>
+   830→              </div>
+   831→
+   832→              {/* Tableau des comptes */}
+   833→              <Card>
+   834→                <CardHeader>
+   835→                  <div className="flex flex-col gap-3">
+   836→                    <div>
+   837→                      <CardTitle className="text-lg md:text-xl">Gestion des comptes</CardTitle>
+   838→                      <CardDescription>Gérez les comptes utilisateurs (suspendre, révoquer)</CardDescription>
+   839→                    </div>
+   840→                    <div className="flex gap-2">
+   841→                      <Badge variant="outline" className="text-xs md:text-sm">
+   842→                        {getFilteredAccounts().length} compte{getFilteredAccounts().length !== 1 ? 's' : ''}
+   843→                      </Badge>
+   844→                    </div>
+   845→                  </div>
+   846→                </CardHeader>
+   847→                <CardContent>
+   848→                  <div className="rounded-md border max-h-[600px] overflow-auto">
+   849→                    {getFilteredAccounts().length === 0 ? (
+   850→                      <div className="p-8 text-center text-muted-foreground">
+   851→                        Aucun compte trouvé
+   852→                      </div>
+   853→                    ) : (
+   854→                      <Table>
+   855→                        <TableHeader>
+   856→                          <TableRow>
+   857→                            <TableHead>Utilisateur</TableHead>
+   858→                            <TableHead>Contact</TableHead>
+   859→                            <TableHead className="hidden md:table-cell">Rôle</TableHead>
+   860→                            <TableHead>Statut</TableHead>
+   861→                            <TableHead className="text-right">Actions</TableHead>
+   862→                          </TableRow>
+   863→                        </TableHeader>
+   864→                        <TableBody>
+   865→                          {loading ? (
+   866→                            <TableRow>
+   867→                              <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+   868→                                Chargement...
+   869→                              </TableCell>
+   870→                            </TableRow>
+   871→                          ) : (
+   872→                            getFilteredAccounts().map((account) => (
+   873→                              <TableRow key={account.id} className="cursor-pointer hover:bg-gray-50" onClick={() => handleAccountClick(account)}>
+   874→                                <TableCell>
+   875→                                  <div>
+   876→                                    <div className="font-medium text-sm md:text-base">{account.name}</div>
+   877→                                    <div className="text-xs text-muted-foreground">
+   878→                                      {formatDate(account.createdAt)}
+   879→                                    </div>
+   880→                                  </div>
+   881→                                </TableCell>
+   882→                                <TableCell>
+   883→                                  <div className="space-y-1">
+   884→                                    <div className="flex items-center text-xs">
+   885→                                      <Phone className="w-3 h-3 mr-1 text-muted-foreground" />
+   886→                                      <span className="truncate block max-w-[120px]">{account.phone}</span>
+   887→                                    </div>
+   888→                                    <div className="flex items-center text-xs hidden sm:flex">
+   889→                                      <Mail className="w-3 h-3 mr-1 text-muted-foreground" />
+   890→                                      <span className="truncate block max-w-[120px]">{account.email}</span>
+   891→                                    </div>
+   892→                                  </div>
+   893→                                </TableCell>
+   894→                                <TableCell className="hidden md:table-cell">
+   895→                                  {getRoleBadge(account.role)}
+   896→                                </TableCell>
+   897→                                <TableCell>
+   898→                                  {getStatusBadge(account.status)}
+   899→                                </TableCell>
+   900→                                <TableCell className="text-right">
+   901→                                  {account.status === 'ACTIVE' && (
+   902→                                    <div className="flex justify-end gap-2">
+   903→                                      <Button
+   904→                                        size="sm"
+   905→                                        variant="outline"
+   906→                                        onClick={() => handleSuspendAccount(account)}
+   907→                                        className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+   908→                                      >
+   909→                                        <AlertTriangle className="w-4 h-4" />
+   910→                                      </Button>
+   911→                                      <Button
+   912→                                        size="sm"
+   913→                                        onClick={() => handleRevokeAccount(account)}
+   914→                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+   915→                                      >
+   916→                                        <Ban className="w-4 h-4" />
+   917→                                      </Button>
+   918→                                    </div>
+   919→                                  )}
+   920→                                  {account.status === 'SUSPENDED' && (
+   921→                                    <div className="flex justify-end gap-2">
+   922→                                      <Button
+   923→                                        size="sm"
+   924→                                        variant="outline"
+   925→                                        onClick={() => handleRestoreAccount(account)}
+   926→                                        className="text-green-600 hover:text-green-700 hover:bg-green-50"
+   927→                                      >
+   928→                                        <CheckCircle className="w-4 h-4" />
+   929→                                      </Button>
+   930→                                      <Button
+   931→                                        size="sm"
+   932→                                        onClick={() => handleRevokeAccount(account)}
+   933→                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+   934→                                      >
+   935→                                        <Ban className="w-4 h-4" />
+   936→                                      </Button>
+   937→                                    </div>
+   938→                                  )}
+   939→                                  {account.status === 'REVOKED' && (
+   940→                                    <span className="text-xs text-muted-foreground italic">Révoqué</span>
+   941→                                  )}
+   942→                                </TableCell>
+   943→                              </TableRow>
+   944→                            ))
+   945→                          )}
+   946→                        </TableBody>
+   947→                      </Table>
+   948→                    )}
+   949→                  </div>
+   950→                </CardContent>
+   951→              </Card>
+   952→            </div>
+   953→          )}
+   954→
+   955→
+   956→          {/* Subscriptions View - Greyed out / Coming Soon */}
+   957→          {activeView === 'subscriptions' && (
+   958→            <div className="space-y-6 relative">
+   959→              {/* Overlay "Bientôt disponible" */}
+   960→              <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-lg backdrop-blur-sm">
+   961→                <div className="text-center space-y-3">
+   962→                  <CreditCard className="w-12 h-12 text-gray-400 mx-auto" />
+   963→                  <h3 className="text-xl font-semibold text-gray-500">Bientôt disponible</h3>
+   964→                  <p className="text-sm text-gray-400 max-w-md">La gestion des abonnements sera disponible dans une prochaine mise à jour.</p>
+   965→                </div>
+   966→              </div>
+   967→
+   968→              {/* Content underneath (greyed out) */}
+   969→              <div className="opacity-40 pointer-events-none select-none">
+   970→                <div className="flex items-center justify-between">
+   971→                  <div>
+   972→                    <h2 className="text-2xl font-bold tracking-tight">Gestion des Abonnements</h2>
+   973→                    <p className="text-muted-foreground">
+   974→                      Gérez et activez les abonnements des livreurs.
+   975→                    </p>
+   976→                  </div>
+   977→                </div>
+   978→
+   979→                <Card>
+   980→                  <CardHeader>
+   981→                    <CardTitle>Livreurs</CardTitle>
+   982→                    <CardDescription>Liste des livreurs et état de leur abonnement</CardDescription>
+   983→                  </CardHeader>
+   984→                  <CardContent>
+   985→                    <Table>
+   986→                      <TableHeader>
+   987→                        <TableRow>
+   988→                          <TableHead>Livreur</TableHead>
+   989→                          <TableHead>Contact</TableHead>
+   990→                          <TableHead>Statut Abonnement</TableHead>
+   991→                          <TableHead>Expiration</TableHead>
+   992→                          <TableHead className="text-right">Action</TableHead>
+   993→                        </TableRow>
+   994→                      </TableHeader>
+   995→                      <TableBody>
+   996→                        {accounts.filter(a => a.role === 'DELIVERY').map((account) => (
+   997→                          <TableRow key={account.id}>
+   998→                            <TableCell className="font-medium">{account.name}</TableCell>
+   999→                            <TableCell>
+  1000→                              <div className="flex flex-col text-sm text-muted-foreground">
+  1001→                                <span>{account.email}</span>
+  1002→                                <span>{account.phone}</span>
+  1003→                              </div>
+  1004→                            </TableCell>
+  1005→                            <TableCell>
+  1006→                              <Badge variant={account.subscriptionStatus === 'ACTIVE' ? 'default' : 'secondary'}
+  1007→                                className={account.subscriptionStatus === 'ACTIVE' ? 'bg-green-600 hover:bg-green-700' : ''}>
+  1008→                                {account.subscriptionStatus === 'ACTIVE' ? 'Actif' : 'Inactif'}
+  1009→                              </Badge>
+  1010→                            </TableCell>
+  1011→                            <TableCell>
+  1012→                              {account.subscriptionEndDate ? formatDate(account.subscriptionEndDate) : '-'}
+  1013→                            </TableCell>
+  1014→                            <TableCell className="text-right">
+  1015→                              {account.subscriptionStatus !== 'ACTIVE' && (
+  1016→                                <Button
+  1017→                                  size="sm"
+  1018→                                  className="bg-orange-600 hover:bg-orange-700 text-white"
+  1019→                                  onClick={() => handleActivateSubscription(account)}
+  1020→                                >
+  1021→                                  Activer (30 jours)
+  1022→                                </Button>
+  1023→                              )}
+  1024→                            </TableCell>
+  1025→                          </TableRow>
+  1026→                        ))}
+  1027→                      </TableBody>
+  1028→                    </Table>
+  1029→                  </CardContent>
+  1030→                </Card>
+  1031→              </div>
+  1032→            </div>
+  1033→          )}
+  1034→        </main>
+  1035→
+  1036→        <Dialog open={selectedRequest !== null} onOpenChange={(open) => !open && setSelectedRequest(null)}>
+  1037→          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+  1038→            {selectedRequest && (
+  1039→              <>
+  1040→                <DialogHeader>
+  1041→                  <DialogTitle>Détails de la demande d'inscription</DialogTitle>
+  1042→                  <DialogDescription>
+  1043→                    Demande de {selectedRequest.name}
+  1044→                  </DialogDescription>
+  1045→                </DialogHeader>
+  1046→
+  1047→                <div className="space-y-6">
+  1048→                  {/* Photo du Livreur */}
+  1049→                  {selectedRequest.profilePhoto && (
+  1050→                    <div>
+  1051→                      <h3 className="text-sm font-semibold mb-3 text-gray-900">Photo du Livreur</h3>
+  1052→                      <div className="flex justify-center">
+  1053→                        <img
+  1054→                          src={photoUrl(selectedRequest.profilePhoto)}
+  1055→                          alt="Photo du livreur"
+  1056→                          className="w-32 h-32 rounded-lg object-cover border border-gray-200"
+  1057→                        />
+  1058→                      </div>
+  1059→                    </div>
+  1060→                  )}
+  1061→
+  1062→                  {/* Informations Personnelles */}
+  1063→                  <div>
+  1064→                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Informations Personnelles</h3>
+  1065→                    <div className="grid grid-cols-2 gap-4">
+  1066→                      <div>
+  1067→                        <label className="text-xs text-gray-500">Nom Complet</label>
+  1068→                        <p className="font-medium">{selectedRequest.name}</p>
+  1069→                      </div>
+  1070→                      <div>
+  1071→                        <label className="text-xs text-gray-500">Email</label>
+  1072→                        <p className="font-medium">{selectedRequest.email}</p>
+  1073→                      </div>
+  1074→                      <div>
+  1075→                        <label className="text-xs text-gray-500">Téléphone</label>
+  1076→                        <p className="font-medium">{selectedRequest.phone}</p>
+  1077→                      </div>
+  1078→                      <div>
+  1079→                        <label className="text-xs text-gray-500">Localisation</label>
+  1080→                        <p className="font-medium">{selectedRequest.location}</p>
+  1081→                      </div>
+  1082→                    </div>
+  1083→                  </div>
+  1084→
+  1085→                  {/* Informations Personnelles (Suite) */}
+  1086→                  <div className="grid grid-cols-2 gap-4">
+  1087→                    {selectedRequest.nineNumber && (
+  1088→                      <div>
+  1089→                        <label className="text-xs text-gray-500">Numéro NINE</label>
+  1090→                        <p className="font-mono font-bold text-orange-600">{selectedRequest.nineNumber}</p>
+  1091→                      </div>
+  1092→                    )}
+  1093→                  </div>
+  1094→
+  1095→                  {/* Document NIU */}
+  1096→                  {selectedRequest.niuPhoto && (
+  1097→                    <div>
+  1098→                      <h3 className="text-sm font-semibold mb-3 text-gray-900">Document NIU</h3>
+  1099→                      <div className="flex justify-center">
+  1100→                        <img
+  1101→                          src={photoUrl(selectedRequest.niuPhoto)}
+  1102→                          alt="Document NIU"
+  1103→                          className="w-full max-h-48 rounded-lg object-cover border border-gray-200"
+  1104→                        />
+  1105→                      </div>
+  1106→                    </div>
+  1107→                  )}
+  1108→
+  1109→                  {/* Pièce d'Identité */}
+  1110→                  <div>
+  1111→                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Pièce d'Identité</h3>
+  1112→                    <div className="space-y-3">
+  1113→                      {selectedRequest.idCardNumber && (
+  1114→                        <div>
+  1115→                          <label className="text-xs text-gray-500">Numéro CNI</label>
+  1116→                          <p className="font-mono font-bold text-orange-600">{selectedRequest.idCardNumber}</p>
+  1117→                        </div>
+  1118→                      )}
+  1119→
+  1120→                      <div className="grid grid-cols-2 gap-3">
+  1121→                        {selectedRequest.idCardRectoPhoto && (
+  1122→                          <div>
+  1123→                            <label className="text-xs text-gray-500 block mb-2">Photo CNI Recto</label>
+  1124→                            <img
+  1125→                              src={photoUrl(selectedRequest.idCardRectoPhoto)}
+  1126→                              alt="Photo CNI Recto"
+  1127→                              className="w-full max-h-32 rounded-lg object-cover border border-gray-200"
+  1128→                            />
+  1129→                          </div>
+  1130→                        )}
+  1131→                        {selectedRequest.idCardVersoPhoto && (
+  1132→                          <div>
+  1133→                            <label className="text-xs text-gray-500 block mb-2">Photo CNI Verso</label>
+  1134→                            <img
+  1135→                              src={photoUrl(selectedRequest.idCardVersoPhoto)}
+  1136→                              alt="Photo CNI Verso"
+  1137→                              className="w-full max-h-32 rounded-lg object-cover border border-gray-200"
+  1138→                            />
+  1139→                          </div>
+  1140→                        )}
+  1141→                      </div>
+  1142→                    </div>
+  1143→                  </div>
+  1144→
+  1145→                  {/* Informations Véhicule */}
+  1146→                  <div>
+  1147→                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Informations Véhicule</h3>
+  1148→                    <div className="grid grid-cols-2 gap-4 mb-4">
+  1149→                      <div>
+  1150→                        <label className="text-xs text-gray-500">Type de Véhicule</label>
+  1151→                        <p className="font-medium">{selectedRequest.vehicleType}</p>
+  1152→                      </div>
+  1153→                      <div>
+  1154→                        <label className="text-xs text-gray-500">Nom du véhicule</label>
+  1155→                        <p className="font-medium">{selectedRequest.vehicleBrand} {selectedRequest.vehicleModel}</p>
+  1156→                      </div>
+  1157→                      <div>
+  1158→                        <label className="text-xs text-gray-500">Plaque d'Immatriculation</label>
+  1159→                        <p className="font-mono font-bold text-lg text-orange-600">{selectedRequest.vehicleRegNumber}</p>
+  1160→                      </div>
+  1161→                      {selectedRequest.vehicleColor && (
+  1162→                        <div>
+  1163→                          <label className="text-xs text-gray-500">Couleur</label>
+  1164→                          <div className="flex items-center gap-2">
+  1165→                            <div
+  1166→                              className="w-4 h-4 rounded-full border border-gray-200"
+  1167→                              style={{ backgroundColor: selectedRequest.vehicleColor.toLowerCase() === 'blanc' ? '#ffffff' : selectedRequest.vehicleColor.toLowerCase() === 'noir' ? '#000000' : selectedRequest.vehicleColor }}
+  1168→                            />
+  1169→                            <p className="font-medium">{selectedRequest.vehicleColor}</p>
+  1170→                          </div>
+  1171→                        </div>
+  1172→                      )}
+  1173→                    </div>
+  1174→
+  1175→                    {/* Photos du Véhicule */}
+  1176→                    {(selectedRequest.vehicleFrontPhoto || selectedRequest.vehicleBackPhoto) && (
+  1177→                      <div className="space-y-4">
+  1178→                        <div className="text-xs text-gray-500 font-semibold mb-2">Photos du Véhicule</div>
+  1179→                        <div className="grid grid-cols-2 gap-3">
+  1180→                          {selectedRequest.vehicleFrontPhoto && (
+  1181→                            <div>
+  1182→                              <label className="text-xs text-gray-500 block mb-2">Vue Avant</label>
+  1183→                              <img
+  1184→                                src={photoUrl(selectedRequest.vehicleFrontPhoto)}
+  1185→                                alt="Vue avant du véhicule"
+  1186→                                className="w-full h-32 rounded-lg object-cover border border-gray-200"
+  1187→                              />
+  1188→                            </div>
+  1189→                          )}
+  1190→                          {selectedRequest.vehicleBackPhoto && (
+  1191→                            <div>
+  1192→                              <label className="text-xs text-gray-500 block mb-2">Vue Arrière</label>
+  1193→                              <img
+  1194→                                src={photoUrl(selectedRequest.vehicleBackPhoto)}
+  1195→                                alt="Vue arrière du véhicule"
+  1196→                                className="w-full h-32 rounded-lg object-cover border border-gray-200"
+  1197→                              />
+  1198→                            </div>
+  1199→                          )}
+  1200→                        </div>
+  1201→                      </div>
+  1202→                    )}
+  1203→                  </div>
+  1204→
+  1205→                  {/* Statut */}
+  1206→                  <div>
+  1207→                    <label className="text-xs text-gray-500">Statut</label>
+  1208→                    <div className="mt-2">
+  1209→                      {getStatusBadge(selectedRequest.status)}
+  1210→                    </div>
+  1211→                  </div>
+  1212→                </div>
+  1213→
+  1214→                <DialogFooter className="gap-2">
+  1215→                  <Button
+  1216→                    variant="outline"
+  1217→                    className="bg-white text-orange-700 border-orange-300 hover:bg-orange-50"
+  1218→                    onClick={() => {
+  1219→                      setActionDialog('reject')
+  1220→                    }}
+  1221→                  >
+  1222→                    Refuser
+  1223→                  </Button>
+  1224→                  <Button
+  1225→                    className="bg-orange-600 hover:bg-orange-700 text-white border border-orange-600"
+  1226→                    onClick={() => {
+  1227→                      setActionDialog('approve')
+  1228→                    }}
+  1229→                  >
+  1230→                    Accepter
+  1231→                  </Button>
+  1232→                </DialogFooter>
+  1233→              </>
+  1234→            )}
+  1235→          </DialogContent>
+  1236→        </Dialog>
+  1237→
+  1238→        {/* Account Details Dialog */}
+  1239→        <Dialog open={showAccountDetail} onOpenChange={(open) => { if (!open) { setShowAccountDetail(false); setAccountDetailData(null); } }}>
+  1240→          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+  1241→            {selectedAccount && (
+  1242→              <>
+  1243→                <DialogHeader>
+  1244→                  <DialogTitle>Informations du compte</DialogTitle>
+  1245→                  <DialogDescription>
+  1246→                    Compte de {selectedAccount.name}
+  1247→                  </DialogDescription>
+  1248→                </DialogHeader>
+  1249→
+  1250→                <div className="space-y-6">
+  1251→                  {/* Photo d'identité */}
+  1252→                  {(selectedAccount.photoCard || (accountDetailData && accountDetailData.photoCard)) && (
+  1253→                    <div>
+  1254→                      <h3 className="text-sm font-semibold mb-3 text-gray-900">Photo d'identité</h3>
+  1255→                      <div className="flex justify-center">
+  1256→                        <img
+  1257→                          src={photoUrl(accountDetailData?.photoCard || selectedAccount.photoCard)}
+  1258→                          alt="Photo d'identité"
+  1259→                          className="w-32 h-32 rounded-lg object-cover border border-gray-200"
+  1260→                        />
+  1261→                      </div>
+  1262→                    </div>
+  1263→                  )}
+  1264→
+  1265→                  {/* Statut du compte */}
+  1266→                  <div>
+  1267→                    <label className="text-xs text-gray-500">Statut du compte</label>
+  1268→                    <div className="mt-2">
+  1269→                      {getStatusBadge(selectedAccount.status)}
+  1270→                    </div>
+  1271→                  </div>
+  1272→
+  1273→                  {/* Informations Personnelles */}
+  1274→                  <div>
+  1275→                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Informations Personnelles</h3>
+  1276→                    <div className="grid grid-cols-2 gap-4">
+  1277→                      <div>
+  1278→                        <label className="text-xs text-gray-500">Nom Complet</label>
+  1279→                        <p className="font-medium">{selectedAccount.name}</p>
+  1280→                      </div>
+  1281→                      <div>
+  1282→                        <label className="text-xs text-gray-500">Email</label>
+  1283→                        <p className="font-medium">{selectedAccount.email}</p>
+  1284→                      </div>
+  1285→                      <div>
+  1286→                        <label className="text-xs text-gray-500">Téléphone</label>
+  1287→                        <p className="font-medium">{selectedAccount.phone}</p>
+  1288→                      </div>
+  1289→                      <div>
+  1290→                        <label className="text-xs text-gray-500">Rôle</label>
+  1291→                        <p className="font-medium">{getRoleBadge(selectedAccount.role)}</p>
+  1292→                      </div>
+  1293→                    </div>
+  1294→                  </div>
+  1295→
+  1296→                  {/* Delivery person details (fetched from backend) */}
+  1297→                  {selectedAccount.role === 'DELIVERY' && accountDetailData && (
+  1298→                    <>
+  1299→                      {/* NINE Number */}
+  1300→                      {accountDetailData.nuiNumber && (
+  1301→                        <div>
+  1302→                          <label className="text-xs text-gray-500">Numéro NINE</label>
+  1303→                          <p className="font-mono font-bold text-orange-600">{accountDetailData.nuiNumber}</p>
+  1304→                        </div>
+  1305→                      )}
+  1306→
+  1307→                      {/* Document NIU */}
+  1308→                      {accountDetailData.nuiPhoto && (
+  1309→                        <div>
+  1310→                          <h3 className="text-sm font-semibold mb-3 text-gray-900">Document NIU</h3>
+  1311→                          <div className="flex justify-center">
+  1312→                            <img
+  1313→                              src={photoUrl(accountDetailData.nuiPhoto)}
+  1314→                              alt="Document NIU"
+  1315→                              className="w-full max-h-48 rounded-lg object-cover border border-gray-200"
+  1316→                            />
+  1317→                          </div>
+  1318→                        </div>
+  1319→                      )}
+  1320→
+  1321→                      {/* Pièce d'Identité */}
+  1322→                      <div>
+  1323→                        <h3 className="text-sm font-semibold mb-3 text-gray-900">Pièce d'Identité</h3>
+  1324→                        <div className="space-y-3">
+  1325→                          {accountDetailData.nationalId && (
+  1326→                            <div>
+  1327→                              <label className="text-xs text-gray-500">Numéro CNI</label>
+  1328→                              <p className="font-mono font-bold text-orange-600">{accountDetailData.nationalId}</p>
+  1329→                            </div>
+  1330→                          )}
+  1331→                          <div className="grid grid-cols-2 gap-3">
+  1332→                            {accountDetailData.cniRecto && (
+  1333→                              <div>
+  1334→                                <label className="text-xs text-gray-500 block mb-2">Photo CNI Recto</label>
+  1335→                                <img
+  1336→                                  src={photoUrl(accountDetailData.cniRecto)}
+  1337→                                  alt="Photo CNI Recto"
+  1338→                                  className="w-full max-h-32 rounded-lg object-cover border border-gray-200"
+  1339→                                />
+  1340→                              </div>
+  1341→                            )}
+  1342→                            {accountDetailData.cniVerso && (
+  1343→                              <div>
+  1344→                                <label className="text-xs text-gray-500 block mb-2">Photo CNI Verso</label>
+  1345→                                <img
+  1346→                                  src={photoUrl(accountDetailData.cniVerso)}
+  1347→                                  alt="Photo CNI Verso"
+  1348→                                  className="w-full max-h-32 rounded-lg object-cover border border-gray-200"
+  1349→                                />
+  1350→                              </div>
+  1351→                            )}
+  1352→                          </div>
+  1353→                        </div>
+  1354→                      </div>
+  1355→
+  1356→                      {/* Informations Véhicule */}
+  1357→                      <div>
+  1358→                        <h3 className="text-sm font-semibold mb-3 text-gray-900">Informations Véhicule</h3>
+  1359→                        <div className="grid grid-cols-2 gap-4 mb-4">
+  1360→                          <div>
+  1361→                            <label className="text-xs text-gray-500">Type de Véhicule</label>
+  1362→                            <p className="font-medium">{accountDetailData.vehicleType}</p>
+  1363→                          </div>
+  1364→                          <div>
+  1365→                            <label className="text-xs text-gray-500">Nom du véhicule</label>
+  1366→                            <p className="font-medium">{accountDetailData.vehicleBrand} {accountDetailData.vehicleModel}</p>
+  1367→                          </div>
+  1368→                          <div>
+  1369→                            <label className="text-xs text-gray-500">Plaque d'Immatriculation</label>
+  1370→                            <p className="font-mono font-bold text-lg text-orange-600">{accountDetailData.vehicleRegNumber}</p>
+  1371→                          </div>
+  1372→                          {accountDetailData.vehicleColor && (
+  1373→                            <div>
+  1374→                              <label className="text-xs text-gray-500">Couleur</label>
+  1375→                              <div className="flex items-center gap-2">
+  1376→                                <div
+  1377→                                  className="w-4 h-4 rounded-full border border-gray-200"
+  1378→                                  style={{ backgroundColor: accountDetailData.vehicleColor.toLowerCase() === 'blanc' ? '#ffffff' : accountDetailData.vehicleColor.toLowerCase() === 'noir' ? '#000000' : accountDetailData.vehicleColor }}
+  1379→                                />
+  1380→                                <p className="font-medium">{accountDetailData.vehicleColor}</p>
+  1381→                              </div>
+  1382→                            </div>
+  1383→                          )}
+  1384→                        </div>
+  1385→
+  1386→                        {/* Photos du Véhicule */}
+  1387→                        {(accountDetailData.vehicleFrontPhoto || accountDetailData.vehicleBackPhoto) && (
+  1388→                          <div className="space-y-4">
+  1389→                            <div className="text-xs text-gray-500 font-semibold mb-2">Photos du Véhicule</div>
+  1390→                            <div className="grid grid-cols-2 gap-3">
+  1391→                              {accountDetailData.vehicleFrontPhoto && (
+  1392→                                <div>
+  1393→                                  <label className="text-xs text-gray-500 block mb-2">Vue Avant</label>
+  1394→                                  <img
+  1395→                                    src={photoUrl(accountDetailData.vehicleFrontPhoto)}
+  1396→                                    alt="Vue avant du véhicule"
+  1397→                                    className="w-full h-32 rounded-lg object-cover border border-gray-200"
+  1398→                                  />
+  1399→                                </div>
+  1400→                              )}
+  1401→                              {accountDetailData.vehicleBackPhoto && (
+  1402→                                <div>
+  1403→                                  <label className="text-xs text-gray-500 block mb-2">Vue Arrière</label>
+  1404→                                  <img
+  1405→                                    src={photoUrl(accountDetailData.vehicleBackPhoto)}
+  1406→                                    alt="Vue arrière du véhicule"
+  1407→                                    className="w-full h-32 rounded-lg object-cover border border-gray-200"
+  1408→                                  />
+  1409→                                </div>
+  1410→                              )}
+  1411→                            </div>
+  1412→                          </div>
+  1413→                        )}
+  1414→                      </div>
+  1415→                    </>
+  1416→                  )}
+  1417→                </div>
+  1418→
+  1419→                <DialogFooter className="gap-2">
+  1420→                  {selectedAccount.status === 'ACTIVE' && (
+  1421→                    <>
+  1422→                      <Button
+  1423→                        variant="outline"
+  1424→                        className="text-orange-600 border-orange-300 hover:bg-orange-50"
+  1425→                        title="Suspendre le compte"
+  1426→                        onClick={() => {
+  1427→                          setShowAccountDetail(false)
+  1428→                          handleSuspendAccount(selectedAccount)
+  1429→                        }}
+  1430→                      >
+  1431→                        <AlertTriangle className="w-4 h-4 mr-2" />
+  1432→                        Suspendre
+  1433→                      </Button>
+  1434→                      <Button
+  1435→                        variant="outline"
+  1436→                        className="text-red-600 border-red-300 hover:bg-red-50"
+  1437→                        title="Révoquer le compte définitivement"
+  1438→                        onClick={() => {
+  1439→                          setShowAccountDetail(false)
+  1440→                          handleRevokeAccount(selectedAccount)
+  1441→                        }}
+  1442→                      >
+  1443→                        <Ban className="w-4 h-4 mr-2" />
+  1444→                        Révoquer
+  1445→                      </Button>
+  1446→                    </>
+  1447→                  )}
+  1448→                  {selectedAccount.status === 'SUSPENDED' && (
+  1449→                    <>
+  1450→                      <Button
+  1451→                        variant="outline"
+  1452→                        className="text-green-600 border-green-300 hover:bg-green-50"
+  1453→                        title="Restaurer le compte"
+  1454→                        onClick={() => {
+  1455→                          setShowAccountDetail(false)
+  1456→                          handleRestoreAccount(selectedAccount)
+  1457→                        }}
+  1458→                      >
+  1459→                        <CheckCircle className="w-4 h-4 mr-2" />
+  1460→                        Restaurer
+  1461→                      </Button>
+  1462→                      <Button
+  1463→                        variant="outline"
+  1464→                        className="text-red-600 border-red-300 hover:bg-red-50"
+  1465→                        title="Révoquer le compte définitivement"
+  1466→                        onClick={() => {
+  1467→                          setShowAccountDetail(false)
+  1468→                          handleRevokeAccount(selectedAccount)
+  1469→                        }}
+  1470→                      >
+  1471→                        <Ban className="w-4 h-4 mr-2" />
+  1472→                        Révoquer
+  1473→                      </Button>
+  1474→                    </>
+  1475→                  )}
+  1476→                  {selectedAccount.status === 'REVOKED' && (
+  1477→                    <div className="text-sm text-red-600 italic">Ce compte a été révoqué définitivement.</div>
+  1478→                  )}
+  1479→                </DialogFooter>
+  1480→              </>
+  1481→            )}
+  1482→          </DialogContent>
+  1483→        </Dialog>
+  1484→
+  1485→        {/* Confirmation Dialog */}
+  1486→        <AlertDialog open={actionDialog !== null && actionDialog !== 'suspend'}>
+  1487→          <AlertDialogContent>
+  1488→            <AlertDialogHeader>
+  1489→              <AlertDialogTitle>
+  1490→                {actionDialog === 'approve' && 'Confirmer l\'approbation'}
+  1491→                {actionDialog === 'reject' && 'Rejeter la demande'}
+  1492→                {actionDialog === 'revoke' && 'Révoquer le compte'}
+  1493→                {actionDialog === 'restore' && 'Restaurer le compte'}
+  1494→              </AlertDialogTitle>
+  1495→            </AlertDialogHeader>
+  1496→            <AlertDialogDescription>
+  1497→              {actionDialog === 'approve' && selectedRequest && `Êtes-vous sûr de vouloir approuver la demande de ${selectedRequest.name} ?`}
+  1498→              {actionDialog === 'reject' && selectedRequest && `Êtes-vous sûr de vouloir rejeter la demande de ${selectedRequest.name} ?`}
+  1499→              {actionDialog === 'revoke' && selectedAccount && `Êtes-vous sûr de vouloir révoquer le compte de ${selectedAccount.name} ?`}
+  1500→              {actionDialog === 'restore' && selectedAccount && `Êtes-vous sûr de vouloir restaurer le compte de ${selectedAccount.name} ?`}
+  1501→            </AlertDialogDescription>
+  1502→            <AlertDialogFooter>
+  1503→              <AlertDialogCancel className="text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700">Annuler</AlertDialogCancel>
+  1504→              <AlertDialogAction
+  1505→                onClick={confirmAction}
+  1506→                className="bg-orange-600 hover:bg-orange-700"
+  1507→              >
+  1508→                Confirmer
+  1509→              </AlertDialogAction>
+  1510→            </AlertDialogFooter>
+  1511→          </AlertDialogContent>
+  1512→        </AlertDialog>
+  1513→
+  1514→        {/* Dialog spécifique pour la suspension avec date */}
+  1515→        <Dialog open={actionDialog === 'suspend'} onOpenChange={(open) => !open && setActionDialog(null)}>
+  1516→          <DialogContent className="sm:max-w-md">
+  1517→            <DialogHeader>
+  1518→              <DialogTitle>Suspendre le compte</DialogTitle>
+  1519→              <DialogDescription>
+  1520→                Êtes-vous sûr de vouloir suspendre le compte de {selectedAccount?.name} ?
+  1521→                Vous pouvez définir une date de fin de suspension optionnelle.
+  1522→              </DialogDescription>
+  1523→            </DialogHeader>
+  1524→            <div className="flex items-center space-x-2 py-4">
+  1525→              <div className="grid flex-1 gap-2">
+  1526→                <Popover>
+  1527→                  <PopoverTrigger asChild>
+  1528→                    <Button
+  1529→                      variant={"outline"}
+  1530→                      className={cn(
+  1531→                        "w-full justify-start text-left font-normal",
+  1532→                        !suspensionEndDate && "text-muted-foreground"
+  1533→                      )}
+  1534→                    >
+  1535→                      <CalendarIcon className="mr-2 h-4 w-4" />
+  1536→                      {suspensionEndDate ? format(suspensionEndDate, "PPP") : <span>Choisir une date de fin</span>}
+  1537→                    </Button>
+  1538→                  </PopoverTrigger>
+  1539→                  <PopoverContent className="w-auto p-0" align="start">
+  1540→                    <Calendar
+  1541→                      mode="single"
+  1542→                      selected={suspensionEndDate}
+  1543→                      onSelect={setSuspensionEndDate}
+  1544→                      initialFocus
+  1545→                      disabled={(date) => date < new Date()}
+  1546→                    />
+  1547→                  </PopoverContent>
+  1548→                </Popover>
+  1549→              </div>
+  1550→            </div>
+  1551→            <DialogFooter className="sm:justify-end">
+  1552→              <Button variant="outline" onClick={() => setActionDialog(null)} className="text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700">
+  1553→                Annuler
+  1554→              </Button>
+  1555→              <Button
+  1556→                variant="destructive"
+  1557→                onClick={confirmAction}
+  1558→                className="bg-orange-600 hover:bg-orange-700 text-white border-orange-600"
+  1559→              >
+  1560→                Confirmer la suspension
+  1561→              </Button>
+  1562→            </DialogFooter>
+  1563→          </DialogContent>
+  1564→        </Dialog>
+  1565→      </div>
+  1566→    </div>
+  1567→  )
+  1568→}
+  1569→
+  1570→export default withAuth(SuperAdminDashboard, ['ADMIN'])
+  1571→

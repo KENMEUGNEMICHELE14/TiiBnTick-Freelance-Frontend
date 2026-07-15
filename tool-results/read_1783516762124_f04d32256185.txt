@@ -1,0 +1,577 @@
+     1→'use client'
+     2→
+     3→import { useState, useEffect, useRef } from 'react'
+     4→import { useSearchParams, useRouter } from 'next/navigation'
+     5→import { motion, AnimatePresence, useDragControls } from 'framer-motion'
+     6→import {
+     7→  ArrowLeft,
+     8→  Phone,
+     9→  MessageCircle,
+    10→  ChevronUp,
+    11→  Navigation,
+    12→  Clock,
+    13→  Package,
+    14→  Mail,
+    15→  Truck,
+    16→  AlertTriangle,
+    17→  X,
+    18→  Send,
+    19→  CheckCircle2,
+    20→  CircleDot,
+    21→  ChevronDown,
+    22→} from 'lucide-react'
+    23→import { Button } from '@/components/ui/button'
+    24→import { Badge } from '@/components/ui/badge'
+    25→import { Input } from '@/components/ui/input'
+    26→import dynamic from 'next/dynamic'
+    27→import { getAnnouncementById } from '@/services/announcementService'
+    28→import { getRoute } from '@/services/routing'
+    29→import { withAuth } from '@/components/hoc/withAuth'
+    30→import type { AnnouncementResponseDTO } from '@/services/announcementService'
+    31→
+    32→// Inline GeoJSON Feature type (avoid importing 'geojson' package — crashes Turbopack)
+    33→interface RouteFeature {
+    34→  type: 'Feature'
+    35→  geometry?: { type: string; coordinates: number[][][] }
+    36→  properties?: Record<string, unknown>
+    37→  routes?: Array<{ geometry?: { coordinates: number[][] } }>
+    38→}
+    39→
+    40→const MapLeaflet = dynamic(() => import('@/components/MapLeaflet'), {
+    41→  ssr: false,
+    42→  loading: () => <div className="w-full h-full bg-gray-100 animate-pulse" />,
+    43→})
+    44→
+    45→// Deterministic number formatter
+    46→function fmt(n: number | undefined): string {
+    47→  if (n == null) return '0'
+    48→  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0')
+    49→}
+    50→
+    51→// ─── Panel CSS heights (no JS calculation) ───
+    52→type Snap = 'peek' | 'half' | 'full'
+    53→const SNAP_H: Record<Snap, string> = {
+    54→  peek: '12.5vh',
+    55→  half: '50vh',
+    56→  full: '92vh',
+    57→}
+    58→const SNAP_ORDER: Snap[] = ['peek', 'half', 'full']
+    59→
+    60→function DeliveryPage() {
+    61→  const searchParams = useSearchParams()
+    62→  const router = useRouter()
+    63→  const announcementId = searchParams.get('id') || ''
+    64→  const [announcement, setAnnouncement] = useState<AnnouncementResponseDTO | null>(null)
+    65→  const [loading, setLoading] = useState(true)
+    66→  const [route, setRoute] = useState<RouteFeature | null>(null)
+    67→  const [panelSnap, setPanelSnap] = useState<Snap>('peek')
+    68→  const [chatOpen, setChatOpen] = useState(false)
+    69→  const [chatMessages, setChatMessages] = useState<{ from: 'me' | 'client'; text: string; time: string }[]>([
+    70→    { from: 'client', text: 'Bonjour, êtes-vous en route ?', time: '14:32' },
+    71→    { from: 'me', text: "Oui, j'arrive dans 15 min !", time: '14:33' },
+    72→  ])
+    73→  const [chatInput, setChatInput] = useState('')
+    74→  const chatEndRef = useRef<HTMLDivElement>(null)
+    75→  const dragControls = useDragControls()
+    76→
+    77→  // Fetch announcement data
+    78→  useEffect(() => {
+    79→    if (!announcementId) {
+    80→      setLoading(false)
+    81→      return
+    82→    }
+    83→    setLoading(true)
+    84→    getAnnouncementById(announcementId)
+    85→      .then((data) => {
+    86→        setAnnouncement(data)
+    87→        // Fetch route if coordinates exist
+    88→        if (data.pickupAddress?.latitude && data.deliveryAddress?.latitude) {
+    89→          getRoute(
+    90→            data.pickupAddress.latitude,
+    91→            data.pickupAddress.longitude,
+    92→            data.deliveryAddress.latitude,
+    93→            data.deliveryAddress.longitude,
+    94→            data.transportMethod === 'bike' ? 'bike' : 'driving'
+    95→          ).then(setRoute).catch(() => {})
+    96→        }
+    97→      })
+    98→      .catch(() => {})
+    99→      .finally(() => setLoading(false))
+   100→  }, [announcementId])
+   101→
+   102→  // Auto-scroll chat
+   103→  useEffect(() => {
+   104→    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+   105→  }, [chatMessages, chatOpen])
+   106→
+   107→  const handleSendChat = () => {
+   108→    if (!chatInput.trim()) return
+   109→    const now = new Date()
+   110→    setChatMessages((prev) => [
+   111→      ...prev,
+   112→      {
+   113→        from: 'me' as const,
+   114→        text: chatInput.trim(),
+   115→        time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
+   116→      },
+   117→    ])
+   118→    setChatInput('')
+   119→  }
+   120→
+   121→  const cyclePanel = () => {
+   122→    setPanelSnap((prev) => {
+   123→      const idx = SNAP_ORDER.indexOf(prev)
+   124→      return SNAP_ORDER[(idx + 1) % SNAP_ORDER.length]
+   125→    })
+   126→  }
+   127→
+   128→  const pickupCoords: [number, number] | null =
+   129→    announcement?.pickupAddress?.latitude && announcement?.pickupAddress?.longitude
+   130→      ? [announcement.pickupAddress.latitude, announcement.pickupAddress.longitude]
+   131→      : null
+   132→
+   133→  const deliveryCoords: [number, number] | null =
+   134→    announcement?.deliveryAddress?.latitude && announcement?.deliveryAddress?.longitude
+   135→      ? [announcement.deliveryAddress.latitude, announcement.deliveryAddress.longitude]
+   136→      : null
+   137→
+   138→  const mapCenter: [number, number] =
+   139→    pickupCoords && deliveryCoords
+   140→      ? [(pickupCoords[0] + deliveryCoords[0]) / 2, (pickupCoords[1] + deliveryCoords[1]) / 2]
+   141→      : [4.0511, 9.7679]
+   142→
+   143→  const markers = [
+   144→    ...(pickupCoords ? [{ position: pickupCoords as [number, number], label: 'Retrait', color: '#f97316' }] : []),
+   145→    ...(deliveryCoords ? [{ position: deliveryCoords as [number, number], label: 'Livraison', color: '#10b981' }] : []),
+   146→  ]
+   147→
+   148→  return (
+   149→    <div className="h-screen w-screen overflow-hidden relative bg-gray-100">
+   150→      {/* ── MAP (full screen behind panel) ── */}
+   151→      <div className="absolute inset-0">
+   152→        {loading ? (
+   153→          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+   154→            <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+   155→          </div>
+   156→        ) : (
+   157→          <MapLeaflet center={mapCenter} zoom={13} markers={markers} route={route} />
+   158→        )}
+   159→      </div>
+   160→
+   161→      {/* ── Back button overlay ── */}
+   162→      <div className="absolute top-4 left-4 z-30">
+   163→        <Button
+   164→          variant="ghost"
+   165→          size="icon"
+   166→          onClick={() => router.back()}
+   167→          className="bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white rounded-full w-10 h-10"
+   168→        >
+   169→          <ArrowLeft className="w-5 h-5 text-gray-700" />
+   170→        </Button>
+   171→      </div>
+   172→
+   173→      {/* ══════════════════════════════════════════════════════
+   174→          SLIDING UP PANEL — pure CSS heights, no JS calc
+   175→         ══════════════════════════════════════════════════════ */}
+   176→      <motion.div
+   177→        className="absolute left-0 right-0 bottom-0 z-20 bg-white rounded-t-3xl shadow-[0_-4px_30px_rgba(0,0,0,0.12)]"
+   178→        style={{ height: SNAP_H.peek }}
+   179→        initial={false}
+   180→        animate={{ height: SNAP_H[panelSnap] }}
+   181→        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+   182→        drag="y"
+   183→        dragControls={dragControls}
+   184→        dragConstraints={{ top: 0, bottom: 0 }}
+   185→        dragElastic={0.15}
+   186→        onDragEnd={(_, info) => {
+   187→          if (info.velocity.y > 300) {
+   188→            setPanelSnap('peek')
+   189→          } else if (info.velocity.y < -300) {
+   190→            setPanelSnap('full')
+   191→          }
+   192→        }}
+   193→      >
+   194→        {/* ── Drag handle ── */}
+   195→        <div
+   196→          className="flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing"
+   197→          onPointerDown={(e) => dragControls.start(e)}
+   198→        >
+   199→          <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+   200→        </div>
+   201→
+   202→        {/* ── Scrollable content ── */}
+   203→        <div className="overflow-y-auto" style={{ maxHeight: 'calc(100% - 28px)' }}>
+   204→          {/* ── PEEK VIEW: client quick-actions bar ── */}
+   205→          <div className="px-4 pb-3">
+   206→            <div className="flex items-center justify-between">
+   207→              <div className="flex items-center gap-3">
+   208→                {/* Client avatar */}
+   209→                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+   210→                  {announcement?.shipperFirstName?.charAt(0) || '?'}
+   211→                </div>
+   212→                <div className="min-w-0">
+   213→                  <p className="text-sm font-bold text-gray-900 truncate">
+   214→                    {announcement?.shipperFirstName} {announcement?.shipperLastName}
+   215→                  </p>
+   216→                  <p className="text-xs text-gray-500">Expéditeur</p>
+   217→                </div>
+   218→              </div>
+   219→
+   220→              <div className="flex items-center gap-2">
+   221→                {/* Chat button */}
+   222→                <Button
+   223→                  variant="outline"
+   224→                  size="icon"
+   225→                  className="rounded-full w-10 h-10 border-orange-200 hover:bg-orange-50 hover:border-orange-300"
+   226→                  onClick={() => setChatOpen(true)}
+   227→                >
+   228→                  <MessageCircle className="w-5 h-5 text-orange-600" />
+   229→                </Button>
+   230→                {/* Call button */}
+   231→                <a
+   232→                  href={announcement?.shipperPhone ? `tel:${announcement.shipperPhone}` : '#'}
+   233→                  className="inline-flex items-center justify-center rounded-full w-10 h-10 border border-green-200 bg-green-50 hover:bg-green-100 transition-colors"
+   234→                >
+   235→                  <Phone className="w-5 h-5 text-green-600" />
+   236→                </a>
+   237→                {/* Expand / collapse button */}
+   238→                <Button
+   239→                  variant="ghost"
+   240→                  size="icon"
+   241→                  className="rounded-full w-10 h-10 text-gray-400 hover:text-gray-600"
+   242→                  onClick={cyclePanel}
+   243→                >
+   244→                  {panelSnap === 'full' ? (
+   245→                    <ChevronDown className="w-5 h-5" />
+   246→                  ) : (
+   247→                    <ChevronUp className="w-5 h-5" />
+   248→                  )}
+   249→                </Button>
+   250→              </div>
+   251→            </div>
+   252→          </div>
+   253→
+   254→          {/* ── EXPANDED CONTENT (visible when half or full) ── */}
+   255→          <AnimatePresence>
+   256→            {(panelSnap === 'half' || panelSnap === 'full') && (
+   257→              <motion.div
+   258→                initial={{ opacity: 0 }}
+   259→                animate={{ opacity: 1 }}
+   260→                exit={{ opacity: 0 }}
+   261→                transition={{ duration: 0.2 }}
+   262→                className="px-4 pb-6 space-y-5"
+   263→              >
+   264→                {/* Divider */}
+   265→                <div className="border-t border-gray-100" />
+   266→
+   267→                {/* Title row */}
+   268→                <div className="flex items-start justify-between gap-2">
+   269→                  <div className="flex items-center gap-2.5 min-w-0">
+   270→                    <div className="w-9 h-9 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+   271→                      <Package className="w-5 h-5 text-orange-600" />
+   272→                    </div>
+   273→                    <div className="min-w-0">
+   274→                      <h2 className="text-base font-bold text-gray-900 truncate">{announcement?.title || 'Livraison'}</h2>
+   275→                      <p className="text-xs text-gray-400 font-mono">{announcement?.id}</p>
+   276→                    </div>
+   277→                  </div>
+   278→                  <Badge className="bg-green-100 text-green-700 border-green-200 flex-shrink-0">
+   279→                    <CheckCircle2 className="w-3 h-3 mr-1" />
+   280→                    {announcement?.status || 'PUBLISHED'}
+   281→                  </Badge>
+   282→                </div>
+   283→
+   284→                {/* Route info */}
+   285→                <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+   286→                  <div className="flex items-start gap-3">
+   287→                    <div className="mt-1.5 w-3 h-3 bg-orange-500 rounded-full flex-shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />
+   288→                    <div>
+   289→                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Retrait</p>
+   290→                      <p className="text-sm text-gray-700">
+   291→                        {announcement?.pickupAddress?.street && `${announcement.pickupAddress.street}, `}
+   292→                        {announcement?.pickupAddress?.district && `${announcement.pickupAddress.district}, `}
+   293→                        {announcement?.pickupAddress?.city || 'N/A'}
+   294→                      </p>
+   295→                    </div>
+   296→                  </div>
+   297→                  <div className="ml-1.5 border-l-2 border-dashed border-gray-300 h-3" />
+   298→                  <div className="flex items-start gap-3">
+   299→                    <div className="mt-1.5 w-3 h-3 bg-green-500 rounded-full flex-shrink-0 shadow-[0_0_0_3px_rgba(16,185,129,0.15)]" />
+   300→                    <div>
+   301→                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Livraison</p>
+   302→                      <p className="text-sm text-gray-700">
+   303→                        {announcement?.deliveryAddress?.street && `${announcement.deliveryAddress.street}, `}
+   304→                        {announcement?.deliveryAddress?.district && `${announcement.deliveryAddress.district}, `}
+   305→                        {announcement?.deliveryAddress?.city || 'N/A'}
+   306→                      </p>
+   307→                    </div>
+   308→                  </div>
+   309→                </div>
+   310→
+   311→                {/* Stats row: distance / duration / price */}
+   312→                <div className="grid grid-cols-3 gap-2">
+   313→                  {announcement?.distance && (
+   314→                    <div className="bg-orange-50 rounded-xl p-3 text-center">
+   315→                      <Navigation className="w-4 h-4 text-orange-600 mx-auto mb-1" />
+   316→                      <p className="text-sm font-bold text-gray-900">{announcement.distance.toFixed(1)}</p>
+   317→                      <p className="text-[10px] text-gray-500">km</p>
+   318→                    </div>
+   319→                  )}
+   320→                  {announcement?.duration && (
+   321→                    <div className="bg-sky-50 rounded-xl p-3 text-center">
+   322→                      <Clock className="w-4 h-4 text-sky-600 mx-auto mb-1" />
+   323→                      <p className="text-sm font-bold text-gray-900">{Math.round(announcement.duration)}</p>
+   324→                      <p className="text-[10px] text-gray-500">min</p>
+   325→                    </div>
+   326→                  )}
+   327→                  {announcement?.amount && (
+   328→                    <div className="bg-green-50 rounded-xl p-3 text-center">
+   329→                      <span className="text-xs font-bold text-green-700">FCFA</span>
+   330→                      <p className="text-sm font-bold text-gray-900">{fmt(announcement.amount)}</p>
+   331→                      <p className="text-[10px] text-gray-500">Montant</p>
+   332→                    </div>
+   333→                  )}
+   334→                </div>
+   335→
+   336→                {/* Transport & Payment */}
+   337→                <div className="grid grid-cols-2 gap-2 text-sm">
+   338→                  {announcement?.transportMethod && (
+   339→                    <div className="bg-gray-50 p-3 rounded-lg">
+   340→                      <p className="text-[10px] text-gray-400 uppercase font-bold">Transport</p>
+   341→                      <p className="font-medium capitalize text-gray-800">
+   342→                        {announcement.transportMethod === 'bike' ? '🛵 Moto' : announcement.transportMethod === 'driving' ? '🚗 Voiture' : announcement.transportMethod}
+   343→                      </p>
+   344→                    </div>
+   345→                  )}
+   346→                  {announcement?.paymentMethod && (
+   347→                    <div className="bg-gray-50 p-3 rounded-lg">
+   348→                      <p className="text-[10px] text-gray-400 uppercase font-bold">Paiement</p>
+   349→                      <p className="font-medium text-gray-800">
+   350→                        {announcement.paymentMethod === 'CASH' ? '💵 Espèces' : announcement.paymentMethod === 'MOBILE_MONEY' ? '📱 Mobile Money' : announcement.paymentMethod}
+   351→                      </p>
+   352→                    </div>
+   353→                  )}
+   354→                </div>
+   355→
+   356→                {/* Description */}
+   357→                {announcement?.description && (
+   358→                  <div>
+   359→                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Description</h4>
+   360→                    <p className="text-sm text-gray-600 leading-relaxed">{announcement.description}</p>
+   361→                  </div>
+   362→                )}
+   363→
+   364→                {/* Packet Details */}
+   365→                {announcement?.packet && (
+   366→                  <div>
+   367→                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 border-b border-gray-100 pb-1.5">
+   368→                      Détails du Colis
+   369→                    </h4>
+   370→                    <div className="grid grid-cols-2 gap-y-2.5 gap-x-3 text-sm">
+   371→                      {announcement.packet.designation && (
+   372→                        <div>
+   373→                          <p className="text-[10px] text-gray-400">Désignation</p>
+   374→                          <p className="font-medium text-gray-800">{announcement.packet.designation}</p>
+   375→                        </div>
+   376→                      )}
+   377→                      {announcement.packet.fragile !== undefined && (
+   378→                        <div>
+   379→                          <p className="text-[10px] text-gray-400">Fragile</p>
+   380→                          <p className="font-medium text-gray-800">
+   381→                            {announcement.packet.fragile ? (
+   382→                              <span className="text-red-500 flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Oui</span>
+   383→                            ) : (
+   384→                              <span className="text-green-600">Non</span>
+   385→                            )}
+   386→                          </p>
+   387→                        </div>
+   388→                      )}
+   389→                      {announcement.packet.isPerishable !== undefined && (
+   390→                        <div>
+   391→                          <p className="text-[10px] text-gray-400">Périssable</p>
+   392→                          <p className="font-medium text-gray-800">{announcement.packet.isPerishable ? 'Oui' : 'Non'}</p>
+   393→                        </div>
+   394→                      )}
+   395→                      {announcement.packet.length && announcement.packet.width && (
+   396→                        <div>
+   397→                          <p className="text-[10px] text-gray-400">Dimensions</p>
+   398→                          <p className="font-medium text-gray-800">
+   399→                            {announcement.packet.length} × {announcement.packet.width}
+   400→                            {announcement.packet.thickness ? ` × ${announcement.packet.thickness}` : ''} cm
+   401→                          </p>
+   402→                        </div>
+   403→                      )}
+   404→                      {announcement.packet.description && (
+   405→                        <div className="col-span-2">
+   406→                          <p className="text-[10px] text-gray-400">Description du colis</p>
+   407→                          <p className="text-xs italic text-gray-500">{announcement.packet.description}</p>
+   408→                        </div>
+   409→                      )}
+   410→                    </div>
+   411→                  </div>
+   412→                )}
+   413→
+   414→                {/* Recipient info */}
+   415→                <div>
+   416→                  <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Destinataire</h4>
+   417→                  <div className="bg-orange-50/60 border border-orange-100 p-4 rounded-xl space-y-2.5">
+   418→                    <div className="flex items-center gap-3">
+   419→                      <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+   420→                        {announcement?.recipientFirstName?.charAt(0) || '?'}
+   421→                      </div>
+   422→                      <p className="font-bold text-gray-900">
+   423→                        {announcement?.recipientFirstName} {announcement?.recipientLastName}
+   424→                      </p>
+   425→                    </div>
+   426→                    {announcement?.recipientPhone && (
+   427→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   428→                        <Phone className="w-3.5 h-3.5 text-gray-400" />
+   429→                        <span>{announcement.recipientPhone}</span>
+   430→                      </div>
+   431→                    )}
+   432→                    {announcement?.recipientEmail && (
+   433→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   434→                        <Mail className="w-3.5 h-3.5 text-gray-400" />
+   435→                        <span>{announcement.recipientEmail}</span>
+   436→                      </div>
+   437→                    )}
+   438→                  </div>
+   439→                </div>
+   440→
+   441→                {/* Shipper info */}
+   442→                <div>
+   443→                  <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Expéditeur</h4>
+   444→                  <div className="bg-orange-50/60 border border-orange-100 p-4 rounded-xl space-y-2.5">
+   445→                    <div className="flex items-center gap-3">
+   446→                      <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+   447→                        {announcement?.shipperFirstName?.charAt(0) || '?'}
+   448→                      </div>
+   449→                      <p className="font-bold text-gray-900">
+   450→                        {announcement?.shipperFirstName} {announcement?.shipperLastName}
+   451→                      </p>
+   452→                    </div>
+   453→                    {announcement?.shipperPhone && (
+   454→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   455→                        <Phone className="w-3.5 h-3.5 text-gray-400" />
+   456→                        <span>{announcement.shipperPhone}</span>
+   457→                      </div>
+   458→                    )}
+   459→                    {announcement?.shipperEmail && (
+   460→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   461→                        <Mail className="w-3.5 h-3.5 text-gray-400" />
+   462→                        <span>{announcement.shipperEmail}</span>
+   463→                      </div>
+   464→                    )}
+   465→                  </div>
+   466→                </div>
+   467→
+   468→                {/* Action button */}
+   469→                <div className="pt-2 pb-2">
+   470→                  <Button className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-2xl shadow-lg">
+   471→                    <Truck className="w-5 h-5 mr-2" />
+   472→                    Démarrer la livraison
+   473→                  </Button>
+   474→                </div>
+   475→              </motion.div>
+   476→            )}
+   477→          </AnimatePresence>
+   478→        </div>
+   479→      </motion.div>
+   480→
+   481→      {/* ── CHAT OVERLAY ── */}
+   482→      <AnimatePresence>
+   483→        {chatOpen && (
+   484→          <motion.div
+   485→            initial={{ y: '100%' }}
+   486→            animate={{ y: 0 }}
+   487→            exit={{ y: '100%' }}
+   488→            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+   489→            className="absolute inset-x-0 bottom-0 z-40 bg-white rounded-t-3xl shadow-[0_-4px_30px_rgba(0,0,0,0.15)] flex flex-col"
+   490→            style={{ height: '75vh' }}
+   491→          >
+   492→            {/* Chat header */}
+   493→            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
+   494→              <div className="flex items-center gap-3">
+   495→                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm">
+   496→                  {announcement?.shipperFirstName?.charAt(0) || '?'}
+   497→                </div>
+   498→                <div>
+   499→                  <p className="text-sm font-bold text-gray-900">{announcement?.shipperFirstName} {announcement?.shipperLastName}</p>
+   500→                  <p className="text-[10px] text-green-500 flex items-center gap-1">
+   501→                    <CircleDot className="w-2.5 h-2.5" /> En ligne
+   502→                  </p>
+   503→                </div>
+   504→              </div>
+   505→              <Button
+   506→                variant="ghost"
+   507→                size="icon"
+   508→                className="rounded-full w-8 h-8"
+   509→                onClick={() => setChatOpen(false)}
+   510→              >
+   511→                <X className="w-5 h-5 text-gray-500" />
+   512→              </Button>
+   513→            </div>
+   514→
+   515→            {/* Chat messages */}
+   516→            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+   517→              {chatMessages.map((msg, i) => (
+   518→                <div
+   519→                  key={i}
+   520→                  className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'}`}
+   521→                >
+   522→                  <div
+   523→                    className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+   524→                      msg.from === 'me'
+   525→                        ? 'bg-orange-500 text-white rounded-br-md'
+   526→                        : 'bg-gray-100 text-gray-800 rounded-bl-md'
+   527→                    }`}
+   528→                  >
+   529→                    <p>{msg.text}</p>
+   530→                    <p className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-orange-200' : 'text-gray-400'}`}>
+   531→                      {msg.time}
+   532→                    </p>
+   533→                  </div>
+   534→                </div>
+   535→              ))}
+   536→              <div ref={chatEndRef} />
+   537→            </div>
+   538→
+   539→            {/* Chat input */}
+   540→            <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-2 flex-shrink-0">
+   541→              <Input
+   542→                value={chatInput}
+   543→                onChange={(e) => setChatInput(e.target.value)}
+   544→                onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
+   545→                placeholder="Écrire un message..."
+   546→                className="flex-1 rounded-full border-gray-200 focus:border-orange-400"
+   547→              />
+   548→              <Button
+   549→                size="icon"
+   550→                onClick={handleSendChat}
+   551→                className="rounded-full w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+   552→              >
+   553→                <Send className="w-4 h-4 text-white" />
+   554→              </Button>
+   555→            </div>
+   556→          </motion.div>
+   557→        )}
+   558→      </AnimatePresence>
+   559→
+   560→      {/* ── No announcement fallback ── */}
+   561→      {!loading && !announcement && (
+   562→        <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/80 backdrop-blur-sm">
+   563→          <div className="text-center p-6">
+   564→            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+   565→            <h3 className="text-lg font-bold text-gray-700 mb-2">Aucune livraison sélectionnée</h3>
+   566→            <p className="text-sm text-gray-500 mb-4">Accédez à cette page depuis une annonce.</p>
+   567→            <Button onClick={() => router.back()} variant="outline" className="rounded-full">
+   568→              <ArrowLeft className="w-4 h-4 mr-2" /> Retour
+   569→            </Button>
+   570→          </div>
+   571→        </div>
+   572→      )}
+   573→    </div>
+   574→  )
+   575→}
+   576→
+   577→export default withAuth(DeliveryPage, ['LIVREUR'])

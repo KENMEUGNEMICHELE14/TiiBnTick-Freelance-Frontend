@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestion du Profil et Politiques Freelancer | LogiFlow Freelancer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#004395",
+                    "tertiary-container": "#0076d2",
+                    "surface-container-lowest": "#ffffff",
+                    "background": "#faf8ff",
+                    "on-tertiary-container": "#fdfcff",
+                    "primary-container": "#cc4900",
+                    "on-error": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-container": "#eaedff",
+                    "surface-container-low": "#f2f3ff",
+                    "surface-bright": "#faf8ff",
+                    "outline-variant": "#e2bfb2",
+                    "primary-fixed": "#ffdbce",
+                    "on-tertiary-fixed": "#001c39",
+                    "on-background": "#131b2e",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#a4c9ff",
+                    "on-primary-fixed-variant": "#7f2b00",
+                    "inverse-primary": "#ffb599",
+                    "surface": "#faf8ff",
+                    "secondary-container": "#2170e4",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#5a4138",
+                    "surface-container-highest": "#dae2fd",
+                    "outline": "#8e7166",
+                    "inverse-on-surface": "#eef0ff",
+                    "surface-gray": "#F8FAFC",
+                    "success-green": "#10B981",
+                    "on-primary-fixed": "#370e00",
+                    "surface-dim": "#d2d9f4",
+                    "inverse-surface": "#283044",
+                    "surface-variant": "#dae2fd",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "on-surface": "#131b2e",
+                    "on-tertiary": "#ffffff",
+                    "border-subtle": "#E2E8F0",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#d4e3ff",
+                    "surface-container-high": "#e2e7ff",
+                    "secondary": "#0058be"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1280px",
+                    "base": "8px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-bold": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "label-sm": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-xl": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .sidebar-link.active {
+        background-color: #ffdbce;
+        color: #a33900;
+        border-right: 4px solid #a33900;
+        font-weight: 700;
+      }
+      .glass-nav {
+        background: rgba(250, 248, 255, 0.8);
+        backdrop-filter: blur(12px);
+      }
+      .content-card {
+        border: 1px solid #E2E8F0;
+        transition: all 0.2s ease;
+      }
+      .content-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+      input[type="checkbox"]:checked {
+        background-color: #a33900;
+        border-color: #a33900;
+      }
+      .toggle-switch:checked + .toggle-bg {
+        background-color: #a33900;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 glass-nav border-b border-border-subtle">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-margin-desktop h-20">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">LogiFlow</span>
+<span class="bg-primary text-on-primary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase">Freelancer</span>
+</div>
+<div class="hidden md:flex items-center gap-gutter">
+<a class="text-on-surface font-medium hover:text-primary transition-colors duration-200" href="#">Go</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 transition-colors duration-200" href="#">Freelancer</a>
+<a class="text-on-surface font-medium hover:text-primary transition-colors duration-200" href="#">Solutions</a>
+<a class="text-on-surface font-medium hover:text-primary transition-colors duration-200" href="#">Resources</a>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-bold active:scale-95 transition-transform">
+                Connect
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="pt-32 pb-16 bg-surface-container-low overflow-hidden relative">
+<div class="max-w-container-max mx-auto px-margin-desktop relative z-10">
+<div class="max-w-2xl">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-6">Gestion du Profil et Politiques Freelancer</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                    Pilotez votre activité, configurez vos tarifs et consultez nos engagements pour une collaboration transparente et sécurisée.
+                </p>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-16 flex flex-col md:flex-row gap-gutter">
+<!-- Sticky Sidebar Navigation -->
+<aside class="md:w-1/4 h-fit sticky top-28 hidden md:block">
+<nav class="flex flex-col gap-1 border-l border-border-subtle">
+<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#settings">1. Paramètres de Profil</a>
+<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#intro">2. Engagement Logistique</a>
+<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#eligibility">3. Conditions d'Éligibilité</a>
+<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#conduct">4. Règles de Conduite</a>
+<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#payment">5. Politique de Paiement</a>
+<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#safety">6. Sécurité et Assurance</a>
+<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#termination">7. Résiliation</a>
+</nav>
+</aside>
+<!-- Content Area -->
+<div class="md:w-3/4 space-y-12">
+<!-- 1. Paramètres de Profil Freelancer (New Section) -->
+<section class="scroll-mt-32" id="settings">
+<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">settings_account_box</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Paramètres de Profil Freelancer</h2>
+</div>
+<div class="space-y-10">
+<!-- Availability -->
+<div><h3 class="font-headline-md text-on-surface mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-primary">calendar_month</span> Disponibilités Hebdomadaires</h3><div class="space-y-3"><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Lundi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Mardi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Mercredi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Jeudi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Vendredi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Samedi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="09:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="13:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Dimanche</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="09:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="13:00"/></div></div></div></div>
+<!-- Pricing -->
+<div class="pt-6 border-t border-border-subtle">
+<h3 class="font-headline-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">sell</span>
+            Tarification du Service
+        </h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-1.5">
+<label class="text-label-bold text-on-surface">Prix par kilomètre (XAF)</label>
+<div class="relative">
+<input class="w-full p-3 pr-12 rounded-lg border border-border-subtle focus:ring-primary focus:border-primary" type="number" value="250"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-label-sm">/km</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-label-bold text-on-surface">Prix par mètre cube (XAF)</label>
+<div class="relative">
+<input class="w-full p-3 pr-12 rounded-lg border border-border-subtle focus:ring-primary focus:border-primary" type="number" value="1500"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-label-sm">/m³</span>
+</div>
+</div>
+</div>
+<!-- Overtime -->
+<div class="mt-8 p-4 bg-surface-container rounded-xl">
+<div class="flex items-center justify-between mb-4">
+<div class="flex flex-col">
+<span class="text-label-bold text-on-surface">Surfacturation par minute d'attente</span>
+<span class="text-label-sm text-on-surface-variant">Activez les frais pour temps d'attente au ramassage/livraison</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-label-bold text-on-surface">Tarif d'attente (XAF/min)</label>
+<input class="p-3 rounded-lg border border-border-subtle focus:ring-primary focus:border-primary bg-white" type="number" value="50"/>
+</div>
+</div>
+</div>
+<!-- Accepted Parcels -->
+<div class="pt-6 border-t border-border-subtle">
+<h3 class="font-headline-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">package_2</span>
+            Colis Acceptés
+        </h3>
+<div class="mb-6">
+<label class="text-label-bold text-on-surface block mb-2">Plage de poids (kg)</label>
+<div class="flex items-center gap-4">
+<input class="w-full p-3 rounded-lg border border-border-subtle" placeholder="Min" type="number" value="0"/>
+<span class="text-on-surface-variant">à</span>
+<input class="w-full p-3 rounded-lg border border-border-subtle" placeholder="Max" type="number" value="50"/>
+</div>
+</div>
+<p class="text-label-bold text-on-surface mb-3">Styles de colis acceptés</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+<input checked="" class="hidden" type="checkbox"/>
+<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">inventory_2</span>
+<span class="text-label-sm font-bold">Standard</span>
+</label>
+<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+<input checked="" class="hidden" type="checkbox"/>
+<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">devices</span>
+<span class="text-label-sm font-bold">Électronique</span>
+</label>
+<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+<input class="hidden" type="checkbox"/>
+<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">wine_bar</span>
+<span class="text-label-sm font-bold">Fragile</span>
+</label>
+<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+<input checked="" class="hidden" type="checkbox"/>
+<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">description</span>
+<span class="text-label-sm font-bold">Documents</span>
+</label>
+</div>
+</div>
+<div class="flex justify-end pt-4">
+<button class="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-bold shadow-lg hover:shadow-primary/20 active:scale-95 transition-all">
+            Enregistrer les modifications
+        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Introduction -->
+<section class="scroll-mt-32" id="intro">
+<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Engagement pour une logistique professionnelle</h2>
+</div>
+<div class="space-y-4 text-body-md text-on-surface-variant leading-relaxed">
+<p>Chez TiiBnTick Freelancer, nous redéfinissons la logistique du dernier kilomètre par l'excellence et la confiance. Notre plateforme n'est pas seulement un outil de mise en relation, c'est un écosystème où chaque livraison compte.</p>
+<p>Nous nous engageons à fournir une infrastructure robuste permettant aux courtiers de travailler en toute autonomie tout en garantissant un niveau de service premium pour nos clients expéditeurs.</p>
+</div>
+</div>
+</section>
+<!-- 3. Conditions d'Éligibilité -->
+<section class="scroll-mt-32" id="eligibility">
+<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">badge</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Conditions d'Éligibilité</h2>
+</div>
+<p class="text-body-md text-on-surface-variant mb-6">Pour rejoindre le réseau LogiFlow en tant que Freelancer TiiBnTick, vous devez satisfaire aux critères suivants :</p>
+<ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-success-green">check_circle</span>
+<div>
+<p class="font-label-bold text-on-surface">Profil Vérifié</p>
+<p class="text-label-sm text-on-surface-variant">Validation biométrique et vérification de l'identité en temps réel.</p>
+</div>
+</li>
+<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-success-green">check_circle</span>
+<div>
+<p class="font-label-bold text-on-surface">Documents Requis</p>
+<p class="text-label-sm text-on-surface-variant">Carte Nationale d'Identité (CNI) ou Passeport en cours de validité.</p>
+</div>
+</li>
+<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-success-green">check_circle</span>
+<div>
+<p class="font-label-bold text-on-surface">Permis de Conduire</p>
+<p class="text-label-sm text-on-surface-variant">Obligatoire pour les véhicules motorisés (moto, auto, utilitaire).</p>
+</div>
+</li>
+<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-success-green">check_circle</span>
+<div>
+<p class="font-label-bold text-on-surface">Statut Indépendant</p>
+<p class="text-label-sm text-on-surface-variant">Numéro d'immatriculation d'entreprise ou statut auto-entrepreneur.</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+<!-- Image Break -->
+<div class="h-64 rounded-xl overflow-hidden shadow-inner relative group">
+<div class="bg-cover bg-center w-full h-full transform group-hover:scale-105 transition-transform duration-700" data-alt="A professional courier wearing a modern branded LogiFlow vest scanning a QR code on a parcel with a smartphone." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjymlqklLr7InD9hs_A3r9aV_avn4HV8NFvWCyP4ZGBV-PiZPR8LcJ7UQlx5Hbz0xFGeddrOnbRxt8XZXDzJEkZhVsjasIwgkiGI7pJPxvJyOoK9rISrh0GKYz34XqWPgJUACZcHvugdL9ZKPp5xtydyYQR4y_K2REJy9D2voyhKGa6-d7eOQJKSXMCMW0436QCZHr-DxRT78h8hHprTUHkirG2AyCQyNXa3HigkBN2is0_gYEW4qp')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+<p class="text-white font-headline-md italic">"Rapidité. Précision. Professionnalisme."</p>
+</div>
+</div>
+<!-- 4. Règles de Conduite -->
+<section class="scroll-mt-32" id="conduct">
+<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">handshake</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Règles de Conduite</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="space-y-3">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<h3 class="font-label-bold text-on-surface">Ponctualité</h3>
+<p class="text-body-md text-on-surface-variant">Respect strict des créneaux de ramassage et de livraison pour maintenir la fluidité du réseau.</p>
+</div>
+<div class="space-y-3">
+<span class="material-symbols-outlined text-primary">sentiment_satisfied</span>
+<h3 class="font-label-bold text-on-surface">Courtoisie</h3>
+<p class="text-body-md text-on-surface-variant">Représenter TiiBnTick avec respect auprès des clients. Une communication claire est essentielle.</p>
+</div>
+<div class="space-y-3">
+<span class="material-symbols-outlined text-primary">inventory_2</span>
+<h3 class="font-label-bold text-on-surface">Manipulation Sécurisée</h3>
+<p class="text-body-md text-on-surface-variant">Garantir l'intégrité physique de chaque colis confié, du point A au point B.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. Politique de Paiement -->
+<section class="scroll-mt-32" id="payment">
+<div class="bg-on-background p-gutter rounded-xl text-white">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white">payments</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg">Politique de Paiement Garanti</h2>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="space-y-6">
+<div class="p-4 border border-white/20 rounded-lg">
+<p class="font-label-bold mb-2">Commissions Transparentes</p>
+<p class="text-body-md text-white/80">LogiFlow prélève une commission fixe sur chaque course, couvrant les frais de service et l'assurance.</p>
+</div>
+<div class="p-4 border border-white/20 rounded-lg">
+<p class="font-label-bold mb-2">Délais de Versement</p>
+<p class="text-body-md text-white/80">Choisissez votre rythme : versements journaliers pour une liquidité immédiate ou hebdomadaires pour une gestion simplifiée.</p>
+</div>
+</div>
+<div class="bg-primary/20 p-6 rounded-lg border border-primary/40">
+<h3 class="font-headline-md mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">lock</span> Paiement Garanti
+                            </h3>
+<p class="text-body-md text-white/90 mb-4">
+                                Pour protéger les deux parties, les fonds sont bloqués par la plateforme dès l'acceptation de la mission.
+                            </p>
+<p class="text-label-sm text-white/70">
+                                Le virement est débloqué vers votre compte TiiBnTick dès la validation finale par le destinataire ou via le QR Code de sécurité.
+                            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. Sécurité et Assurance -->
+<section class="scroll-mt-32" id="safety">
+<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="md:w-1/2 space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">shield</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Sécurité &amp; Assurance</h2>
+</div>
+<p class="text-body-md text-on-surface-variant">Votre sécurité et celle des biens transportés sont nos priorités absolues. Chaque mission effectuée sur TiiBnTick est couverte par notre programme de protection.</p>
+<div class="space-y-4">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary">qr_code_scanner</span>
+<div>
+<p class="font-label-bold text-on-surface">Validation par QR Code</p>
+<p class="text-body-md text-on-surface-variant">Preuve de livraison infalsifiable. Le paiement n'est débloqué qu'après le scan.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary">health_and_safety</span>
+<div>
+<p class="font-label-bold text-on-surface">Couverture Incident</p>
+<p class="text-body-md text-on-surface-variant">Assurance responsabilité civile incluse pour tout incident survenant durant la course.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="md:w-1/2 rounded-xl overflow-hidden">
+<div class="w-full h-full min-h-[300px] bg-cover bg-center" data-alt="A macro shot of a hand holding a mobile phone displaying a QR code." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4nx57HrgbrH8PNW5nWclmjzSNJatZjzTnuWXpV390LDuR-bzzxGzqQUhQorWRAW3lK7zoEj8411zRw7pF1g6naieQD1mdgDvDUpzQSr9gPmixoXCdKQ-sl8ip4K4h_nzjVb6zXUIsFjyW_L0fodJ5GuIXQmiy1v-i39TBtzhmDtAWJEEKVoUjJ_2_a5b-HMMT4XPMyhr9nSdAtVfwLgDqItCKbMamI0Kr50VZAEClVP3m9WtWIu53')"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. Résiliation -->
+<section class="scroll-mt-32" id="termination">
+<div class="bg-error-container/30 p-gutter rounded-xl border border-error/20">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-error">report</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-error">Résiliation et Suspension</h2>
+</div>
+<div class="text-body-md text-on-surface-variant space-y-4">
+<p>Le non-respect répété ou grave de nos politiques peut entraîner une suspension temporaire ou définitive du compte Freelancer :</p>
+<ul class="list-disc pl-6 space-y-2">
+<li>Annulations de missions abusives et répétées (plus de 3 en 30 jours).</li>
+<li>Comportement inapproprié ou non-professionnel envers les clients.</li>
+<li>Fraude sur les documents ou utilisation de comptes tiers.</li>
+<li>Manquement aux règles de sécurité routière ou manipulation dangereuse des colis.</li>
+</ul>
+<p class="pt-4 font-label-bold text-on-surface italic">TiiBnTick se réserve le droit de geler les avoirs en cours en cas d'enquête pour fraude avérée.</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-border-subtle dark:border-outline-variant">
+<div class="max-w-container-max mx-auto px-margin-desktop py-12 grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="space-y-4">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-surface-bright">LogiFlow</span>
+<p class="text-label-sm text-on-surface-variant dark:text-surface-variant">L'excellence logistique à portée de clic.</p>
+</div>
+<div class="flex flex-col gap-2">
+<p class="font-label-bold text-primary dark:text-primary-fixed-dim">Plateforme</p>
+<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Trouver des courses</a>
+<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Mes livraisons</a>
+<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Profil</a>
+</div>
+<div class="flex flex-col gap-2">
+<p class="font-label-bold text-primary dark:text-primary-fixed-dim">Legal</p>
+<a class="text-label-sm text-primary font-bold" href="#">Privacy Policy</a>
+<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Carrier Terms</a>
+</div>
+<div class="flex flex-col gap-2">
+<p class="font-label-bold text-primary dark:text-primary-fixed-dim">Support</p>
+<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Contact Us</a>
+<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">FAQ Freelancer</a>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop py-6 border-t border-border-subtle/30 text-center">
+<p class="text-label-sm text-on-surface-variant/60 dark:text-surface-variant/60">© 2024 LogiFlow Logistics. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        // Simple Intersection Observer to highlight active sidebar link
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.sidebar-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll for anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body></html>

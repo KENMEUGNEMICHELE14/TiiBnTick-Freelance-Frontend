@@ -1,0 +1,571 @@
+'use client'
+
+import { useEffect, useState, useCallback, useRef } from 'react'
+import {
+  Settings, Calendar, Tag, Package, ShieldCheck, Shield, Award, CheckCircle,
+  Clock, Smile, Box, CreditCard, Lock, QrCode,
+  AlertTriangle, ChevronDown, FileText, Smartphone, Wine, Archive,
+  Menu, X, Handshake,
+} from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+
+/* ════════════════════════════════════════════
+   TiiBnTick — Gestion du Profil Freelancer
+   ════════════════════════════════════════════ */
+
+/* ─── Types ─── */
+interface DaySlot { day: string; enabled: boolean; start: string; end: string }
+interface ParcelType { id: string; label: string; icon: React.ReactNode; checked: boolean }
+
+/* ─── Data ─── */
+const DAYS_INITIAL: DaySlot[] = [
+  { day: 'Lundi',    enabled: true,  start: '08:00', end: '18:00' },
+  { day: 'Mardi',    enabled: true,  start: '08:00', end: '18:00' },
+  { day: 'Mercredi', enabled: true,  start: '08:00', end: '18:00' },
+  { day: 'Jeudi',    enabled: true,  start: '08:00', end: '18:00' },
+  { day: 'Vendredi', enabled: true,  start: '08:00', end: '18:00' },
+  { day: 'Samedi',   enabled: false, start: '09:00', end: '13:00' },
+  { day: 'Dimanche', enabled: false, start: '09:00', end: '13:00' },
+]
+
+const SIDEBAR_SECTIONS = [
+  { id: 'settings',    label: '1. Paramètres de Profil' },
+  { id: 'intro',       label: '2. Engagement Logistique' },
+  { id: 'eligibility', label: "3. Conditions d'Éligibilité" },
+  { id: 'conduct',     label: '4. Règles de Conduite' },
+  { id: 'payment',     label: '5. Politique de Paiement' },
+  { id: 'safety',      label: '6. Sécurité et Assurance' },
+  { id: 'termination', label: '7. Résiliation' },
+]
+
+/* ─── Component ─── */
+export default function TiiBnTickPage() {
+  const [days, setDays] = useState<DaySlot[]>(DAYS_INITIAL)
+  const [pricePerKm, setPricePerKm] = useState('250')
+  const [pricePerM3, setPricePerM3] = useState('1500')
+  const [overtimeEnabled, setOvertimeEnabled] = useState(true)
+  const [overtimeRate, setOvertimeRate] = useState('50')
+  const [weightMin, setWeightMin] = useState('0')
+  const [weightMax, setWeightMax] = useState('50')
+  const [parcels, setParcels] = useState<ParcelType[]>([
+    { id: 'standard',     label: 'Standard',     icon: <Archive className="w-7 h-7" />,     checked: true },
+    { id: 'electronique', label: 'Électronique', icon: <Smartphone className="w-7 h-7" />,  checked: true },
+    { id: 'fragile',      label: 'Fragile',      icon: <Wine className="w-7 h-7" />,        checked: false },
+    { id: 'documents',    label: 'Documents',    icon: <FileText className="w-7 h-7" />,     checked: true },
+  ])
+  const [activeSection, setActiveSection] = useState('settings')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  /* Scroll spy */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSection(entry.target.id)
+        }
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    )
+    document.querySelectorAll('.tt-section').forEach((s) => observer.observe(s))
+    return () => observer.disconnect()
+  }, [])
+
+  const toggleDay = useCallback((idx: number) =>
+    setDays((p) => p.map((d, i) => (i === idx ? { ...d, enabled: !d.enabled } : d))), [])
+  const updateDayTime = useCallback((idx: number, field: 'start' | 'end', v: string) =>
+    setDays((p) => p.map((d, i) => (i === idx ? { ...d, [field]: v } : d))), [])
+  const toggleParcel = useCallback((id: string) =>
+    setParcels((p) => p.map((x) => (x.id === id ? { ...x, checked: !x.checked } : x))), [])
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    setMobileMenuOpen(false)
+  }, [])
+
+  /* ─── Section Icon Wrapper ─── */
+  function SectionIcon({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
+    return (
+      <div className="w-12 h-12 flex items-center justify-center shrink-0"
+        style={{ backgroundColor: bg, borderRadius: 'var(--tt-radius-full)', color }}>
+        {children}
+      </div>
+    )
+  }
+
+  /* ═══════════════════════════════════════════
+     RENDER
+     ═══════════════════════════════════════════ */
+  return (
+    <div className="tiibtick min-h-screen flex flex-col"
+      style={{ backgroundColor: 'var(--tt-bg)', color: 'var(--tt-on-background)' }}>
+
+      {/* ══════════ TopNavBar ══════════ */}
+      <nav className="fixed top-0 w-full z-50 tt-glass-nav"
+        style={{ borderBottom: '1px solid var(--tt-border-subtle)' }}>
+        <div className="flex justify-between items-center mx-auto h-20"
+          style={{ maxWidth: 'var(--tt-container)', padding: '0 var(--tt-margin-d)' }}>
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <span className="tt-headline-md tracking-tight" style={{ color: 'var(--tt-primary)' }}>TiiBnTick</span>
+            <span className="text-white px-2 py-0.5 uppercase tracking-widest"
+              style={{ backgroundColor: 'var(--tt-primary)', fontSize: '10px', fontWeight: 700, borderRadius: 'var(--tt-radius)' }}>
+              Freelancer
+            </span>
+          </div>
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center" style={{ gap: 'var(--tt-gutter)' }}>
+            {['Go', 'Freelancer', 'Solutions', 'Resources'].map((link, i) => (
+              <a key={link} href="#" className="tt-body-md transition-colors duration-200"
+                style={i === 1
+                  ? { color: 'var(--tt-primary)', fontWeight: 700, borderBottom: '2px solid var(--tt-primary)', paddingBottom: 4 }
+                  : { color: 'var(--tt-on-surface)', fontWeight: 500 }
+                }
+                onMouseEnter={(e) => { if (i !== 1) e.currentTarget.style.color = 'var(--tt-primary)' }}
+                onMouseLeave={(e) => { if (i !== 1) e.currentTarget.style.color = 'var(--tt-on-surface)' }}>
+                {link}
+              </a>
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="text-white px-6 py-2.5 tt-label-bold active:scale-95 transition-transform"
+              style={{ backgroundColor: 'var(--tt-primary)', borderRadius: 'var(--tt-radius-lg)' }}>
+              Connect
+            </button>
+            <button
+              className="md:hidden flex items-center justify-center w-11 h-11 border active:scale-95 transition-transform"
+              style={{ borderColor: 'var(--tt-border-subtle)', color: 'var(--tt-on-surface)', borderRadius: 'var(--tt-radius-lg)' }}
+              aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div style={{ borderTop: '1px solid var(--tt-border-subtle)', backgroundColor: 'var(--tt-surface-container-lowest)' }}>
+            <div className="flex flex-col p-4 gap-1">
+              {['Go', 'Freelancer', 'Solutions', 'Resources'].map((link) => (
+                <a key={link} href="#"
+                  className="px-4 py-3 tt-body-md"
+                  style={{ borderRadius: 'var(--tt-radius-lg)', color: link === 'Freelancer' ? 'var(--tt-primary)' : 'var(--tt-on-surface)', fontWeight: link === 'Freelancer' ? 700 : 500 }}>
+                  {link}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {/* ══════════ Hero Section ══════════ */}
+      <header className="pt-32 pb-16 overflow-hidden relative"
+        style={{ backgroundColor: 'var(--tt-surface-container-low)' }}>
+        <div className="relative z-10" style={{ maxWidth: 'var(--tt-container)', margin: '0 auto', padding: '0 var(--tt-margin-d)' }}>
+          <div style={{ maxWidth: '42rem' }}>
+            <h1 className="tt-headline-xl" style={{ color: 'var(--tt-on-surface)', marginBottom: '24px' }}>
+              Gestion du Profil et Politiques Freelancer
+            </h1>
+            <p className="tt-body-lg" style={{ color: 'var(--tt-on-surface-variant)' }}>
+              Pilotez votre activité, configurez vos tarifs et consultez nos engagements pour une collaboration transparente et sécurisée.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {/* ══════════ Main Layout ══════════ */}
+      <main className="flex-1 flex flex-col md:flex-row py-16 mx-auto"
+        style={{ maxWidth: 'var(--tt-container)', padding: '64px var(--tt-margin-d)', gap: 'var(--tt-gutter)' }}>
+
+        {/* ── Sticky Sidebar (desktop) ── */}
+        <aside className="hidden md:block md:w-1/4 h-fit md:sticky md:top-28">
+          <nav className="flex flex-col gap-1"
+            style={{ borderLeft: '1px solid var(--tt-border-subtle)' }}>
+            {SIDEBAR_SECTIONS.map((s) => (
+              <a key={s.id}
+                className={`tt-sidebar-link px-4 py-3 cursor-pointer ${activeSection === s.id ? 'active' : ''}`}
+                style={activeSection !== s.id ? { color: 'var(--tt-on-surface-variant)' } : undefined}
+                onClick={() => scrollTo(s.id)}>
+                {s.label}
+              </a>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Mobile dropdown */}
+        <div className="md:hidden mb-4">
+          <div className="relative">
+            <select className="w-full p-3 appearance-none tt-label-bold pr-10"
+              style={{ borderRadius: 'var(--tt-radius-lg)', borderColor: 'var(--tt-border-subtle)', backgroundColor: 'var(--tt-surface-container-lowest)', color: 'var(--tt-on-surface)' }}
+              value={activeSection} onChange={(e) => scrollTo(e.target.value)}>
+              {SIDEBAR_SECTIONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+            </select>
+            <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ color: 'var(--tt-on-surface-variant)' }} />
+          </div>
+        </div>
+
+        {/* ── Content ── */}
+        <div className="md:w-3/4 space-y-12">
+
+          {/* ═══ 1. PARAMÈTRES DE PROFIL ═══ */}
+          <section id="settings" className="tt-section scroll-mt-32">
+            <div className="p-6 md:p-8 tt-content-card" style={{ backgroundColor: 'var(--tt-surface-container-lowest)', borderRadius: 'var(--tt-radius-xl)' }}>
+              <div className="flex items-center gap-4 mb-8">
+                <SectionIcon bg="var(--tt-primary-fixed)" color="var(--tt-primary)">
+                  <Settings className="w-6 h-6" />
+                </SectionIcon>
+                <h2 className="tt-headline-lg" style={{ color: 'var(--tt-on-surface)' }}>Paramètres de Profil Freelancer</h2>
+              </div>
+
+              <div className="space-y-10">
+                {/* ── Disponibilités ── */}
+                <div>
+                  <h3 className="tt-headline-md mb-6 flex items-center gap-2" style={{ color: 'var(--tt-on-surface)' }}>
+                    <Calendar className="w-5 h-5" style={{ color: 'var(--tt-primary)' }} />
+                    Disponibilités Hebdomadaires
+                  </h3>
+                  <div className="space-y-3">
+                    {days.map((day, idx) => (
+                      <div key={day.day}
+                        className="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 border transition-colors"
+                        style={{ borderColor: 'var(--tt-border-subtle)', borderRadius: 'var(--tt-radius-lg)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--tt-surface-container)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" checked={day.enabled} onChange={() => toggleDay(idx)}
+                            className="rounded" />
+                          <span className="tt-label-bold">{day.day}</span>
+                        </label>
+                        <div className="flex flex-col gap-1">
+                          <label className="uppercase tracking-wider" style={{ fontSize: '10px', fontWeight: 700, color: 'var(--tt-on-surface-variant)' }}>Début</label>
+                          <input type="time" value={day.start} onChange={(e) => updateDayTime(idx, 'start', e.target.value)} disabled={!day.enabled}
+                            className="p-2 text-sm border disabled:opacity-40"
+                            style={{ borderRadius: 'var(--tt-radius)', borderColor: 'var(--tt-border-subtle)' }} />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="uppercase tracking-wider" style={{ fontSize: '10px', fontWeight: 700, color: 'var(--tt-on-surface-variant)' }}>Fin</label>
+                          <input type="time" value={day.end} onChange={(e) => updateDayTime(idx, 'end', e.target.value)} disabled={!day.enabled}
+                            className="p-2 text-sm border disabled:opacity-40"
+                            style={{ borderRadius: 'var(--tt-radius)', borderColor: 'var(--tt-border-subtle)' }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Tarification ── */}
+                <div className="pt-6" style={{ borderTop: '1px solid var(--tt-border-subtle)' }}>
+                  <h3 className="tt-headline-md mb-4 flex items-center gap-2" style={{ color: 'var(--tt-on-surface)' }}>
+                    <Tag className="w-5 h-5" style={{ color: 'var(--tt-primary)' }} />
+                    Tarification du Service
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {[
+                      { label: 'Prix par kilomètre (XAF)', value: pricePerKm, set: setPricePerKm, unit: '/km' },
+                      { label: 'Prix par mètre cube (XAF)', value: pricePerM3, set: setPricePerM3, unit: '/m³' },
+                    ].map((f) => (
+                      <div key={f.label} className="flex flex-col gap-1.5">
+                        <label className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>{f.label}</label>
+                        <div className="relative">
+                          <input type="number" value={f.value} onChange={(e) => f.set(e.target.value)}
+                            className="w-full p-3 pr-12 border"
+                            style={{ borderRadius: 'var(--tt-radius-lg)', borderColor: 'var(--tt-border-subtle)' }} />
+                          <span className="absolute right-4 top-1/2 -translate-y-1/2 tt-label-sm" style={{ color: 'var(--tt-on-surface-variant)' }}>{f.unit}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Overtime toggle */}
+                  <div className="mt-8 p-4" style={{ backgroundColor: 'var(--tt-surface-container)', borderRadius: 'var(--tt-radius-xl)' }}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex flex-col">
+                        <span className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>Surfacturation par minute d&apos;attente</span>
+                        <span className="tt-label-sm" style={{ color: 'var(--tt-on-surface-variant)' }}>Activez les frais pour temps d&apos;attente au ramassage/livraison</span>
+                      </div>
+                      <Switch checked={overtimeEnabled} onCheckedChange={setOvertimeEnabled} />
+                    </div>
+                    {overtimeEnabled && (
+                      <div className="flex flex-col gap-1.5">
+                        <label className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>Tarif d&apos;attente (XAF/min)</label>
+                        <input type="number" value={overtimeRate} onChange={(e) => setOvertimeRate(e.target.value)}
+                          className="p-3 border bg-white"
+                          style={{ borderRadius: 'var(--tt-radius-lg)', borderColor: 'var(--tt-border-subtle)' }} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* ── Colis Acceptés ── */}
+                <div className="pt-6" style={{ borderTop: '1px solid var(--tt-border-subtle)' }}>
+                  <h3 className="tt-headline-md mb-4 flex items-center gap-2" style={{ color: 'var(--tt-on-surface)' }}>
+                    <Package className="w-5 h-5" style={{ color: 'var(--tt-primary)' }} />
+                    Colis Acceptés
+                  </h3>
+                  <div className="mb-6">
+                    <label className="tt-label-bold block mb-2" style={{ color: 'var(--tt-on-surface)' }}>Plage de poids (kg)</label>
+                    <div className="flex items-center gap-4">
+                      <input type="number" value={weightMin} onChange={(e) => setWeightMin(e.target.value)} placeholder="Min"
+                        className="w-full p-3 border" style={{ borderRadius: 'var(--tt-radius-lg)', borderColor: 'var(--tt-border-subtle)' }} />
+                      <span style={{ color: 'var(--tt-on-surface-variant)' }}>à</span>
+                      <input type="number" value={weightMax} onChange={(e) => setWeightMax(e.target.value)} placeholder="Max"
+                        className="w-full p-3 border" style={{ borderRadius: 'var(--tt-radius-lg)', borderColor: 'var(--tt-border-subtle)' }} />
+                    </div>
+                  </div>
+                  <p className="tt-label-bold mb-3" style={{ color: 'var(--tt-on-surface)' }}>Styles de colis acceptés</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {parcels.map((p) => (
+                      <label key={p.id} className="tt-parcel-card group flex flex-col items-center p-4 cursor-pointer"
+                        style={{
+                          borderRadius: 'var(--tt-radius-xl)',
+                          border: `1px solid ${p.checked ? 'var(--tt-primary)' : 'var(--tt-border-subtle)'}`,
+                          backgroundColor: p.checked ? 'var(--tt-primary-fixed)' : 'transparent',
+                        }}>
+                        <input type="checkbox" checked={p.checked} onChange={() => toggleParcel(p.id)} className="hidden" />
+                        <span className="mb-2 transition-transform group-hover:scale-110" style={{ color: 'var(--tt-primary)' }}>{p.icon}</span>
+                        <span className="tt-label-sm font-bold">{p.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Save */}
+                <div className="flex justify-end pt-4">
+                  <button className="text-white px-8 py-3 tt-label-bold shadow-lg active:scale-95 transition-all"
+                    style={{
+                      backgroundColor: 'var(--tt-primary)',
+                      borderRadius: 'var(--tt-radius-lg)',
+                      boxShadow: '0 10px 15px -3px rgba(163,57,0,0.2)',
+                    }}>
+                    Enregistrer les modifications
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══ 2. ENGAGEMENT LOGISTIQUE ═══ */}
+          <section id="intro" className="tt-section scroll-mt-32">
+            <div className="p-6 md:p-8 tt-content-card" style={{ backgroundColor: 'var(--tt-surface-container-lowest)', borderRadius: 'var(--tt-radius-xl)' }}>
+              <div className="flex items-center gap-4 mb-6">
+                <SectionIcon bg="var(--tt-primary-fixed)" color="var(--tt-primary)">
+                  <ShieldCheck className="w-6 h-6" />
+                </SectionIcon>
+                <h2 className="tt-headline-lg" style={{ color: 'var(--tt-on-surface)' }}>Engagement pour une logistique professionnelle</h2>
+              </div>
+              <div className="space-y-4 tt-body-md leading-relaxed" style={{ color: 'var(--tt-on-surface-variant)' }}>
+                <p>Chez TiiBnTick Freelancer, nous redéfinissons la logistique du dernier kilomètre par l&apos;excellence et la confiance. Notre plateforme n&apos;est pas seulement un outil de mise en relation, c&apos;est un écosystème où chaque livraison compte.</p>
+                <p>Nous nous engageons à fournir une infrastructure robuste permettant aux courtiers de travailler en toute autonomie tout en garantissant un niveau de service premium pour nos clients expéditeurs.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══ 3. CONDITIONS D'ÉLIGIBILITÉ ═══ */}
+          <section id="eligibility" className="tt-section scroll-mt-32">
+            <div className="p-6 md:p-8 tt-content-card" style={{ backgroundColor: 'var(--tt-surface-container-lowest)', borderRadius: 'var(--tt-radius-xl)' }}>
+              <div className="flex items-center gap-4 mb-6">
+                <SectionIcon bg="var(--tt-secondary-fixed)" color="var(--tt-secondary)">
+                  <Award className="w-6 h-6" />
+                </SectionIcon>
+                <h2 className="tt-headline-lg" style={{ color: 'var(--tt-on-surface)' }}>Conditions d&apos;Éligibilité</h2>
+              </div>
+              <p className="tt-body-md mb-6" style={{ color: 'var(--tt-on-surface-variant)' }}>
+                Pour rejoindre le réseau TiiBnTick en tant que Freelancer, vous devez satisfaire aux critères suivants :
+              </p>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { title: 'Profil Vérifié',      desc: 'Validation biométrique et vérification de l\'identité en temps réel.' },
+                  { title: 'Documents Requis',     desc: 'Carte Nationale d\'Identité (CNI) ou Passeport en cours de validité.' },
+                  { title: 'Permis de Conduire',   desc: 'Obligatoire pour les véhicules motorisés (moto, auto, utilitaire).' },
+                  { title: 'Statut Indépendant',   desc: 'Numéro d\'immatriculation d\'entreprise ou statut auto-entrepreneur.' },
+                ].map((item) => (
+                  <li key={item.title} className="flex items-start gap-3 p-4"
+                    style={{ backgroundColor: 'var(--tt-surface-container)', borderRadius: 'var(--tt-radius-lg)' }}>
+                    <CheckCircle className="w-5 h-5 mt-0.5 shrink-0" style={{ color: 'var(--tt-success-green)' }} />
+                    <div>
+                      <p className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>{item.title}</p>
+                      <p className="tt-label-sm mt-0.5" style={{ color: 'var(--tt-on-surface-variant)' }}>{item.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/* ═══ Image Break ═══ */}
+          <div className="h-64 overflow-hidden shadow-inner relative group"
+            style={{ borderRadius: 'var(--tt-radius-xl)' }}>
+            <div className="w-full h-full bg-cover bg-center transform group-hover:scale-105 transition-transform duration-700"
+              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjymlqklLr7InD9hs_A3r9aV_avn4HV8NFvWCyP4ZGBV-PiZPR8LcJ7UQlx5Hbz0xFGeddrOnbRxt8XZXDzJEkZhVsjasIwgkiGI7pJPxvJyOoK9rISrh0GKYz34XqWPgJUACZcHvugdL9ZKPp5xtydyYQR4y_K2REJy9D2voyhKGa6-d7eOQJKSXMCMW0436QCZHr-DxRT78h8hHprTUHkirG2AyCQyNXa3HigkBN2is0_gYEW4qp')" }}
+              role="img" aria-label="Livreur professionnel TiiBnTick" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+              <p className="text-white tt-headline-md italic">&ldquo;Rapidité. Précision. Professionnalisme.&rdquo;</p>
+            </div>
+          </div>
+
+          {/* ═══ 4. RÈGLES DE CONDUITE ═══ */}
+          <section id="conduct" className="tt-section scroll-mt-32">
+            <div className="p-6 md:p-8 tt-content-card" style={{ backgroundColor: 'var(--tt-surface-container-lowest)', borderRadius: 'var(--tt-radius-xl)' }}>
+              <div className="flex items-center gap-4 mb-6">
+                <SectionIcon bg="var(--tt-tertiary-fixed)" color="var(--tt-tertiary)">
+                  <Handshake className="w-6 h-6" />
+                </SectionIcon>
+                <h2 className="tt-headline-lg" style={{ color: 'var(--tt-on-surface)' }}>Règles de Conduite</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { icon: <Clock className="w-6 h-6" />,  title: 'Ponctualité',            desc: 'Respect strict des créneaux de ramassage et de livraison pour maintenir la fluidité du réseau.' },
+                  { icon: <Smile className="w-6 h-6" />,   title: 'Courtoisie',             desc: 'Représenter TiiBnTick avec respect auprès des clients. Une communication claire est essentielle.' },
+                  { icon: <Box className="w-6 h-6" />,     title: 'Manipulation Sécurisée',  desc: 'Garantir l\'intégrité physique de chaque colis confié, du point A au point B.' },
+                ].map((item) => (
+                  <div key={item.title} className="space-y-3">
+                    <span style={{ color: 'var(--tt-primary)' }}>{item.icon}</span>
+                    <h3 className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>{item.title}</h3>
+                    <p className="tt-body-md" style={{ color: 'var(--tt-on-surface-variant)' }}>{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ═══ 5. POLITIQUE DE PAIEMENT ═══ */}
+          <section id="payment" className="tt-section scroll-mt-32">
+            <div className="p-6 md:p-8 text-white" style={{ backgroundColor: 'var(--tt-on-background)', borderRadius: 'var(--tt-radius-xl)' }}>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: 'var(--tt-primary)', borderRadius: 'var(--tt-radius-full)' }}>
+                  <CreditCard className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="tt-headline-lg">Politique de Paiement Garanti</h2>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="p-4 border border-white/20" style={{ borderRadius: 'var(--tt-radius-lg)' }}>
+                    <p className="tt-label-bold mb-2">Commissions Transparentes</p>
+                    <p className="tt-body-md text-white/80">TiiBnTick prélève une commission fixe sur chaque course, couvrant les frais de service et l&apos;assurance.</p>
+                  </div>
+                  <div className="p-4 border border-white/20" style={{ borderRadius: 'var(--tt-radius-lg)' }}>
+                    <p className="tt-label-bold mb-2">Délais de Versement</p>
+                    <p className="tt-body-md text-white/80">Choisissez votre rythme : versements journaliers pour une liquidité immédiate ou hebdomadaires pour une gestion simplifiée.</p>
+                  </div>
+                </div>
+                <div className="p-6 border" style={{ backgroundColor: 'rgba(163,57,0,0.2)', borderColor: 'rgba(163,57,0,0.4)', borderRadius: 'var(--tt-radius-lg)' }}>
+                  <h3 className="tt-headline-md mb-4 flex items-center gap-2">
+                    <Lock className="w-5 h-5" /> Paiement Garanti
+                  </h3>
+                  <p className="tt-body-md text-white/90 mb-4">
+                    Pour protéger les deux parties, les fonds sont bloqués par la plateforme dès l&apos;acceptation de la mission.
+                  </p>
+                  <p className="tt-label-sm text-white/70">
+                    Le virement est débloqué vers votre compte TiiBnTick dès la validation finale par le destinataire ou via le QR Code de sécurité.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══ 6. SÉCURITÉ & ASSURANCE ═══ */}
+          <section id="safety" className="tt-section scroll-mt-32">
+            <div className="p-6 md:p-8 tt-content-card" style={{ backgroundColor: 'var(--tt-surface-container-lowest)', borderRadius: 'var(--tt-radius-xl)' }}>
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="md:w-1/2 space-y-6">
+                  <div className="flex items-center gap-4">
+                    <SectionIcon bg="var(--tt-tertiary-fixed)" color="var(--tt-tertiary)">
+                      <Shield className="w-6 h-6" />
+                    </SectionIcon>
+                    <h2 className="tt-headline-lg" style={{ color: 'var(--tt-on-surface)' }}>Sécurité &amp; Assurance</h2>
+                  </div>
+                  <p className="tt-body-md" style={{ color: 'var(--tt-on-surface-variant)' }}>
+                    Votre sécurité et celle des biens transportés sont nos priorités absolues. Chaque mission effectuée sur TiiBnTick est couverte par notre programme de protection.
+                  </p>
+                  <div className="space-y-4">
+                    <div className="flex gap-4">
+                      <QrCode className="w-5 h-5 mt-0.5 shrink-0" style={{ color: 'var(--tt-primary)' }} />
+                      <div>
+                        <p className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>Validation par QR Code</p>
+                        <p className="tt-body-md" style={{ color: 'var(--tt-on-surface-variant)' }}>Preuve de livraison infalsifiable. Le paiement n&apos;est débloqué qu&apos;après le scan.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <Shield className="w-5 h-5 mt-0.5 shrink-0" style={{ color: 'var(--tt-primary)' }} />
+                      <div>
+                        <p className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>Couverture Incident</p>
+                        <p className="tt-body-md" style={{ color: 'var(--tt-on-surface-variant)' }}>Assurance responsabilité civile incluse pour tout incident survenant durant la course.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="md:w-1/2 overflow-hidden" style={{ borderRadius: 'var(--tt-radius-xl)' }}>
+                  <div className="w-full h-full min-h-[300px] bg-cover bg-center"
+                    style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4nx57HrgbrH8PNW5nWclmjzSNJatZjzTnuWXpV390LDuR-bzzxGzqQUhQorWRAW3lK7zoEj8411zRw7pF1g6naieQD1mdgDvDUpzQSr9gPmixoXCdKQ-sl8ip4K4h_nzjVb6zXUIsFjyW_L0fodJ5GuIXQmiy1v-i39TBtzhmDtAWJEEKVoUjJ_2_a5b-HMMT4XPMyhr9nSdAtVfwLgDqItCKbMamI0Kr50VZAEClVP3m9WtWIu53')" }}
+                    role="img" aria-label="Téléphone avec QR code" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══ 7. RÉSILIATION ═══ */}
+          <section id="termination" className="tt-section scroll-mt-32">
+            <div className="p-6 md:p-8 border"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--tt-error-container) 30%, transparent)',
+                borderColor: 'color-mix(in srgb, var(--tt-error) 20%, transparent)',
+                borderRadius: 'var(--tt-radius-xl)',
+              }}>
+              <div className="flex items-center gap-4 mb-6">
+                <SectionIcon bg="var(--tt-error-container)" color="var(--tt-error)">
+                  <AlertTriangle className="w-6 h-6" />
+                </SectionIcon>
+                <h2 className="tt-headline-lg" style={{ color: 'var(--tt-error)' }}>Résiliation et Suspension</h2>
+              </div>
+              <div className="tt-body-md space-y-4" style={{ color: 'var(--tt-on-surface-variant)' }}>
+                <p>Le non-respect répété ou grave de nos politiques peut entraîner une suspension temporaire ou définitive du compte Freelancer :</p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Annulations de missions abusives et répétées (plus de 3 en 30 jours).</li>
+                  <li>Comportement inapproprié ou non-professionnel envers les clients.</li>
+                  <li>Fraude sur les documents ou utilisation de comptes tiers.</li>
+                  <li>Manquement aux règles de sécurité routière ou manipulation dangereuse des colis.</li>
+                </ul>
+                <p className="pt-4 tt-label-bold italic" style={{ color: 'var(--tt-on-surface)' }}>
+                  TiiBnTick se réserve le droit de geler les avoirs en cours en cas d&apos;enquête pour fraude avérée.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {/* ══════════ Footer ══════════ */}
+      <footer className="mt-auto" style={{ backgroundColor: 'var(--tt-surface-container-lowest)', borderTop: '1px solid var(--tt-border-subtle)' }}>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6"
+          style={{ maxWidth: 'var(--tt-container)', margin: '0 auto', padding: '48px var(--tt-margin-d)' }}>
+          <div className="space-y-4">
+            <span className="tt-label-bold" style={{ color: 'var(--tt-on-surface)' }}>TiiBnTick</span>
+            <p className="tt-label-sm" style={{ color: 'var(--tt-on-surface-variant)' }}>L&apos;excellence logistique à portée de clic.</p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="tt-label-bold" style={{ color: 'var(--tt-primary)' }}>Plateforme</p>
+            <a className="tt-label-sm cursor-pointer" style={{ color: 'var(--tt-on-surface-variant)' }}>Trouver des courses</a>
+            <a className="tt-label-sm cursor-pointer" style={{ color: 'var(--tt-on-surface-variant)' }}>Mes livraisons</a>
+            <a className="tt-label-sm cursor-pointer" style={{ color: 'var(--tt-on-surface-variant)' }}>Profil</a>
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="tt-label-bold" style={{ color: 'var(--tt-primary)' }}>Legal</p>
+            <a className="tt-label-sm font-bold cursor-pointer" style={{ color: 'var(--tt-primary)' }}>Privacy Policy</a>
+            <a className="tt-label-sm cursor-pointer" style={{ color: 'var(--tt-on-surface-variant)' }}>Terms of Service</a>
+            <a className="tt-label-sm cursor-pointer" style={{ color: 'var(--tt-on-surface-variant)' }}>Carrier Terms</a>
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="tt-label-bold" style={{ color: 'var(--tt-primary)' }}>Support</p>
+            <a className="tt-label-sm cursor-pointer" style={{ color: 'var(--tt-on-surface-variant)' }}>Contact Us</a>
+            <a className="tt-label-sm cursor-pointer" style={{ color: 'var(--tt-on-surface-variant)' }}>FAQ Freelancer</a>
+          </div>
+        </div>
+        <div className="text-center" style={{ maxWidth: 'var(--tt-container)', margin: '0 auto', padding: '24px var(--tt-margin-d)', borderTop: '1px solid color-mix(in srgb, var(--tt-border-subtle) 30%, transparent)' }}>
+          <p className="tt-label-sm opacity-60" style={{ color: 'var(--tt-on-surface-variant)' }}>
+            © {new Date().getFullYear()} TiiBnTick Logistics. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
+  )
+}

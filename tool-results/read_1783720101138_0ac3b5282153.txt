@@ -1,0 +1,1142 @@
+     1→'use client'
+     2→
+     3→import { useState } from 'react'
+     4→import { Button } from '@/components/ui/button'
+     5→import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+     6→import { Badge } from '@/components/ui/badge'
+     7→import { Input } from '@/components/ui/input'
+     8→import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+     9→import { Label } from '@/components/ui/label'
+    10→import { useRouter } from 'next/navigation'
+    11→import dynamic from 'next/dynamic'
+    12→import {
+    13→  AlertDialog,
+    14→  AlertDialogAction,
+    15→  AlertDialogCancel,
+    16→  AlertDialogContent,
+    17→  AlertDialogDescription,
+    18→  AlertDialogFooter,
+    19→  AlertDialogHeader,
+    20→  AlertDialogTitle,
+    21→} from "@/components/ui/alert-dialog"
+    22→
+    23→const MapLeaflet = dynamic(() => import('@/components/MapLeaflet'), {
+    24→  ssr: false,
+    25→  loading: () => <div className="w-full h-64 bg-gray-100 animate-pulse rounded-xl" />
+    26→});
+    27→import {
+    28→  MapPin,
+    29→  Clock,
+    30→  CheckCircle2,
+    31→  ArrowRight,
+    32→  Star,
+    33→  Menu,
+    34→  X,
+    35→  Package,
+    36→  Megaphone,
+    37→  Truck,
+    38→  Bell,
+    39→  Home,
+    40→  MessageSquare,
+    41→  User,
+    42→  Calendar,
+    43→  MapPin as MapPinIcon,
+    44→  LogOut,
+    45→  DollarSign,
+    46→  MapIcon,
+    47→  Plus
+    48→} from 'lucide-react'
+    49→import { withAuth } from '@/components/hoc/withAuth'
+    50→import { useAuth } from '@/context/AuthContext'
+    51→import { useEffect, useCallback } from 'react'
+    52→import {
+    53→  getAnnouncementByClientId,
+    54→  deleteAnnouncement,
+    55→  publishAnnouncement,
+    56→  updateAnnouncement,
+    57→  getSubscriptions,
+    58→  assignDeliveryPerson,
+    59→  AnnouncementResponseDTO,
+    60→  SubscriptionResponseDTO
+    61→} from '@/services/announcementService'
+    62→import { toast } from 'sonner'
+    63→import { Loader2 } from 'lucide-react'
+    64→import { getRoute } from '@/services/routing'
+    65→
+    66→export function ClientLanding() {
+    67→  const router = useRouter()
+    68→  const { user, logout } = useAuth()
+    69→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    70→  const [trackingNumber, setTrackingNumber] = useState('')
+    71→  const [activeTab, setActiveTab] = useState('accueil')
+    72→  const [selectedAnnouncement, setSelectedAnnouncement] = useState<any>(null)
+    73→  const [detailsOpen, setDetailsOpen] = useState(false)
+    74→  const [isEditing, setIsEditing] = useState(false)
+    75→  const [loading, setLoading] = useState(false)
+    76→  const [myAnnouncements, setMyAnnouncements] = useState<AnnouncementResponseDTO[]>([])
+    77→  const [route, setRoute] = useState<any>(null)
+    78→
+    79→  // Réponses tab state
+    80→  const [responsesAnnouncements, setResponsesAnnouncements] = useState<AnnouncementResponseDTO[]>([])
+    81→  const [responsesLoading, setResponsesLoading] = useState(false)
+    82→  const [selectedResponseAnnouncement, setSelectedResponseAnnouncement] = useState<AnnouncementResponseDTO | null>(null)
+    83→  const [subscriptions, setSubscriptions] = useState<SubscriptionResponseDTO[]>([])
+    84→  const [subscriptionsLoading, setSubscriptionsLoading] = useState(false)
+    85→  const [subscriptionsDialogOpen, setSubscriptionsDialogOpen] = useState(false)
+    86→  const [assigningId, setAssigningId] = useState<string | null>(null)
+    87→
+    88→  const fetchAnnouncements = useCallback(async () => {
+    89→    if (!user?.clientId) return
+    90→    setLoading(true)
+    91→    try {
+    92→      const data = await getAnnouncementByClientId(user.clientId)
+    93→      setMyAnnouncements(data)
+    94→    } catch (error) {
+    95→      toast.error('Erreur lors du chargement de vos annonces')
+    96→    } finally {
+    97→      setLoading(false)
+    98→    }
+    99→  }, [user?.clientId])
+   100→
+   101→  useEffect(() => {
+   102→    if (activeTab === 'annonces') {
+   103→      fetchAnnouncements()
+   104→    }
+   105→    if (activeTab === 'reponses') {
+   106→      fetchResponsesAnnouncements()
+   107→    }
+   108→  }, [activeTab, fetchAnnouncements])
+   109→
+   110→  const fetchResponsesAnnouncements = async () => {
+   111→    if (!user?.clientId) return
+   112→    setResponsesLoading(true)
+   113→    try {
+   114→      const data = await getAnnouncementByClientId(user.clientId)
+   115→      setResponsesAnnouncements(data)
+   116→    } catch (error) {
+   117→      toast.error('Erreur lors du chargement des annonces')
+   118→    } finally {
+   119→      setResponsesLoading(false)
+   120→    }
+   121→  }
+   122→
+   123→  const handleViewSubscriptions = async (announcement: AnnouncementResponseDTO) => {
+   124→    setSelectedResponseAnnouncement(announcement)
+   125→    setSubscriptionsDialogOpen(true)
+   126→    setSubscriptionsLoading(true)
+   127→    try {
+   128→      const subs = await getSubscriptions(announcement.id)
+   129→      setSubscriptions(subs)
+   130→    } catch (error) {
+   131→      toast.error('Erreur lors du chargement des souscriptions')
+   132→      setSubscriptions([])
+   133→    } finally {
+   134→      setSubscriptionsLoading(false)
+   135→    }
+   136→  }
+   137→
+   138→  const handleAssignDeliveryPerson = async (deliveryPersonId: string) => {
+   139→    if (!selectedResponseAnnouncement) return
+   140→    setAssigningId(deliveryPersonId)
+   141→    try {
+   142→      const updated = await assignDeliveryPerson(selectedResponseAnnouncement.id, deliveryPersonId)
+   143→      setResponsesAnnouncements(prev =>
+   144→        prev.map(a => a.id === updated.id ? updated : a)
+   145→      )
+   146→      setMyAnnouncements(prev =>
+   147→        prev.map(a => a.id === updated.id ? updated : a)
+   148→      )
+   149→      setSelectedResponseAnnouncement(updated)
+   150→      setSubscriptionsDialogOpen(false)
+   151→      toast.success('Livreur assigné avec succès ! Un email de notification lui a été envoyé.')
+   152→    } catch (error) {
+   153→      toast.error("Erreur lors de l'assignation du livreur")
+   154→    } finally {
+   155→      setAssigningId(null)
+   156→    }
+   157→  }
+   158→
+   159→  useEffect(() => {
+   160→    const fetchRoute = async () => {
+   161→      if (
+   162→        selectedAnnouncement?.pickupAddress?.latitude &&
+   163→        selectedAnnouncement?.pickupAddress?.longitude &&
+   164→        selectedAnnouncement?.deliveryAddress?.latitude &&
+   165→        selectedAnnouncement?.deliveryAddress?.longitude
+   166→      ) {
+   167→        try {
+   168→          const routeData = await getRoute(
+   169→            selectedAnnouncement.pickupAddress.latitude,
+   170→            selectedAnnouncement.pickupAddress.longitude,
+   171→            selectedAnnouncement.deliveryAddress.latitude,
+   172→            selectedAnnouncement.deliveryAddress.longitude,
+   173→            selectedAnnouncement.transportMethod || 'driving'
+   174→          );
+   175→          setRoute(routeData);
+   176→        } catch (error) {
+   177→          console.error('Error fetching route:', error);
+   178→          setRoute(null);
+   179→        }
+   180→      } else {
+   181→        setRoute(null);
+   182→      }
+   183→    };
+   184→    fetchRoute();
+   185→  }, [selectedAnnouncement]);
+   186→
+   187→  // Fonction pour publier une annonce
+   188→  const handlePublishAnnouncement = async (id: string) => {
+   189→    try {
+   190→      await publishAnnouncement(id)
+   191→      toast.success('Annonce publiée avec succès')
+   192→      fetchAnnouncements()
+   193→    } catch (error) {
+   194→      toast.error('Erreur lors de la publication')
+   195→    }
+   196→  }
+   197→
+   198→  // State pour la boîte de dialogue de suppression
+   199→  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+   200→  const [announcementToDelete, setAnnouncementToDelete] = useState<string | null>(null)
+   201→
+   202→  // Fonction pour demander la suppression (ouvre la modale)
+   203→  const confirmDelete = (id: string) => {
+   204→    setAnnouncementToDelete(id)
+   205→    setDeleteDialogOpen(true)
+   206→  }
+   207→
+   208→  // Fonction pour exécuter la suppression après confirmation
+   209→  const executeDelete = async () => {
+   210→    if (!announcementToDelete) return
+   211→
+   212→    try {
+   213→      await deleteAnnouncement(announcementToDelete)
+   214→      toast.success('Annonce supprimée avec succès')
+   215→      setMyAnnouncements((prev) => prev.filter((ann) => ann.id !== announcementToDelete))
+   216→    } catch (error) {
+   217→      toast.error('Erreur lors de la suppression')
+   218→    } finally {
+   219→      setDeleteDialogOpen(false)
+   220→      setAnnouncementToDelete(null)
+   221→    }
+   222→  }
+   223→
+   224→  // Fonction pour mettre à jour une annonce
+   225→  const handleUpdateAnnouncement = async (updatedFields: any) => {
+   226→    if (!selectedAnnouncement) return;
+   227→    try {
+   228→      const payload = {
+   229→        clientId: selectedAnnouncement.clientId,
+   230→        title: selectedAnnouncement.title,
+   231→        description: selectedAnnouncement.description,
+   232→        recipientFirstName: selectedAnnouncement.recipientFirstName,
+   233→        recipientLastName: selectedAnnouncement.recipientLastName,
+   234→        recipientEmail: selectedAnnouncement.recipientEmail,
+   235→        recipientPhone: selectedAnnouncement.recipientPhone,
+   236→        shipperFirstName: selectedAnnouncement.shipperFirstName,
+   237→        shipperLastName: selectedAnnouncement.shipperLastName,
+   238→        shipperEmail: selectedAnnouncement.shipperEmail,
+   239→        shipperPhone: selectedAnnouncement.shipperPhone,
+   240→        amount: updatedFields.amount ?? selectedAnnouncement.amount,
+   241→        signatureUrl: selectedAnnouncement.signatureUrl,
+   242→        paymentMethod: selectedAnnouncement.paymentMethod,
+   243→        transportMethod: selectedAnnouncement.transportMethod,
+   244→        distance: selectedAnnouncement.distance,
+   245→        duration: selectedAnnouncement.duration,
+   246→        pickupAddress: selectedAnnouncement.pickupAddress,
+   247→        deliveryAddress: selectedAnnouncement.deliveryAddress,
+   248→        packet: {
+   249→          ...selectedAnnouncement.packet,
+   250→          ...updatedFields.packet,
+   251→        },
+   252→      };
+   253→      const updated = await updateAnnouncement(selectedAnnouncement.id, payload);
+   254→      setMyAnnouncements((prev) =>
+   255→        prev.map((ann) => (ann.id === updated.id ? updated : ann))
+   256→      );
+   257→      setSelectedAnnouncement(updated);
+   258→      setIsEditing(false);
+   259→      toast.success('Annonce mise à jour avec succès');
+   260→    } catch (error) {
+   261→      toast.error('Erreur lors de la mise à jour de l\'annonce');
+   262→    }
+   263→  };
+   264→
+   265→
+   266→
+   267→  // Client info from context
+   268→  const clientInfo = {
+   269→    firstName: user?.firstName || 'Client',
+   270→    lastName: user?.lastName || '',
+   271→    rating: user?.rating || 4.6,
+   272→    totalOrders: user?.totalDeliveries || 0
+   273→  }
+   274→
+   275→  const steps = [
+   276→    {
+   277→      number: '01',
+   278→      title: 'Publiez',
+   279→      description: 'Décrivez votre besoin et publiez votre annonce gratuite'
+   280→    },
+   281→    {
+   282→      number: '02',
+   283→      title: 'Choisissez',
+   284→      description: 'Comparez les profils, prix et avis des livreurs'
+   285→    },
+   286→    {
+   287→      number: '03',
+   288→      title: 'Livraison',
+   289→      description: 'Suivez en temps réel et recevez à votre porte'
+   290→    },
+   291→  ]
+   292→
+   293→  return (
+   294→    <div className="min-h-screen flex flex-col bg-white">
+   295→      {/* Header */}
+   296→      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+   297→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   298→          <div className="flex items-center justify-between h-16">
+   299→            {/* Logo */}
+   300→            <div className="flex items-center gap-2">
+   301→              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
+   302→                <Package className="w-6 h-6 text-white" />
+   303→              </div>
+   304→              <h1 className="text-xl font-bold text-gray-900">
+   305→                TiiB<span className="text-amber-500">n</span>Tick
+   306→              </h1>
+   307→            </div>
+   308→
+   309→            {/* Desktop Navigation */}
+   310→            <nav className="hidden md:flex items-center gap-1">
+   311→              <Button variant="ghost" className="text-gray-400 cursor-not-allowed opacity-50 font-medium" disabled>
+   312→                Tarifs
+   313→              </Button>
+   314→              <Button variant="ghost" className="text-gray-400 cursor-not-allowed opacity-50 font-medium" disabled>
+   315→                Comment ça marche
+   316→              </Button>
+   317→              <Button variant="ghost" size="icon" onClick={logout} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+   318→                <LogOut className="w-5 h-5" />
+   319→              </Button>
+   320→              <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium shadow-md">
+   321→                <MapPin className="w-4 h-4 mr-2" />
+   322→                Commander
+   323→              </Button>
+   324→            </nav>
+   325→
+   326→            {/* Mobile Menu */}
+   327→            <div className="md:hidden flex items-center gap-2">
+   328→              <Button
+   329→                variant="ghost"
+   330→                size="icon"
+   331→                className="text-gray-400 relative opacity-50 cursor-not-allowed"
+   332→                disabled
+   333→              >
+   334→                <Bell className="w-6 h-6" />
+   335→              </Button>
+   336→              <Button
+   337→                variant="outline"
+   338→                size="icon-lg"
+   339→                className="border-gray-200 text-gray-700 active:scale-95 transition-transform"
+   340→                aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+   341→                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+   342→              >
+   343→                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+   344→              </Button>
+   345→            </div>
+   346→          </div>
+   347→
+   348→          {/* Mobile Menu Dropdown */}
+   349→          {mobileMenuOpen && (
+   350→            <nav className="md:hidden border-t border-gray-100 bg-white py-4 space-y-2">
+   351→              <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors"
+   352→                onClick={() => router.push('/client/profil')}>
+   353→                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
+   354→                  <User className="w-4 h-4 text-white" />
+   355→                </div>
+   356→                <div>
+   357→                  <p className="text-sm font-semibold text-gray-900">{clientInfo.lastName} {clientInfo.firstName}</p>
+   358→                  <div className="flex items-center gap-1">
+   359→                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
+   360→                    <span className="text-xs text-gray-600">{clientInfo.rating}</span>
+   361→                  </div>
+   362→                </div>
+   363→              </div>
+   364→              <Button variant="ghost" className="w-full justify-start opacity-50 cursor-not-allowed" disabled>
+   365→                <MapPinIcon className="w-4 h-4 mr-2" />
+   366→                Mes adresses
+   367→              </Button>
+   368→              <Button variant="ghost" className="w-full justify-start opacity-50 cursor-not-allowed" disabled>
+   369→                <Calendar className="w-4 h-4 mr-2" />
+   370→                Historique des livraisons
+   371→              </Button>
+   372→              <Button variant="ghost" className="w-full justify-start text-red-600" onClick={logout}>
+   373→                <LogOut className="w-4 h-4 mr-2" />
+   374→                Déconnexion
+   375→              </Button>
+   376→            </nav>
+   377→          )}
+   378→        </div>
+   379→      </header>
+   380→
+   381→      {/* Main Content */}
+   382→      <main className="flex-1">
+   383→        {/* Announcements Section */}
+   384→        {activeTab === 'annonces' && (
+   385→          <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-white min-h-[60vh]">
+   386→            <div className="max-w-7xl mx-auto">
+   387→              {loading ? (
+   388→                <div className="flex flex-col items-center justify-center py-20">
+   389→                  <Loader2 className="w-10 h-10 text-orange-500 animate-spin mb-4" />
+   390→                  <p className="text-gray-500">Chargement de vos annonces...</p>
+   391→                </div>
+   392→              ) : myAnnouncements.length > 0 ? (
+   393→                <>
+   394→                  <div className="flex items-center justify-between mb-6">
+   395→                    <h2 className="text-2xl font-bold text-gray-900">Mes Annonces</h2>
+   396→                    <Button
+   397→                      className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
+   398→                      onClick={() => router.push('/expedition')}
+   399→                    >
+   400→                      <Plus className="w-5 h-5 mr-2" />
+   401→                      Ajouter une annonce
+   402→                    </Button>
+   403→                  </div>
+   404→                  <div className="grid lg:grid-cols-2 gap-4">
+   405→                    {myAnnouncements.map((announcement: AnnouncementResponseDTO) => (
+   406→                      <Card key={announcement.id} className="bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl">
+   407→                        <CardHeader className="pb-3">
+   408→                          <div className="flex items-start justify-between">
+   409→                            <div className="space-y-1">
+   410→                              <CardTitle className="text-xs break-all pr-2">{announcement.id}</CardTitle>
+   411→                            </div>
+   412→                            <Badge variant={announcement.status === 'ASSIGNED' ? 'default' : announcement.status === 'PUBLISHED' ? "default" : "secondary"}
+   413→                              className={announcement.status === 'ASSIGNED' ? "bg-green-100 text-green-700 border-green-300" : announcement.status === 'PUBLISHED' ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-300"}
+   414→                            >
+   415→                              {announcement.status === 'ASSIGNED' ? (
+   416→                                <><CheckCircle2 className="w-3 h-3 mr-1" /> Assignée</>
+   417→                              ) : announcement.status === 'PUBLISHED' ? "Publiée" : "Non publiée"}
+   418→                            </Badge>
+   419→                          </div>
+   420→                        </CardHeader>
+   421→                        <CardContent className="space-y-3">
+   422→                          <div className="flex items-start gap-2">
+   423→                            <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+   424→                            <div className="space-y-2 flex-1">
+   425→                              <div className="flex items-center gap-2">
+   426→                                <div className="w-2 h-2 bg-green-500 rounded-full" />
+   427→                                <p className="text-sm text-gray-700">
+   428→                                  <span className="font-medium">Retrait:</span> {announcement.pickupAddress?.street || announcement.pickupAddress?.description || announcement.pickupAddress?.district}, {announcement.pickupAddress?.city}
+   429→                                </p>
+   430→                              </div>
+   431→                              <div className="flex items-center gap-2">
+   432→                                <div className="w-2 h-2 bg-red-500 rounded-full" />
+   433→                                <p className="text-sm text-gray-700">
+   434→                                  <span className="font-medium">Livraison:</span> {announcement.deliveryAddress?.street || announcement.deliveryAddress?.description || announcement.deliveryAddress?.district}, {announcement.deliveryAddress?.city}
+   435→                                </p>
+   436→                              </div>
+   437→                            </div>
+   438→                          </div>
+   439→
+   440→                          <div className="flex items-center justify-between text-sm text-gray-600 pt-2 border-t">
+   441→                            <div className="flex items-center gap-2">
+   442→                              <MapIcon className="w-4 h-4" />
+   443→                              <span>{announcement.distance ?? '--'} km</span>
+   444→                            </div>
+   445→                            <div className="flex items-center gap-2">
+   446→                              <Clock className="w-4 h-4" />
+   447→                              <span>{announcement.duration ? Math.round(announcement.duration) : '--'} min</span>
+   448→                            </div>
+   449→                            <div className="flex items-center gap-1">
+   450→                              <DollarSign className="w-4 h-4 text-green-600" />
+   451→                              <span className="font-semibold text-green-600">{announcement.amount?.toLocaleString() || 0} FCFA</span>
+   452→                            </div>
+   453→                          </div>
+   454→
+   455→                          <div className="flex gap-2 pt-2">
+   456→                            <Button
+   457→                              size="sm"
+   458→                              variant="outline"
+   459→                              className="flex-1 border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+   460→                              onClick={() => { setSelectedAnnouncement(announcement); setDetailsOpen(true) }}
+   461→                            >
+   462→                              Voir Détails
+   463→                            </Button>
+   464→                            {announcement.status !== 'ASSIGNED' && (
+   465→                              <Button
+   466→                                size="sm"
+   467→                                variant="outline"
+   468→                                className="flex-1 border-red-500 text-red-600 hover:bg-red-50"
+   469→                                onClick={() => confirmDelete(announcement.id)}
+   470→                              >
+   471→                                Supprimer
+   472→                              </Button>
+   473→                            )}
+   474→                            {announcement.status !== 'PUBLISHED' && announcement.status !== 'ASSIGNED' && (
+   475→                              <Button
+   476→                                size="sm"
+   477→                                className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+   478→                                onClick={() => handlePublishAnnouncement(announcement.id)}
+   479→                              >
+   480→                                Publier
+   481→                              </Button>
+   482→                            )}
+   483→                          </div>
+   484→
+   485→                          {/* Show assigned delivery person info */}
+   486→                          {announcement.status === 'ASSIGNED' && announcement.assignedDeliveryPersonFirstName && (
+   487→                            <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+   488→                              <div className="flex items-center gap-2 mb-1">
+   489→                                <CheckCircle2 className="w-4 h-4 text-green-600" />
+   490→                                <span className="text-sm font-semibold text-green-700">Livreur assigné</span>
+   491→                              </div>
+   492→                              <p className="text-sm text-gray-700">
+   493→                                {announcement.assignedDeliveryPersonFirstName} {announcement.assignedDeliveryPersonLastName}
+   494→                              </p>
+   495→                              <p className="text-xs text-gray-500">{announcement.assignedDeliveryPersonPhone}</p>
+   496→                            </div>
+   497→                          )}
+   498→                        </CardContent>
+   499→                      </Card>
+   500→                    ))}
+   501→                  </div>
+   502→                </>
+   503→              ) : (
+   504→                <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+   505→                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+   506→                    <Package className="w-10 h-10 text-gray-400" />
+   507→                  </div>
+   508→                  <h3 className="text-xl font-bold text-gray-900 mb-2">Aucune annonce disponible</h3>
+   509→                  <p className="text-gray-500 text-center max-w-sm mb-8">
+   510→                    Vous n'avez pas encore publié d'annonce. Commencez dès maintenant pour trouver un livreur !
+   511→                  </p>
+   512→                  <Button
+   513→                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold h-12 px-8 shadow-lg shadow-orange-500/20"
+   514→                    onClick={() => router.push('/expedition')}
+   515→                  >
+   516→                    <Plus className="w-5 h-5 mr-2" />
+   517→                    Créer ma première annonce
+   518→                  </Button>
+   519→                </div>
+   520→              )}
+   521→
+   522→              <Dialog open={detailsOpen} onOpenChange={(o) => { setDetailsOpen(o); if (!o) { setSelectedAnnouncement(null); setIsEditing(false); } }}>
+   523→                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+   524→                  <DialogHeader className="border-b pb-4">
+   525→                    <div className="flex items-center justify-between">
+   526→                      <div className="flex items-center gap-3">
+   527→                        <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+   528→                          <Package className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+   529→                        </div>
+   530→                        <div>
+   531→                          <DialogTitle className="text-xl">Détails de l'annonce</DialogTitle>
+   532→                          <DialogDescription className="font-mono text-xs text-orange-600 break-all">{selectedAnnouncement?.id}</DialogDescription>
+   533→                        </div>
+   534→                      </div>
+   535→                      <div className="flex gap-2">
+   536→                        <Button
+   537→                          variant={isEditing ? "default" : "outline"}
+   538→                          size="sm"
+   539→                          onClick={() => {
+   540→                            if (isEditing) {
+   541→                              const designation = (document.getElementById('edit-designation') as HTMLInputElement)?.value;
+   542→                              const description = (document.getElementById('edit-description') as HTMLTextAreaElement)?.value;
+   543→                              const amountStr = (document.getElementById('edit-amount') as HTMLInputElement)?.value;
+   544→                              const amount = amountStr ? parseFloat(amountStr) : selectedAnnouncement.amount;
+   545→                              handleUpdateAnnouncement({
+   546→                                amount,
+   547→                                packet: {
+   548→                                  designation: designation || selectedAnnouncement.packet.designation,
+   549→                                  description: description || selectedAnnouncement.packet.description
+   550→                                }
+   551→                              });
+   552→                            } else {
+   553→                              setIsEditing(true);
+   554→                            }
+   555→                          }}
+   556→                          className={isEditing ? "bg-green-600 hover:bg-green-700 text-white" : "border-orange-500 text-orange-600 hover:bg-orange-50"}
+   557→                        >
+   558→                          {isEditing ? "Enregistrer" : "Modifier"}
+   559→                        </Button>
+   560→                      </div>
+   561→                    </div>
+   562→                  </DialogHeader>
+   563→
+   564→                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
+   565→                    {/* Colonne Gauche : Infos Trajet & Carte */}
+   566→                    <div className="space-y-6">
+   567→                      <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-4">
+   568→                        <div className="flex items-start gap-3">
+   569→                          <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
+   570→                          <div>
+   571→                            <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Point de Retrait (Expéditeur)</p>
+   572→                            <p className="font-semibold text-gray-900">
+   573→                              {selectedAnnouncement?.shipperFirstName} {selectedAnnouncement?.shipperLastName}
+   574→                            </p>
+   575→                            <p className="text-sm text-gray-600 font-medium">{selectedAnnouncement?.shipperPhone?.replace(/^\+237/, '') || 'N/A'}</p>
+   576→                            <p className="text-sm text-gray-500">
+   577→                              {selectedAnnouncement?.pickupAddress?.street || selectedAnnouncement?.pickupAddress?.description || selectedAnnouncement?.pickupAddress?.district}, {selectedAnnouncement?.pickupAddress?.city}
+   578→                            </p>
+   579→                          </div>
+   580→                        </div>
+   581→                        <div className="flex items-start gap-3">
+   582→                          <div className="w-2 h-2 bg-red-500 rounded-full mt-2" />
+   583→                          <div>
+   584→                            <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Point de Livraison (Destinataire)</p>
+   585→                            <p className="font-semibold text-gray-900">{selectedAnnouncement?.recipientLastName} {selectedAnnouncement?.recipientFirstName}</p>
+   586→                            <p className="text-sm text-gray-600 font-medium">{selectedAnnouncement?.recipientPhone?.replace(/^\+237/, '') || 'N/A'}</p>
+   587→                            <p className="text-sm text-gray-500">
+   588→                              {selectedAnnouncement?.deliveryAddress?.street || selectedAnnouncement?.deliveryAddress?.description || selectedAnnouncement?.deliveryAddress?.district}, {selectedAnnouncement?.deliveryAddress?.city}
+   589→                            </p>
+   590→                          </div>
+   591→                        </div>
+   592→                      </div>
+   593→
+   594→                      <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-64 relative z-0">
+   595→                        {selectedAnnouncement && selectedAnnouncement.pickupAddress?.latitude && selectedAnnouncement.pickupAddress?.longitude && selectedAnnouncement.deliveryAddress?.latitude && selectedAnnouncement.deliveryAddress?.longitude ? (
+   596→                          <MapLeaflet
+   597→                            center={[
+   598→                              (selectedAnnouncement.pickupAddress.latitude + selectedAnnouncement.deliveryAddress.latitude) / 2,
+   599→                              (selectedAnnouncement.pickupAddress.longitude + selectedAnnouncement.deliveryAddress.longitude) / 2
+   600→                            ]}
+   601→                            zoom={10}
+   602→                            markers={[
+   603→                              { position: [selectedAnnouncement.pickupAddress.latitude, selectedAnnouncement.pickupAddress.longitude], label: "Retrait", color: "#f97316" },
+   604→                              { position: [selectedAnnouncement.deliveryAddress.latitude, selectedAnnouncement.deliveryAddress.longitude], label: "Livraison", color: "#10b981" }
+   605→                            ]}
+   606→                            route={route}
+   607→                          />
+   608→                        ) : (
+   609→                          <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400 gap-2">
+   610→                            <MapIcon className="w-8 h-8 opacity-20" />
+   611→                            <p className="text-xs">Carte non disponible</p>
+   612→                          </div>
+   613→                        )}
+   614→                      </div>
+   615→
+   616→                      <div className="flex justify-between items-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-100">
+   617→                        <div className="flex items-center gap-2">
+   618→                          <MapIcon className="w-5 h-5 text-orange-600" />
+   619→                          <span className="font-bold text-gray-900">{selectedAnnouncement?.distance ?? '--'} km</span>
+   620→                        </div>
+   621→                        <div className="flex items-center gap-2">
+   622→                          <Clock className="w-5 h-5 text-orange-600" />
+   623→                          <span className="font-bold text-gray-900">{selectedAnnouncement?.duration ? Math.round(selectedAnnouncement.duration) : '--'} min</span>
+   624→                        </div>
+   625→                        {isEditing ? (
+   626→                          <div className="flex items-center gap-1">
+   627→                            <Input id="edit-amount" type="number" defaultValue={selectedAnnouncement?.amount} className="h-9 w-28 text-sm font-bold text-orange-600 border-orange-200 focus:border-orange-500" />
+   628→                            <span className="text-sm font-bold text-orange-600">FCFA</span>
+   629→                          </div>
+   630→                        ) : (
+   631→                          <div className="text-lg font-black text-orange-600">
+   632→                            {selectedAnnouncement?.amount?.toLocaleString() || 0} FCFA
+   633→                          </div>
+   634→                        )}
+   635→                      </div>
+   636→                    </div>
+   637→
+   638→                    {/* Colonne Droite : Infos Colis & Logistique */}
+   639→                    <div className="space-y-6">
+   640→                      <div>
+   641→                        <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-3 border-b pb-1">Détails du Colis</h4>
+   642→
+   643→                        {/* Photo du Colis */}
+   644→                        <div className="mb-6">
+   645→                          <div className="aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center relative group">
+   646→                            {selectedAnnouncement?.packet?.photoPacket ? (
+   647→                              <img
+   648→                                src={selectedAnnouncement.packet.photoPacket}
+   649→                                alt="Colis"
+   650→                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+   651→                              />
+   652→                            ) : (
+   653→                              <div className="flex flex-col items-center gap-2 text-gray-400">
+   654→                                <Package className="w-10 h-10 opacity-20" />
+   655→                                <p className="text-xs">Aucune photo disponible</p>
+   656→                              </div>
+   657→                            )}
+   658→                          </div>
+   659→                        </div>
+   660→
+   661→                        <div className="grid grid-cols-2 gap-y-4 gap-x-4">
+   662→                          <div>
+   663→                            <p className="text-xs text-gray-500 mb-1">Désignation</p>
+   664→                            {isEditing ? (
+   665→                              <Input id="edit-designation" defaultValue={selectedAnnouncement?.packet?.designation} className="h-9 text-sm border-orange-200 focus:border-orange-500" />
+   666→                            ) : (
+   667→                              <p className="font-semibold text-gray-900">{selectedAnnouncement?.packet?.designation}</p>
+   668→                            )}
+   669→                          </div>
+   670→                          <div>
+   671→                            <p className="text-xs text-gray-500 mb-1">Type de colis</p>
+   672→                            <p className="font-semibold text-gray-900">{selectedAnnouncement?.packet?.description?.substring(0, 20)}...</p>
+   673→                          </div>
+   674→                          <div className="col-span-2">
+   675→                            <p className="text-xs text-gray-500 mb-1">Description</p>
+   676→                            {isEditing ? (
+   677→                              <textarea id="edit-description" className="w-full text-sm border border-orange-200 rounded-md p-2 h-24 bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all outline-none" defaultValue={selectedAnnouncement?.packet?.description} />
+   678→                            ) : (
+   679→                              <p className="text-sm text-gray-600 leading-relaxed">{selectedAnnouncement?.packet?.description || 'Aucune description fournie'}</p>
+   680→                            )}
+   681→                          </div>
+   682→                          <div>
+   683→                            <p className="text-xs text-gray-500 mb-1">Poids approx.</p>
+   684→                            <p className="font-semibold text-gray-900">3.5 kg</p>
+   685→                          </div>
+   686→                          <div>
+   687→                            <p className="text-xs text-gray-500 mb-1">Dimensions (Lxlxh)</p>
+   688→                            <p className="font-semibold text-gray-900">
+   689→                              {selectedAnnouncement?.packet?.length}x{selectedAnnouncement?.packet?.width}x{selectedAnnouncement?.packet?.thickness} cm
+   690→                            </p>
+   691→                          </div>
+   692→                        </div>
+   693→                      </div>
+   694→
+   695→                      <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-xl space-y-4 border border-orange-100">
+   696→                        <p className="text-sm font-bold text-orange-800 dark:text-orange-300 flex items-center gap-2">
+   697→                          <CheckCircle2 className="w-4 h-4" />
+   698→                          Options & Sécurité
+   699→                        </p>
+   700→                        <div className="flex flex-wrap gap-2">
+   701→                          <Badge variant="outline" className={selectedAnnouncement?.packet?.fragile ? "border-red-500 text-red-600 bg-red-50 font-semibold" : "opacity-30 border-gray-200 text-gray-400"}>Fragile</Badge>
+   702→                          <Badge variant="outline" className={selectedAnnouncement?.packet?.isPerishable ? "border-orange-500 text-orange-600 bg-orange-50 font-semibold" : "opacity-30 border-gray-200 text-gray-400"}>Périssable</Badge>
+   703→                          <Badge variant="outline" className={selectedAnnouncement?.isInsured ? "border-green-500 text-green-600 bg-green-50 font-semibold" : "opacity-30 border-gray-200 text-gray-400"}>
+   704→                            Assuré ({selectedAnnouncement?.declaredValue || 0} FCFA)
+   705→                          </Badge>
+   706→                        </div>
+   707→                        {/* Transport and urgence sections removed as not relevant */}
+   708→                      </div>
+   709→                    </div>
+   710→                  </div>
+   711→                </DialogContent>
+   712→              </Dialog>
+   713→
+   714→              <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+   715→                <AlertDialogContent>
+   716→                  <AlertDialogHeader>
+   717→                    <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
+   718→                    <AlertDialogDescription>
+   719→                      Cette action est irréversible. Elle supprimera définitivement votre annonce
+   720→                      ainsi que toutes les photos et données associées de nos serveurs.
+   721→                    </AlertDialogDescription>
+   722→                  </AlertDialogHeader>
+   723→                  <AlertDialogFooter>
+   724→                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+   725→                    <AlertDialogAction
+   726→                      onClick={executeDelete}
+   727→                      className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600"
+   728→                    >
+   729→                      Supprimer définitivement
+   730→                    </AlertDialogAction>
+   731→                  </AlertDialogFooter>
+   732→                </AlertDialogContent>
+   733→              </AlertDialog>
+   734→            </div>
+   735→          </section>
+   736→        )}
+   737→
+   738→        {/* Réponses Tab */}
+   739→        {activeTab === 'reponses' && (
+   740→          <section className="space-y-6">
+   741→            <div className="flex items-center justify-between">
+   742→              <div>
+   743→                <h2 className="text-2xl font-bold text-gray-900">Réponses aux annonces</h2>
+   744→                <p className="text-sm text-gray-500 mt-1">Consultez les livreurs intéressés et assignez une livraison</p>
+   745→              </div>
+   746→            </div>
+   747→
+   748→            {responsesLoading ? (
+   749→              <div className="flex items-center justify-center py-16">
+   750→                <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+   751→              </div>
+   752→            ) : responsesAnnouncements.length === 0 ? (
+   753→              <Card className="py-16">
+   754→                <CardContent className="flex flex-col items-center justify-center text-center">
+   755→                  <MessageSquare className="w-12 h-12 text-gray-300 mb-4" />
+   756→                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Aucune annonce</h3>
+   757→                  <p className="text-sm text-gray-500">Publiez une annonce pour recevoir des réponses de livreurs</p>
+   758→                </CardContent>
+   759→              </Card>
+   760→            ) : (
+   761→              <div className="grid gap-4">
+   762→                {responsesAnnouncements
+   763→                  .filter(a => a.status === 'PUBLISHED' || a.status === 'ASSIGNED')
+   764→                  .map((announcement) => (
+   765→                    <Card key={announcement.id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+   766→                      <CardContent className="p-4 sm:p-5">
+   767→                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+   768→                          <div className="flex-1 min-w-0">
+   769→                            <div className="flex flex-wrap items-center gap-2 mb-2">
+   770→                              <h3 className="font-semibold text-gray-900 truncate">{announcement.title}</h3>
+   771→                              {announcement.status === 'ASSIGNED' ? (
+   772→                                <Badge className="bg-green-100 text-green-700 border-green-200">
+   773→                                  <CheckCircle2 className="w-3 h-3 mr-1" />
+   774→                                  Assigné
+   775→                                </Badge>
+   776→                              ) : (
+   777→                                <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+   778→                                  Publiée
+   779→                                </Badge>
+   780→                              )}
+   781→                            </div>
+   782→                            {announcement.description && (
+   783→                              <p className="text-sm text-gray-500 mb-3 line-clamp-2">{announcement.description}</p>
+   784→                            )}
+   785→                            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+   786→                              <div className="flex items-center gap-1">
+   787→                                <MapPin className="w-4 h-4 text-orange-500" />
+   788→                                <span className="truncate max-w-[180px] sm:max-w-[250px]">
+   789→                                  {announcement.pickupAddress?.city || 'N/A'} → {announcement.deliveryAddress?.city || 'N/A'}
+   790→                                </span>
+   791→                              </div>
+   792→                              {announcement.amount && (
+   793→                                <div className="flex items-center gap-1">
+   794→                                  <DollarSign className="w-4 h-4 text-green-500" />
+   795→                                  <span className="font-semibold text-green-600">{announcement.amount.toLocaleString()} FCFA</span>
+   796→                                </div>
+   797→                              )}
+   798→                            </div>
+   799→
+   800→                            {/* Show assigned delivery person details */}
+   801→                            {announcement.status === 'ASSIGNED' && announcement.assignedDeliveryPersonFirstName && (
+   802→                              <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+   803→                                <div className="flex items-center gap-2 mb-2">
+   804→                                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+   805→                                    {announcement.assignedDeliveryPersonFirstName?.charAt(0)}{announcement.assignedDeliveryPersonLastName?.charAt(0)}
+   806→                                  </div>
+   807→                                  <div>
+   808→                                    <p className="text-sm font-semibold text-green-800">
+   809→                                      {announcement.assignedDeliveryPersonFirstName} {announcement.assignedDeliveryPersonLastName}
+   810→                                    </p>
+   811→                                    <p className="text-xs text-green-600">{announcement.assignedDeliveryPersonPhone}</p>
+   812→                                  </div>
+   813→                                </div>
+   814→                                <p className="text-xs text-gray-500">{announcement.assignedDeliveryPersonEmail}</p>
+   815→                              </div>
+   816→                            )}
+   817→                          </div>
+   818→                          <div className="flex-shrink-0 self-start">
+   819→                            {announcement.status === 'ASSIGNED' ? (
+   820→                              <div className="px-3 py-2 bg-green-50 rounded-lg text-sm font-medium text-green-700 whitespace-nowrap">
+   821→                                ✓ Livreur assigné
+   822→                              </div>
+   823→                            ) : (
+   824→                              <Button
+   825→                                variant="outline"
+   826→                                size="sm"
+   827→                                className="border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700 w-full sm:w-auto"
+   828→                                onClick={() => handleViewSubscriptions(announcement)}
+   829→                              >
+   830→                                <MessageSquare className="w-4 h-4 mr-2" />
+   831→                                Voir les réponses
+   832→                              </Button>
+   833→                            )}
+   834→                          </div>
+   835→                        </div>
+   836→                      </CardContent>
+   837→                    </Card>
+   838→                  ))}
+   839→              </div>
+   840→            )}
+   841→
+   842→            {/* Subscriptions Dialog */}
+   843→            <Dialog open={subscriptionsDialogOpen} onOpenChange={setSubscriptionsDialogOpen}>
+   844→              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+   845→                <DialogHeader className="border-b pb-4">
+   846→                  <div className="flex items-center gap-3">
+   847→                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+   848→                      <MessageSquare className="w-5 h-5 text-orange-600" />
+   849→                    </div>
+   850→                    <div>
+   851→                      <DialogTitle className="text-lg">Livreurs intéressés</DialogTitle>
+   852→                      <DialogDescription className="text-sm text-gray-500">
+   853→                        {selectedResponseAnnouncement?.title}
+   854→                      </DialogDescription>
+   855→                    </div>
+   856→                  </div>
+   857→                </DialogHeader>
+   858→
+   859→                <div className="py-4 space-y-3">
+   860→                  {subscriptionsLoading ? (
+   861→                    <div className="flex items-center justify-center py-12">
+   862→                      <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
+   863→                    </div>
+   864→                  ) : subscriptions.length === 0 ? (
+   865→                    <div className="text-center py-12">
+   866→                      <User className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+   867→                      <p className="text-sm text-gray-500">Aucun livreur n'a encore souscrit à cette annonce</p>
+   868→                    </div>
+   869→                  ) : (
+   870→                    subscriptions.map((sub) => (
+   871→                      <div
+   872→                        key={sub.subscriptionId}
+   873→                        className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-orange-200 transition-colors"
+   874→                      >
+   875→                        <div className="flex items-center justify-between gap-4">
+   876→                          <div className="flex items-center gap-3 flex-1 min-w-0">
+   877→                            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white font-bold">
+   878→                              {sub.firstName?.charAt(0)}{sub.lastName?.charAt(0)}
+   879→                            </div>
+   880→                            <div className="min-w-0">
+   881→                              <p className="font-semibold text-gray-900">{sub.lastName} {sub.firstName}</p>
+   882→                              <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
+   883→                                <span className="flex items-center gap-1">
+   884→                                  <MapPinIcon className="w-3 h-3" />
+   885→                                  {sub.phone}
+   886→                                </span>
+   887→                                {sub.rating && (
+   888→                                  <span className="flex items-center gap-1">
+   889→                                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
+   890→                                    {sub.rating.toFixed(1)}
+   891→                                  </span>
+   892→                                )}
+   893→                              </div>
+   894→                              <p className="text-xs text-gray-400 mt-1">{sub.email}</p>
+   895→                            </div>
+   896→                          </div>
+   897→                          <Button
+   898→                            size="sm"
+   899→                            disabled={assigningId === sub.deliveryPersonId}
+   900→                            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md"
+   901→                            onClick={() => handleAssignDeliveryPerson(sub.deliveryPersonId)}
+   902→                          >
+   903→                            {assigningId === sub.deliveryPersonId ? (
+   904→                              <Loader2 className="w-4 h-4 animate-spin" />
+   905→                            ) : (
+   906→                              'Assigner'
+   907→                            )}
+   908→                          </Button>
+   909→                        </div>
+   910→                      </div>
+   911→                    ))
+   912→                  )}
+   913→                </div>
+   914→              </DialogContent>
+   915→            </Dialog>
+   916→          </section>
+   917→        )}
+   918→
+   919→        {/* Hero and How It Works Section */}
+   920→        {activeTab === 'accueil' && (
+   921→          <>
+   922→
+   923→            <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50 py-16 sm:py-24 lg:py-32">
+   924→              {/* Decorative Elements */}
+   925→              <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-orange-100 to-transparent opacity-50 rounded-full translate-x-1/2 -translate-y-1/2"></div>
+   926→              <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-amber-100 to-transparent opacity-30 rounded-full -translate-x-1/3 translate-y-1/3"></div>
+   927→
+   928→              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   929→                <div className="grid lg:grid-cols-2 gap-12 items-center">
+   930→                  {/* Left Content */}
+   931→                  <div className="text-center lg:text-left">
+   932→                    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+   933→                      Vous avez un besoin ?
+   934→                      <span className="block text-orange-600">Trouvez votre livreur</span>
+   935→                    </h2>
+   936→
+   937→                    <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl">
+   938→                      Postez votre annonce et choisissez parmi nos centaines de livreurs disponibles. Repas, courses, documents, colis, pharmacie ou service personnalisé.
+   939→                    </p>
+   940→
+   941→                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+   942→                      <Button
+   943→                        size="lg"
+   944→                        className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold px-8 shadow-xl shadow-orange-500/20 text-base h-12"
+   945→                        onClick={() => {
+   946→                          // Pré-remplir le formulaire d'expédition avec quelques infos client basiques
+   947→                          try {
+   948→                            const expeditionPrefill = {
+   949→                              currentStep: 1,
+   950→                              senderData: {
+   951→                                senderName: `${clientInfo.lastName} ${clientInfo.firstName}`,
+   952→                                senderPhone: '',
+   953→                                senderEmail: '',
+   954→                                senderCountry: 'cameroun',
+   955→                                senderRegion: 'centre',
+   956→                                senderCity: 'Yaoundé',
+   957→                                senderAddress: '',
+   958→                                senderLieuDit: ''
+   959→                              },
+   960→                              recipientData: {
+   961→                                recipientName: '', recipientPhone: '', recipientEmail: '', recipientCountry: 'cameroun', recipientRegion: 'centre', recipientCity: 'Yaoundé', recipientAddress: '', recipientLieuDit: ''
+   962→                              },
+   963→                              packageData: {
+   964→                                photo: null, designation: '', description: '', weight: '', length: '', width: '', height: '',
+   965→                                isFragile: false, isPerishable: false, isLiquid: false, isInsured: false, declaredValue: '',
+   966→                                transportMethod: '', logistics: 'standard', pickup: false, delivery: false
+   967→                              },
+   968→                              routeData: { departurePointId: null, arrivalPointId: null, departurePointName: '', arrivalPointName: '', distanceKm: 0 },
+   969→                              signatureData: { signatureUrl: null },
+   970→                              pricing: { basePrice: 0, travelPrice: 0, operatorFee: 0, totalPrice: 0 }
+   971→                            };
+   972→
+   973→                            localStorage.setItem('expedition_form_in_progress', JSON.stringify(expeditionPrefill));
+   974→                          } catch (e) { console.error('Erreur préfill expedition', e); }
+   975→
+   976→                          router.push('/expedition');
+   977→                        }}
+   978→                      >
+   979→                        <Megaphone className="w-5 h-5 mr-2" />
+   980→                        Publier une annonce
+   981→                      </Button>
+   982→                      <Button
+   983→                        size="lg"
+   984→                        variant="outline"
+   985→                        className="border-2 border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-8 h-12 text-base"
+   986→                        onClick={() => router.push('/inscription?role=livreur&step=2')}
+   987→                      >
+   988→                        <Truck className="w-5 h-5 mr-2" />
+   989→                        Devenir livreur
+   990→                      </Button>
+   991→                    </div>
+   992→
+   993→                    {/* Stats */}
+   994→                    <div className="flex flex-wrap gap-6 mt-8 justify-center lg:justify-start">
+   995→                      <div className="flex items-center gap-2">
+   996→                        <Clock className="w-5 h-5 text-blue-500" />
+   997→                        <span className="text-sm text-gray-700 font-medium">Suivi en temps réel</span>
+   998→                      </div>
+   999→                      <div className="flex items-center gap-2">
+  1000→                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+  1001→                        <span className="text-sm text-gray-700 font-medium">Paiement sécurisé</span>
+  1002→                      </div>
+  1003→                      <div className="flex items-center gap-2">
+  1004→                        <Package className="w-5 h-5 text-red-500" />
+  1005→                        <span className="text-sm text-gray-700 font-medium">Service client 24/7</span>
+  1006→                      </div>
+  1007→                    </div>
+  1008→                  </div>
+  1009→
+  1010→                  {/* Right Content - Tracking */}
+  1011→                  <div className="hidden lg:block">
+  1012→                    <Card className="shadow-2xl border-2 border-orange-100 bg-white">
+  1013→                      <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-100">
+  1014→                        <CardTitle className="flex items-center gap-2 text-xl">
+  1015→                          <MapPin className="w-6 h-6 text-orange-600" />
+  1016→                          Suivre une livraison
+  1017→                        </CardTitle>
+  1018→                      </CardHeader>
+  1019→                      <CardContent className="p-6">
+  1020→                        <div className="space-y-4">
+  1021→                          <div>
+  1022→                            <Label htmlFor="tracking" className="text-base font-semibold text-gray-800 mb-2">
+  1023→                              Numéro de suivi
+  1024→                            </Label>
+  1025→                            <div className="flex gap-2">
+  1026→                              <Input
+  1027→                                id="tracking"
+  1028→                                placeholder="Entrez votre numéro"
+  1029→                                value={trackingNumber}
+  1030→                                onChange={(e) => setTrackingNumber(e.target.value)}
+  1031→                                className="flex-1 text-base border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+  1032→                              />
+  1033→                              <Button size="icon" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
+  1034→                                <ArrowRight className="w-5 h-5" />
+  1035→                              </Button>
+  1036→                            </div>
+  1037→                          </div>
+  1038→
+  1039→                          <div className="text-sm text-gray-500">
+  1040→                            Exemple: TBP-2024-XXXXXXX
+  1041→                          </div>
+  1042→
+  1043→                          <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 px-4 py-3 rounded-lg">
+  1044→                            <Clock className="w-4 h-4" />
+  1045→                            <span className="font-medium">Dernière livraison il y a 5 minutes</span>
+  1046→                          </div>
+  1047→                        </div>
+  1048→                      </CardContent>
+  1049→                    </Card>
+  1050→                  </div>
+  1051→                </div>
+  1052→              </div>
+  1053→            </section>
+  1054→
+  1055→            {/* How It Works Section */}
+  1056→            <section className="py-16 sm:py-24 bg-gradient-to-b from-gray-50 to-white">
+  1057→              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  1058→                <div className="text-center mb-16">
+  1059→                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+  1060→                    Comment ça marche ?
+  1061→                  </h3>
+  1062→                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+  1063→                    En seulement 3 étapes simples
+  1064→                  </p>
+  1065→                </div>
+  1066→
+  1067→                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+  1068→                  {steps.map((step, index) => (
+  1069→                    <div key={index} className="relative">
+  1070→                      <div className="text-center">
+  1071→                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full text-white text-2xl font-bold shadow-lg mb-6">
+  1072→                          {step.number}
+  1073→                        </div>
+  1074→                        <h4 className="text-xl font-bold text-gray-900 mb-3">
+  1075→                          {step.title}
+  1076→                        </h4>
+  1077→                        <p className="text-gray-600">
+  1078→                          {step.description}
+  1079→                        </p>
+  1080→                      </div>
+  1081→
+  1082→                      {/* Connector Line */}
+  1083→                      {index < steps.length - 1 && (
+  1084→                        <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-orange-200 to-transparent"></div>
+  1085→                      )}
+  1086→                    </div>
+  1087→                  ))}
+  1088→                </div>
+  1089→              </div>
+  1090→            </section>
+  1091→          </>
+  1092→        )}
+  1093→      </main>
+  1094→
+  1095→      {/* Bottom Navigation */}
+  1096→      <nav className="sticky bottom-0 bg-white border-t border-gray-200 shadow-lg z-50">
+  1097→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  1098→          <div className="flex items-center justify-around py-3">
+  1099→            <button
+  1100→              onClick={() => setActiveTab('accueil')}
+  1101→              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${activeTab === 'accueil' ? 'text-orange-600' : 'text-gray-500 hover:text-orange-500'
+  1102→                }`}
+  1103→            >
+  1104→              <Home className="w-6 h-6" />
+  1105→              <span className="text-xs font-medium">Accueil</span>
+  1106→            </button>
+  1107→
+  1108→            <button
+  1109→              onClick={() => setActiveTab('annonces')}
+  1110→              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${activeTab === 'annonces' ? 'text-orange-600' : 'text-gray-500 hover:text-orange-500'
+  1111→                }`}
+  1112→            >
+  1113→              <Megaphone className="w-6 h-6" />
+  1114→              <span className="text-xs font-medium">Annonces</span>
+  1115→            </button>
+  1116→
+  1117→            <button
+  1118→              onClick={() => setActiveTab('reponses')}
+  1119→              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${activeTab === 'reponses' ? 'text-orange-600' : 'text-gray-500 hover:text-orange-500'
+  1120→                }`}
+  1121→            >
+  1122→              <MessageSquare className="w-6 h-6" />
+  1123→              <span className="text-xs font-medium">Réponses</span>
+  1124→            </button>
+  1125→
+  1126→            <button
+  1127→              onClick={() => setActiveTab('livraisons')}
+  1128→              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${activeTab === 'livraisons' ? 'text-orange-600' : 'text-gray-500 hover:text-orange-500'
+  1129→                }`}
+  1130→            >
+  1131→              <Package className="w-6 h-6" />
+  1132→              <span className="text-xs font-medium">Livraisons</span>
+  1133→            </button>
+  1134→          </div>
+  1135→        </div>
+  1136→      </nav>
+  1137→    </div>
+  1138→  )
+  1139→}
+  1140→
+  1141→export default withAuth(ClientLanding, ['CLIENT'])
+  1142→

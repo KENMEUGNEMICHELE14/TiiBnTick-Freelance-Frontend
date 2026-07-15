@@ -1,0 +1,789 @@
+     1→'use client'
+     2→
+     3→import { useState, useEffect } from 'react'
+     4→import { Button } from '@/components/ui/button'
+     5→import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+     6→import { Input } from '@/components/ui/input'
+     7→import { Label } from '@/components/ui/label'
+     8→import {
+     9→  Select,
+    10→  SelectContent,
+    11→  SelectItem,
+    12→  SelectTrigger,
+    13→  SelectValue,
+    14→} from "@/components/ui/select"
+    15→import { Badge } from '@/components/ui/badge'
+    16→import { useRouter } from 'next/navigation'
+    17→import {
+    18→  User,
+    19→  Mail,
+    20→  Phone,
+    21→  MapPin,
+    22→  MapPin as MapPinIcon,
+    23→  Star,
+    24→  Package,
+    25→  Edit,
+    26→  LogOut,
+    27→  Trash2,
+    28→  AlertTriangle,
+    29→  CheckCircle2,
+    30→  Settings,
+    31→  CreditCard,
+    32→  Eye,
+    33→  EyeOff,
+    34→  Lock,
+    35→  Loader2,
+    36→  Home,
+    37→  Menu,
+    38→  X,
+    39→  Megaphone,
+    40→  MessageSquare,
+    41→  Bell,
+    42→  Plus,
+    43→  UserCircle,
+    44→  Contact,
+    45→  Wallet as WalletIcon,
+    46→} from 'lucide-react'
+    47→import { cn } from '@/lib/utils'
+    48→import { withAuth } from '@/components/hoc/withAuth'
+    49→import { useAuth } from '@/context/AuthContext'
+    50→import { useToast } from '@/hooks/use-toast'
+    51→import { updateClient, checkEmail, checkNationalId, deleteClient } from '@/services/clientService'
+    52→
+    53→export function GoProfile() {
+    54→  const router = useRouter()
+    55→  const { toast } = useToast()
+    56→  const { user, login, logout, refreshUser } = useAuth()
+    57→  const [isEditing, setIsEditing] = useState(false)
+    58→  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    59→  const [showPassword, setShowPassword] = useState(false)
+    60→  const [isLoading, setIsLoading] = useState(false)
+    61→  const [isRedirecting, setIsRedirecting] = useState(false)
+    62→  const [hasMounted, setHasMounted] = useState(false)
+    63→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    64→  const currentActiveTab: string = 'profil'
+    65→  const goInfo = {
+    66→    firstName: user?.firstName || 'Go',
+    67→    lastName: user?.lastName || '',
+    68→    rating: user?.rating || 4.6,
+    69→  }
+    70→
+    71→  useEffect(() => {
+    72→    setHasMounted(true)
+    73→    // Refresh user data from server on mount to ensure mobile-ready persistence
+    74→    refreshUser()
+    75→  }, [])
+    76→
+    77→  // Real data from context
+    78→  const [clientData, setClientData] = useState({
+    79→    firstName: '',
+    80→    lastName: '',
+    81→    email: '',
+    82→    phone: '',
+    83→    nationalId: '',
+    84→    password: '',
+    85→    rating: 5.0,
+    86→    totalOrders: 0,
+    87→    memberSince: new Date().toISOString()
+    88→  })
+    89→
+    90→  // editedData should be a subset of clientData for the form
+    91→  const [editedData, setEditedData] = useState({
+    92→    firstName: '',
+    93→    lastName: '',
+    94→    email: '',
+    95→    phone: '',
+    96→    nationalId: '',
+    97→    password: '',
+    98→  })
+    99→
+   100→  // Sync state when user is loaded
+   101→  useEffect(() => {
+   102→    if (user) {
+   103→      const initialData = {
+   104→        firstName: user.firstName || '',
+   105→        lastName: user.lastName || '',
+   106→        email: user.email || '',
+   107→        phone: user.phone || '',
+   108→        nationalId: user.nationalId || '',
+   109→        password: user.password || '123atanga',
+   110→        rating: user.rating || 5.0,
+   111→        totalOrders: 0,
+   112→        memberSince: user.memberSince || new Date().toISOString()
+   113→      }
+   114→      setClientData(initialData)
+   115→      setEditedData({
+   116→        firstName: initialData.firstName,
+   117→        lastName: initialData.lastName,
+   118→        email: initialData.email,
+   119→        phone: initialData.phone,
+   120→        nationalId: initialData.nationalId,
+   121→        password: initialData.password,
+   122→      })
+   123→    }
+   124→  }, [user])
+   125→
+   126→  const handleEdit = () => {
+   127→    setIsEditing(true)
+   128→    setEditedData({ ...clientData })
+   129→  }
+   130→
+   131→  const handleCancel = () => {
+   132→    setIsEditing(false)
+   133→    setEditedData({ ...clientData })
+   134→  }
+   135→
+   136→  const handleSave = async () => {
+   137→    // 1. Check for empty fields individually for a better user experience
+   138→    const missingFields = []
+   139→    if (!editedData.firstName) missingFields.push('Prénom')
+   140→    if (!editedData.lastName) missingFields.push('Nom')
+   141→    if (!editedData.email) missingFields.push('Email')
+   142→    if (!editedData.phone) missingFields.push('Téléphone')
+   143→    if (!editedData.nationalId) missingFields.push('Numéro CNI')
+   144→    if (!editedData.password) missingFields.push('Mot de passe')
+   145→
+   146→    if (missingFields.length > 0) {
+   147→      toast({
+   148→        title: 'Champs obligatoires',
+   149→        description: `Veuillez remplir les champs suivants : ${missingFields.join(', ')}.`,
+   150→        variant: 'destructive',
+   151→      })
+   152→      return
+   153→    }
+   154→
+   155→    setIsLoading(true)
+   156→
+   157→    try {
+   158→      // 2. Validate email if it changed
+   159→      if (editedData.email !== clientData.email) {
+   160→        const emailExists = await checkEmail(editedData.email)
+   161→        if (emailExists) {
+   162→          toast({
+   163→            title: 'Email déjà utilisé',
+   164→            description: 'Cet email est déjà associé à un autre compte.',
+   165→            variant: 'destructive',
+   166→          })
+   167→          setIsLoading(false)
+   168→          return
+   169→        }
+   170→      }
+   171→
+   172→      // 3. Validate CNI if it changed
+   173→      if (editedData.nationalId !== clientData.nationalId) {
+   174→        const nIdExists = await checkNationalId(editedData.nationalId)
+   175→        if (nIdExists) {
+   176→          toast({
+   177→            title: 'Numéro CNI déjà utilisé',
+   178→            description: 'Ce numéro de CNI est déjà associé à un autre compte.',
+   179→            variant: 'destructive',
+   180→          })
+   181→          setIsLoading(false)
+   182→          return
+   183→        }
+   184→      }
+   185→
+   186→      // 4. Update in Backend
+   187→      if (user?.clientId) {
+   188→        await updateClient(user.clientId, editedData)
+   189→
+   190→        // 5. Update local state and context TOGETHER
+   191→        const updatedClient = {
+   192→          ...clientData,
+   193→          ...editedData
+   194→        }
+   195→
+   196→        const updatedUser = {
+   197→          ...user,
+   198→          ...editedData
+   199→        }
+   200→
+   201→        setClientData(updatedClient)
+   202→        login(updatedUser)
+   203→        setIsEditing(false)
+   204→
+   205→        toast({
+   206→          title: 'Succès ! ✅',
+   207→          description: 'Votre compte a été mis à jour avec succès.',
+   208→        })
+   209→      }
+   210→    } catch (error: any) {
+   211→      console.error('Update failed:', error)
+   212→      const errorMsg = error.response?.data?.message || error.message || 'Une erreur est survenue.'
+   213→      toast({
+   214→        title: 'Échec de la mise à jour',
+   215→        description: errorMsg,
+   216→        variant: 'destructive',
+   217→      })
+   218→    } finally {
+   219→      setIsLoading(false)
+   220→    }
+   221→  }
+   222→
+   223→  const handleLogout = () => {
+   224→    logout()
+   225→  }
+   226→
+   227→  const handleDeleteAccount = async () => {
+   228→    if (!user?.clientId) return
+   229→
+   230→    setIsLoading(true)
+   231→    try {
+   232→      await deleteClient(user.clientId)
+   233→
+   234→      toast({
+   235→        title: 'Compte supprimé ✅',
+   236→        description: 'Votre compte a été définitivement supprimé. Au plaisir de vous revoir !',
+   237→      })
+   238→
+   239→      // Use the official logout from context which handles redirection and state cleanup
+   240→      logout()
+   241→    } catch (error: any) {
+   242→      console.error('Deletion failed:', error)
+   243→      const errorMsg = error.response?.data?.message || error.message || 'Une erreur est survenue lors de la suppression.'
+   244→      toast({
+   245→        title: 'Erreur',
+   246→        description: errorMsg,
+   247→        variant: 'destructive',
+   248→      })
+   249→      setIsLoading(false)
+   250→      setShowDeleteDialog(false)
+   251→    }
+   252→  }
+   253→
+   254→  // Safe date formatter helper
+   255→  const formatDate = (dateString?: string) => {
+   256→    if (!hasMounted || !dateString) return '...'
+   257→    try {
+   258→      return new Date(dateString).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+   259→    } catch (e) {
+   260→      return '...'
+   261→    }
+   262→  }
+   263→
+   264→  // Determine if we should show content or loader
+   265→  const showContent = hasMounted && user && clientData.email && !isRedirecting
+   266→
+   267→  return (
+   268→    <div className="min-h-screen flex flex-col bg-white" suppressHydrationWarning>
+   269→      {/* Header */}
+   270→      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+   271→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   272→          <div className="flex items-center justify-between h-16">
+   273→            {/* Logo */}
+   274→            <div className="flex items-center gap-2">
+   275→              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
+   276→                <Package className="w-6 h-6 text-white" />
+   277→              </div>
+   278→              <h1 className="text-xl font-bold text-gray-900">
+   279→                TiiB<span className="text-amber-500">n</span>Tick
+   280→              </h1>
+   281→            </div>
+   282→
+   283→            {/* Desktop Navigation */}
+   284→            <nav className="hidden md:flex items-center gap-1">
+   285→              <Button
+   286→                variant="ghost"
+   287→                className={cn('font-medium', currentActiveTab === 'accueil' ? 'text-orange-600 bg-orange-50' : 'text-gray-700')}
+   288→                onClick={() => router.push('/user')}
+   289→              >
+   290→                <Home className="w-4 h-4 mr-1.5" />
+   291→                Accueil
+   292→              </Button>
+   293→              <Button
+   294→                variant="ghost"
+   295→                className={cn('font-medium', currentActiveTab === 'annonces' ? 'text-orange-600 bg-orange-50' : 'text-gray-700')}
+   296→                onClick={() => router.push('/user')}
+   297→              >
+   298→                <Megaphone className="w-4 h-4 mr-1.5" />
+   299→                Annonces
+   300→              </Button>
+   301→              <Button
+   302→                variant="ghost"
+   303→                className={cn('font-medium', currentActiveTab === 'reponses' ? 'text-orange-600 bg-orange-50' : 'text-gray-700')}
+   304→                onClick={() => router.push('/user')}
+   305→              >
+   306→                <MessageSquare className="w-4 h-4 mr-1.5" />
+   307→                Réponses
+   308→              </Button>
+   309→              <Button
+   310→                variant="ghost"
+   311→                className={cn('font-medium', currentActiveTab === 'livraisons' ? 'text-orange-600 bg-orange-50' : 'text-gray-700')}
+   312→                onClick={() => router.push('/user')}
+   313→              >
+   314→                <Package className="w-4 h-4 mr-1.5" />
+   315→                Livraisons
+   316→              </Button>
+   317→              <div className="w-px h-6 bg-gray-200 mx-1" />
+   318→              <Button
+   319→                variant="ghost"
+   320→                className="text-gray-700 font-medium"
+   321→                onClick={() => router.push('/user/wallet')}
+   322→              >
+   323→                <WalletIcon className="w-4 h-4 mr-1.5" />
+   324→                Wallet
+   325→              </Button>
+   326→              <Button
+   327→                variant="ghost"
+   328→                className={cn('font-medium', currentActiveTab === 'profil' ? 'text-orange-600 bg-orange-50' : 'text-gray-700')}
+   329→                onClick={() => router.push('/user/profil')}
+   330→              >
+   331→                <UserCircle className="w-4 h-4 mr-1.5" />
+   332→                Profil
+   333→              </Button>
+   334→              <Button variant="ghost" size="icon" onClick={handleLogout} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+   335→                <LogOut className="w-5 h-5" />
+   336→              </Button>
+   337→            </nav>
+   338→
+   339→            {/* Mobile Menu */}
+   340→            <div className="md:hidden flex items-center gap-2">
+   341→              <Button variant="ghost" size="icon" className="relative opacity-50 cursor-not-allowed" disabled>
+   342→                <Bell className="w-5 h-5" />
+   343→              </Button>
+   344→              <Button
+   345→                variant="outline"
+   346→                size="icon-lg"
+   347→                className="border-gray-200 active:scale-95 transition-transform"
+   348→                aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+   349→                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+   350→              >
+   351→                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+   352→              </Button>
+   353→            </div>
+   354→          </div>
+   355→
+   356→          {/* Mobile Menu Dropdown — Livreur-style */}
+   357→          {mobileMenuOpen && (
+   358→            <nav className="md:hidden border-t bg-white py-4 space-y-1">
+   359→              {/* User profile card */}
+   360→              <div className="flex items-center gap-3 px-4 py-3 mb-2">
+   361→                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
+   362→                  <User className="w-5 h-5 text-white" />
+   363→                </div>
+   364→                <div className="flex-1">
+   365→                  <p className="text-sm font-bold text-gray-900">{goInfo.lastName} {goInfo.firstName}</p>
+   366→                  <div className="flex items-center gap-1">
+   367→                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
+   368→                    <span className="text-xs text-gray-600">{goInfo.rating}</span>
+   369→                  </div>
+   370→                </div>
+   371→              </div>
+   372→
+   373→              <div className="h-px bg-gray-100 mx-2" />
+   374→
+   375→              {/* Navigation items */}
+   376→              <Button
+   377→                variant="ghost"
+   378→                className={cn(
+   379→                  'w-full justify-start gap-3 rounded-lg',
+   380→                  currentActiveTab === 'accueil' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   381→                )}
+   382→                onClick={() => { router.push('/user'); setMobileMenuOpen(false); }}
+   383→              >
+   384→                <Home className="w-5 h-5" />
+   385→                Accueil
+   386→              </Button>
+   387→
+   388→              <Button
+   389→                variant="ghost"
+   390→                className={cn(
+   391→                  'w-full justify-start gap-3 rounded-lg',
+   392→                  currentActiveTab === 'annonces' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   393→                )}
+   394→                onClick={() => { router.push('/user'); setMobileMenuOpen(false); }}
+   395→              >
+   396→                <Megaphone className="w-5 h-5" />
+   397→                Annonces
+   398→              </Button>
+   399→
+   400→              <Button
+   401→                variant="ghost"
+   402→                className={cn(
+   403→                  'w-full justify-start gap-3 rounded-lg',
+   404→                  currentActiveTab === 'reponses' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   405→                )}
+   406→                onClick={() => { router.push('/user'); setMobileMenuOpen(false); }}
+   407→              >
+   408→                <MessageSquare className="w-5 h-5" />
+   409→                Réponses
+   410→              </Button>
+   411→
+   412→              <Button
+   413→                variant="ghost"
+   414→                className={cn(
+   415→                  'w-full justify-start gap-3 rounded-lg',
+   416→                  currentActiveTab === 'livraisons' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   417→                )}
+   418→                onClick={() => { router.push('/user'); setMobileMenuOpen(false); }}
+   419→              >
+   420→                <Package className="w-5 h-5" />
+   421→                Livraisons
+   422→              </Button>
+   423→
+   424→              <div className="h-px bg-gray-100 mx-2" />
+   425→
+   426→              <Button
+   427→                variant="ghost"
+   428→                className="w-full justify-start gap-3 rounded-lg text-gray-700"
+   429→                onClick={() => { router.push('/user/wallet'); setMobileMenuOpen(false); }}
+   430→              >
+   431→                <WalletIcon className="w-5 h-5" />
+   432→                Mon Wallet
+   433→              </Button>
+   434→
+   435→              <Button
+   436→                variant="ghost"
+   437→                className={cn(
+   438→                  'w-full justify-start gap-3 rounded-lg',
+   439→                  currentActiveTab === 'adresses' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   440→                )}
+   441→                onClick={() => { router.push('/user'); setMobileMenuOpen(false); }}
+   442→              >
+   443→                <MapPinIcon className="w-5 h-5" />
+   444→                Mes adresses
+   445→              </Button>
+   446→
+   447→              <Button
+   448→                variant="ghost"
+   449→                className={cn(
+   450→                  'w-full justify-start gap-3 rounded-lg',
+   451→                  currentActiveTab === 'contacts' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   452→                )}
+   453→                onClick={() => { router.push('/user'); setMobileMenuOpen(false); }}
+   454→              >
+   455→                <Contact className="w-5 h-5" />
+   456→                Contacts
+   457→              </Button>
+   458→
+   459→              <div className="h-px bg-gray-100 mx-2" />
+   460→
+   461→              <Button
+   462→                variant="ghost"
+   463→                className={cn(
+   464→                  'w-full justify-start gap-3 rounded-lg',
+   465→                  currentActiveTab === 'profil' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+   466→                )}
+   467→                onClick={() => { router.push('/user/profil'); setMobileMenuOpen(false); }}
+   468→              >
+   469→                <UserCircle className="w-5 h-5" />
+   470→                Mon profil
+   471→              </Button>
+   472→
+   473→              <Button
+   474→                variant="ghost"
+   475→                className="w-full justify-start gap-3 rounded-lg text-gray-700 opacity-50 cursor-not-allowed"
+   476→                disabled
+   477→              >
+   478→                <Settings className="w-5 h-5" />
+   479→                Paramètres
+   480→              </Button>
+   481→
+   482→              <div className="h-px bg-gray-100 mx-2" />
+   483→
+   484→              <Button
+   485→                variant="ghost"
+   486→                className="w-full justify-start gap-3 rounded-lg text-red-600 hover:bg-red-50"
+   487→                onClick={handleLogout}
+   488→              >
+   489→                <LogOut className="w-5 h-5" />
+   490→                Déconnexion
+   491→              </Button>
+   492→            </nav>
+   493→          )}
+   494→        </div>
+   495→      </header>
+   496→
+   497→      {/* Main Content */}
+   498→      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+   499→        {!showContent ? (
+   500→          <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+   501→            <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4" />
+   502→            <p className="text-gray-500 font-medium">Chargement de votre profil...</p>
+   503→          </div>
+   504→        ) : (
+   505→          <div className="max-w-4xl mx-auto space-y-6">
+   506→            {/* Profile Overview Card */}
+   507→            <Card className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 shadow-lg">
+   508→              <CardContent className="p-6">
+   509→                <div className="flex items-center gap-6">
+   510→                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-4 border-white/30">
+   511→                    <User className="w-10 h-10 text-white" />
+   512→                  </div>
+   513→                  <div className="flex-1">
+   514→                    <h2 className="text-2xl font-bold mb-1">{clientData.lastName} {clientData.firstName}</h2>
+   515→                    <div className="flex items-center gap-4 text-sm opacity-90">
+   516→                      <div className="flex items-center gap-1">
+   517→                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+   518→                        <span className="font-semibold">{clientData.rating}</span>
+   519→                      </div>
+   520→                      <span>•</span>
+   521→                      <span>Membre depuis {formatDate(clientData.memberSince)}</span>
+   522→                    </div>
+   523→                  </div>
+   524→                </div>
+   525→              </CardContent>
+   526→            </Card>
+   527→
+   528→            {/* Personal Information Card */}
+   529→            <Card>
+   530→              <CardHeader>
+   531→                <CardTitle className="flex items-center gap-2">
+   532→                  <User className="w-5 h-5 text-orange-600" />
+   533→                  Informations personnelles
+   534→                </CardTitle>
+   535→              </CardHeader>
+   536→              <CardContent className="space-y-4">
+   537→                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+   538→                  <div>
+   539→                    <Label htmlFor="lastName">Nom {isEditing && <span className="text-red-500">*</span>}</Label>
+   540→                    {isEditing ? (
+   541→                      <Input
+   542→                        id="lastName"
+   543→                        value={editedData.lastName}
+   544→                        onChange={(e) => setEditedData({ ...editedData, lastName: e.target.value })}
+   545→                        className="mt-1"
+   546→                      />
+   547→                    ) : (
+   548→                      <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+   549→                        <User className="w-5 h-5 text-gray-400" />
+   550→                        <span className="font-medium">{clientData.lastName}</span>
+   551→                      </div>
+   552→                    )}
+   553→                  </div>
+   554→
+   555→                  <div>
+   556→                    <Label htmlFor="firstName">Prénom {isEditing && <span className="text-red-500">*</span>}</Label>
+   557→                    {isEditing ? (
+   558→                      <Input
+   559→                        id="firstName"
+   560→                        value={editedData.firstName}
+   561→                        onChange={(e) => setEditedData({ ...editedData, firstName: e.target.value })}
+   562→                        className="mt-1"
+   563→                      />
+   564→                    ) : (
+   565→                      <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+   566→                        <User className="w-5 h-5 text-gray-400" />
+   567→                        <span className="font-medium">{clientData.firstName}</span>
+   568→                      </div>
+   569→                    )}
+   570→                  </div>
+   571→
+   572→                  <div>
+   573→                    <Label htmlFor="email">Email {isEditing && <span className="text-red-500">*</span>}</Label>
+   574→                    {isEditing ? (
+   575→                      <Input
+   576→                        id="email"
+   577→                        type="email"
+   578→                        value={editedData.email}
+   579→                        onChange={(e) => setEditedData({ ...editedData, email: e.target.value })}
+   580→                        className="mt-1"
+   581→                      />
+   582→                    ) : (
+   583→                      <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+   584→                        <Mail className="w-5 h-5 text-gray-400" />
+   585→                        <span className="font-medium">{clientData.email}</span>
+   586→                      </div>
+   587→                    )}
+   588→                  </div>
+   589→
+   590→                  <div>
+   591→                    <Label htmlFor="phone">Téléphone {isEditing && <span className="text-red-500">*</span>}</Label>
+   592→                    {isEditing ? (
+   593→                      <Input
+   594→                        id="phone"
+   595→                        type="tel"
+   596→                        value={editedData.phone}
+   597→                        onChange={(e) => setEditedData({ ...editedData, phone: e.target.value })}
+   598→                        className="mt-1"
+   599→                      />
+   600→                    ) : (
+   601→                      <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+   602→                        <Phone className="w-5 h-5 text-gray-400" />
+   603→                        <span className="font-medium">{clientData.phone}</span>
+   604→                      </div>
+   605→                    )}
+   606→                  </div>
+   607→
+   608→                  <div>
+   609→                    <Label htmlFor="nationalId">Numéro CNI {isEditing && <span className="text-red-500">*</span>}</Label>
+   610→                    {isEditing ? (
+   611→                      <Input
+   612→                        id="nationalId"
+   613→                        value={editedData.nationalId}
+   614→                        onChange={(e) => setEditedData({ ...editedData, nationalId: e.target.value })}
+   615→                        className="mt-1"
+   616→                      />
+   617→                    ) : (
+   618→                      <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1">
+   619→                        <CreditCard className="w-5 h-5 text-gray-400" />
+   620→                        <span className="font-medium">{clientData.nationalId || 'Non renseigné'}</span>
+   621→                      </div>
+   622→                    )}
+   623→                  </div>
+   624→
+   625→                  <div>
+   626→                    <Label htmlFor="password">Mot de passe {isEditing && <span className="text-red-500">*</span>}</Label>
+   627→                    {isEditing ? (
+   628→                      <div className="relative mt-1">
+   629→                        <Input
+   630→                          id="password"
+   631→                          type={showPassword ? "text" : "password"}
+   632→                          value={editedData.password}
+   633→                          onChange={(e) => setEditedData({ ...editedData, password: e.target.value })}
+   634→                          className="pr-10"
+   635→                        />
+   636→                        <button
+   637→                          type="button"
+   638→                          onClick={() => setShowPassword(!showPassword)}
+   639→                          className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 hover:text-orange-600 transition-colors"
+   640→                          aria-label={showPassword ? "Masquer" : "Afficher"}
+   641→                        >
+   642→                          {showPassword ? <Eye key="eye-open" size={20} /> : <EyeOff key="eye-closed" size={20} />}
+   643→                        </button>
+   644→                      </div>
+   645→                    ) : (
+   646→                      <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg mt-1 relative pr-10 min-h-[52px]">
+   647→                        <Lock className="w-5 h-5 text-gray-400 shrink-0" />
+   648→                        <span className="font-medium truncate">
+   649→                          {showPassword ? clientData.password : '********'}
+   650→                        </span>
+   651→                        <button
+   652→                          type="button"
+   653→                          onClick={() => setShowPassword(!showPassword)}
+   654→                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors"
+   655→                          aria-label={showPassword ? "Masquer" : "Afficher"}
+   656→                        >
+   657→                          {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+   658→                        </button>
+   659→                      </div>
+   660→                    )}
+   661→                  </div>
+   662→                </div>
+   663→
+   664→                {isEditing && (
+   665→                  <div className="flex gap-3 pt-4">
+   666→                    <Button
+   667→                      onClick={handleSave}
+   668→                      disabled={isLoading}
+   669→                      className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+   670→                    >
+   671→                      <span className="flex items-center justify-center gap-2 pointer-events-none">
+   672→                        {isLoading ? (
+   673→                          <Loader2 key="loader" className="w-4 h-4 animate-spin" />
+   674→                        ) : (
+   675→                          <CheckCircle2 key="check" className="w-4 h-4" />
+   676→                        )}
+   677→                        <span className="font-medium">Enregistrer</span>
+   678→                      </span>
+   679→                    </Button>
+   680→                    <Button
+   681→                      onClick={handleCancel}
+   682→                      variant="outline"
+   683→                      className="flex-1"
+   684→                    >
+   685→                      Annuler
+   686→                    </Button>
+   687→                  </div>
+   688→                )}
+   689→              </CardContent>
+   690→            </Card>
+   691→
+   692→            {/* Account Actions Card */}
+   693→            <Card>
+   694→              <CardHeader>
+   695→                <CardTitle className="flex items-center gap-2">
+   696→                  <Settings className="w-5 h-5 text-orange-600" />
+   697→                  Actions du compte
+   698→                </CardTitle>
+   699→              </CardHeader>
+   700→              <CardContent className="space-y-4">
+   701→                <Button
+   702→                  onClick={() => setIsEditing(true)}
+   703→                  variant="outline"
+   704→                  className="w-full justify-start h-12 border-2 border-orange-200 hover:bg-orange-50 hover:border-orange-300 text-orange-700"
+   705→                >
+   706→                  <Edit className="w-5 h-5 mr-3" />
+   707→                  <span className="font-medium">Modifier mon compte</span>
+   708→                </Button>
+   709→
+   710→                <Button
+   711→                  onClick={handleLogout}
+   712→                  variant="outline"
+   713→                  className="w-full justify-start h-12 border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-blue-700"
+   714→                >
+   715→                  <LogOut className="w-5 h-5 mr-3" />
+   716→                  <span className="font-medium">Déconnexion</span>
+   717→                </Button>
+   718→
+   719→                <Button
+   720→                  onClick={() => setShowDeleteDialog(true)}
+   721→                  variant="outline"
+   722→                  className="w-full justify-start h-12 border-2 border-orange-200 hover:bg-orange-50 hover:border-orange-300 text-orange-600"
+   723→                >
+   724→                  <Trash2 className="w-5 h-5 mr-3" />
+   725→                  <span className="font-medium">Supprimer le compte</span>
+   726→                </Button>
+   727→              </CardContent>
+   728→            </Card>
+   729→
+   730→            {/* Delete Confirmation Dialog */}
+   731→            {showDeleteDialog && (
+   732→              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+   733→                <Card className="max-w-md w-full border-2 border-orange-200">
+   734→                  <CardHeader>
+   735→                    <div className="flex items-center gap-3">
+   736→                      <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+   737→                        <AlertTriangle className="w-6 h-6 text-orange-600" />
+   738→                      </div>
+   739→                      <div>
+   740→                        <CardTitle className="text-xl text-orange-900">Supprimer le compte ?</CardTitle>
+   741→                        <p className="text-sm text-orange-700 mt-1">Cette action est irréversible</p>
+   742→                      </div>
+   743→                    </div>
+   744→                  </CardHeader>
+   745→                  <CardContent>
+   746→                    <p className="text-gray-600 mb-6">
+   747→                      Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes vos données seront définitivement perdues.
+   748→                    </p>
+   749→                    <div className="flex gap-3">
+   750→                      <Button
+   751→                        onClick={() => setShowDeleteDialog(false)}
+   752→                        variant="outline"
+   753→                        className="flex-1"
+   754→                      >
+   755→                        Non
+   756→                      </Button>
+   757→                      <Button
+   758→                        onClick={handleDeleteAccount}
+   759→                        disabled={isLoading}
+   760→                        className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white"
+   761→                      >
+   762→                        {isLoading ? (
+   763→                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+   764→                        ) : (
+   765→                          <Trash2 className="w-4 h-4 mr-2" />
+   766→                        )}
+   767→                        Oui
+   768→                      </Button>
+   769→                    </div>
+   770→                  </CardContent>
+   771→                </Card>
+   772→              </div>
+   773→            )}
+   774→          </div>
+   775→        )}
+   776→      </main>
+   777→
+   778→      {/* Desktop Footer */}
+   779→      <footer className="hidden md:block py-6 bg-white border-t border-gray-100 mt-auto">
+   780→        <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+   781→          <p>© 2025 TiiBnTick - Espace Go • Disponible 24h/24</p>
+   782→        </div>
+   783→      </footer>
+   784→    </div>
+   785→  )
+   786→}
+   787→
+   788→export default withAuth(GoProfile, ['CLIENT'])
+   789→

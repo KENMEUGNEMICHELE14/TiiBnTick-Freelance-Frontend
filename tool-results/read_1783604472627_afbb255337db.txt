@@ -1,0 +1,514 @@
+     1→<!DOCTYPE html>
+     2→
+     3→<html class="scroll-smooth" lang="fr"><head>
+     4→<meta charset="utf-8"/>
+     5→<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+     6→<title>Gestion du Profil et Politiques Freelancer | LogiFlow Freelancer</title>
+     7→<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+     8→<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+     9→<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    10→<script id="tailwind-config">
+    11→      tailwind.config = {
+    12→        darkMode: "class",
+    13→        theme: {
+    14→          extend: {
+    15→            "colors": {
+    16→                    "on-secondary-fixed-variant": "#004395",
+    17→                    "tertiary-container": "#0076d2",
+    18→                    "surface-container-lowest": "#ffffff",
+    19→                    "background": "#faf8ff",
+    20→                    "on-tertiary-container": "#fdfcff",
+    21→                    "primary-container": "#cc4900",
+    22→                    "on-error": "#ffffff",
+    23→                    "on-primary": "#ffffff",
+    24→                    "on-secondary-fixed": "#001a42",
+    25→                    "surface-container": "#eaedff",
+    26→                    "surface-container-low": "#f2f3ff",
+    27→                    "surface-bright": "#faf8ff",
+    28→                    "outline-variant": "#e2bfb2",
+    29→                    "primary-fixed": "#ffdbce",
+    30→                    "on-tertiary-fixed": "#001c39",
+    31→                    "on-background": "#131b2e",
+    32→                    "error-container": "#ffdad6",
+    33→                    "tertiary-fixed-dim": "#a4c9ff",
+    34→                    "on-primary-fixed-variant": "#7f2b00",
+    35→                    "inverse-primary": "#ffb599",
+    36→                    "surface": "#faf8ff",
+    37→                    "secondary-container": "#2170e4",
+    38→                    "on-secondary": "#ffffff",
+    39→                    "on-surface-variant": "#5a4138",
+    40→                    "surface-container-highest": "#dae2fd",
+    41→                    "outline": "#8e7166",
+    42→                    "inverse-on-surface": "#eef0ff",
+    43→                    "surface-gray": "#F8FAFC",
+    44→                    "success-green": "#10B981",
+    45→                    "on-primary-fixed": "#370e00",
+    46→                    "surface-dim": "#d2d9f4",
+    47→                    "inverse-surface": "#283044",
+    48→                    "surface-variant": "#dae2fd",
+    49→                    "secondary-fixed-dim": "#adc6ff",
+    50→                    "on-surface": "#131b2e",
+    51→                    "on-tertiary": "#ffffff",
+    52→                    "border-subtle": "#E2E8F0",
+    53→                    "error": "#ba1a1a",
+    54→                    "tertiary-fixed": "#d4e3ff",
+    55→                    "surface-container-high": "#e2e7ff",
+    56→                    "secondary": "#0058be"
+    57→            },
+    58→            "borderRadius": {
+    59→                    "DEFAULT": "0.125rem",
+    60→                    "lg": "0.25rem",
+    61→                    "xl": "0.5rem",
+    62→                    "full": "0.75rem"
+    63→            },
+    64→            "spacing": {
+    65→                    "container-max": "1280px",
+    66→                    "base": "8px",
+    67→                    "gutter": "24px",
+    68→                    "margin-mobile": "16px",
+    69→                    "margin-desktop": "40px"
+    70→            },
+    71→            "fontFamily": {
+    72→                    "headline-md": ["Hanken Grotesk"],
+    73→                    "body-md": ["Hanken Grotesk"],
+    74→                    "label-bold": ["Hanken Grotesk"],
+    75→                    "headline-lg-mobile": ["Hanken Grotesk"],
+    76→                    "label-sm": ["Hanken Grotesk"],
+    77→                    "body-lg": ["Hanken Grotesk"],
+    78→                    "headline-xl": ["Hanken Grotesk"],
+    79→                    "headline-lg": ["Hanken Grotesk"]
+    80→            },
+    81→            "fontSize": {
+    82→                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+    83→                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+    84→                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+    85→                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+    86→                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+    87→                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+    88→                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+    89→                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+    90→            }
+    91→          },
+    92→        },
+    93→      }
+    94→    </script>
+    95→<style>
+    96→      .material-symbols-outlined {
+    97→        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    98→      }
+    99→      .sidebar-link.active {
+   100→        background-color: #ffdbce;
+   101→        color: #a33900;
+   102→        border-right: 4px solid #a33900;
+   103→        font-weight: 700;
+   104→      }
+   105→      .glass-nav {
+   106→        background: rgba(250, 248, 255, 0.8);
+   107→        backdrop-filter: blur(12px);
+   108→      }
+   109→      .content-card {
+   110→        border: 1px solid #E2E8F0;
+   111→        transition: all 0.2s ease;
+   112→      }
+   113→      .content-card:hover {
+   114→        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+   115→      }
+   116→      input[type="checkbox"]:checked {
+   117→        background-color: #a33900;
+   118→        border-color: #a33900;
+   119→      }
+   120→      .toggle-switch:checked + .toggle-bg {
+   121→        background-color: #a33900;
+   122→      }
+   123→    </style>
+   124→</head>
+   125→<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+   126→<!-- TopNavBar -->
+   127→<nav class="fixed top-0 w-full z-50 glass-nav border-b border-border-subtle">
+   128→<div class="flex justify-between items-center max-w-container-max mx-auto px-margin-desktop h-20">
+   129→<div class="flex items-center gap-2">
+   130→<span class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">LogiFlow</span>
+   131→<span class="bg-primary text-on-primary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase">Freelancer</span>
+   132→</div>
+   133→<div class="hidden md:flex items-center gap-gutter">
+   134→<a class="text-on-surface font-medium hover:text-primary transition-colors duration-200" href="#">Go</a>
+   135→<a class="text-primary font-bold border-b-2 border-primary pb-1 transition-colors duration-200" href="#">Freelancer</a>
+   136→<a class="text-on-surface font-medium hover:text-primary transition-colors duration-200" href="#">Solutions</a>
+   137→<a class="text-on-surface font-medium hover:text-primary transition-colors duration-200" href="#">Resources</a>
+   138→</div>
+   139→<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-bold active:scale-95 transition-transform">
+   140→                Connect
+   141→            </button>
+   142→</div>
+   143→</nav>
+   144→<!-- Hero Section -->
+   145→<header class="pt-32 pb-16 bg-surface-container-low overflow-hidden relative">
+   146→<div class="max-w-container-max mx-auto px-margin-desktop relative z-10">
+   147→<div class="max-w-2xl">
+   148→<h1 class="font-headline-xl text-headline-xl text-on-surface mb-6">Gestion du Profil et Politiques Freelancer</h1>
+   149→<p class="font-body-lg text-body-lg text-on-surface-variant">
+   150→                    Pilotez votre activité, configurez vos tarifs et consultez nos engagements pour une collaboration transparente et sécurisée.
+   151→                </p>
+   152→</div>
+   153→</div>
+   154→</header>
+   155→<main class="max-w-container-max mx-auto px-margin-desktop py-16 flex flex-col md:flex-row gap-gutter">
+   156→<!-- Sticky Sidebar Navigation -->
+   157→<aside class="md:w-1/4 h-fit sticky top-28 hidden md:block">
+   158→<nav class="flex flex-col gap-1 border-l border-border-subtle">
+   159→<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#settings">1. Paramètres de Profil</a>
+   160→<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#intro">2. Engagement Logistique</a>
+   161→<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#eligibility">3. Conditions d'Éligibilité</a>
+   162→<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#conduct">4. Règles de Conduite</a>
+   163→<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#payment">5. Politique de Paiement</a>
+   164→<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#safety">6. Sécurité et Assurance</a>
+   165→<a class="sidebar-link px-4 py-3 text-body-md text-on-surface-variant hover:bg-surface-container transition-all" href="#termination">7. Résiliation</a>
+   166→</nav>
+   167→</aside>
+   168→<!-- Content Area -->
+   169→<div class="md:w-3/4 space-y-12">
+   170→<!-- 1. Paramètres de Profil Freelancer (New Section) -->
+   171→<section class="scroll-mt-32" id="settings">
+   172→<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+   173→<div class="flex items-center gap-4 mb-8">
+   174→<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center">
+   175→<span class="material-symbols-outlined text-primary">settings_account_box</span>
+   176→</div>
+   177→<h2 class="font-headline-lg text-headline-lg text-on-surface">Paramètres de Profil Freelancer</h2>
+   178→</div>
+   179→<div class="space-y-10">
+   180→<!-- Availability -->
+   181→<div><h3 class="font-headline-md text-on-surface mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-primary">calendar_month</span> Disponibilités Hebdomadaires</h3><div class="space-y-3"><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Lundi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Mardi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Mercredi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Jeudi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input checked="" class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Vendredi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="08:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="18:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Samedi</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="09:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="13:00"/></div></div><div class="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] items-center gap-4 p-3 rounded-lg border border-border-subtle hover:bg-surface-container transition-colors"><label class="flex items-center gap-3 cursor-pointer"><input class="rounded border-outline text-primary focus:ring-primary" type="checkbox"/><span class="text-label-bold">Dimanche</span></label><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Début</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="09:00"/></div><div class="flex flex-col gap-1"><label class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Fin</label><input class="p-2 text-sm rounded border border-border-subtle focus:ring-primary focus:border-primary" type="time" value="13:00"/></div></div></div></div>
+   182→<!-- Pricing -->
+   183→<div class="pt-6 border-t border-border-subtle">
+   184→<h3 class="font-headline-md text-on-surface mb-4 flex items-center gap-2">
+   185→<span class="material-symbols-outlined text-primary">sell</span>
+   186→            Tarification du Service
+   187→        </h3>
+   188→<div class="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
+   189→<div class="flex flex-col gap-1.5">
+   190→<label class="text-label-bold text-on-surface">Prix par kilomètre (XAF)</label>
+   191→<div class="relative">
+   192→<input class="w-full p-3 pr-12 rounded-lg border border-border-subtle focus:ring-primary focus:border-primary" type="number" value="250"/>
+   193→<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-label-sm">/km</span>
+   194→</div>
+   195→</div>
+   196→<div class="flex flex-col gap-1.5">
+   197→<label class="text-label-bold text-on-surface">Prix par mètre cube (XAF)</label>
+   198→<div class="relative">
+   199→<input class="w-full p-3 pr-12 rounded-lg border border-border-subtle focus:ring-primary focus:border-primary" type="number" value="1500"/>
+   200→<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-label-sm">/m³</span>
+   201→</div>
+   202→</div>
+   203→</div>
+   204→<!-- Overtime -->
+   205→<div class="mt-8 p-4 bg-surface-container rounded-xl">
+   206→<div class="flex items-center justify-between mb-4">
+   207→<div class="flex flex-col">
+   208→<span class="text-label-bold text-on-surface">Surfacturation par minute d'attente</span>
+   209→<span class="text-label-sm text-on-surface-variant">Activez les frais pour temps d'attente au ramassage/livraison</span>
+   210→</div>
+   211→<label class="relative inline-flex items-center cursor-pointer">
+   212→<input checked="" class="sr-only peer" type="checkbox" value=""/>
+   213→<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+   214→</label>
+   215→</div>
+   216→<div class="flex flex-col gap-1.5">
+   217→<label class="text-label-bold text-on-surface">Tarif d'attente (XAF/min)</label>
+   218→<input class="p-3 rounded-lg border border-border-subtle focus:ring-primary focus:border-primary bg-white" type="number" value="50"/>
+   219→</div>
+   220→</div>
+   221→</div>
+   222→<!-- Accepted Parcels -->
+   223→<div class="pt-6 border-t border-border-subtle">
+   224→<h3 class="font-headline-md text-on-surface mb-4 flex items-center gap-2">
+   225→<span class="material-symbols-outlined text-primary">package_2</span>
+   226→            Colis Acceptés
+   227→        </h3>
+   228→<div class="mb-6">
+   229→<label class="text-label-bold text-on-surface block mb-2">Plage de poids (kg)</label>
+   230→<div class="flex items-center gap-4">
+   231→<input class="w-full p-3 rounded-lg border border-border-subtle" placeholder="Min" type="number" value="0"/>
+   232→<span class="text-on-surface-variant">à</span>
+   233→<input class="w-full p-3 rounded-lg border border-border-subtle" placeholder="Max" type="number" value="50"/>
+   234→</div>
+   235→</div>
+   236→<p class="text-label-bold text-on-surface mb-3">Styles de colis acceptés</p>
+   237→<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+   238→<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+   239→<input checked="" class="hidden" type="checkbox"/>
+   240→<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">inventory_2</span>
+   241→<span class="text-label-sm font-bold">Standard</span>
+   242→</label>
+   243→<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+   244→<input checked="" class="hidden" type="checkbox"/>
+   245→<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">devices</span>
+   246→<span class="text-label-sm font-bold">Électronique</span>
+   247→</label>
+   248→<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+   249→<input class="hidden" type="checkbox"/>
+   250→<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">wine_bar</span>
+   251→<span class="text-label-sm font-bold">Fragile</span>
+   252→</label>
+   253→<label class="group flex flex-col items-center p-4 rounded-xl border border-border-subtle hover:border-primary cursor-pointer transition-all has-[:checked]:bg-primary-fixed has-[:checked]:border-primary">
+   254→<input checked="" class="hidden" type="checkbox"/>
+   255→<span class="material-symbols-outlined text-3xl mb-2 group-hover:scale-110 transition-transform">description</span>
+   256→<span class="text-label-sm font-bold">Documents</span>
+   257→</label>
+   258→</div>
+   259→</div>
+   260→<div class="flex justify-end pt-4">
+   261→<button class="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-bold shadow-lg hover:shadow-primary/20 active:scale-95 transition-all">
+   262→            Enregistrer les modifications
+   263→        </button>
+   264→</div>
+   265→</div>
+   266→</div>
+   267→</section>
+   268→<!-- 2. Introduction -->
+   269→<section class="scroll-mt-32" id="intro">
+   270→<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+   271→<div class="flex items-center gap-4 mb-6">
+   272→<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center">
+   273→<span class="material-symbols-outlined text-primary">verified_user</span>
+   274→</div>
+   275→<h2 class="font-headline-lg text-headline-lg text-on-surface">Engagement pour une logistique professionnelle</h2>
+   276→</div>
+   277→<div class="space-y-4 text-body-md text-on-surface-variant leading-relaxed">
+   278→<p>Chez TiiBnTick Freelancer, nous redéfinissons la logistique du dernier kilomètre par l'excellence et la confiance. Notre plateforme n'est pas seulement un outil de mise en relation, c'est un écosystème où chaque livraison compte.</p>
+   279→<p>Nous nous engageons à fournir une infrastructure robuste permettant aux courtiers de travailler en toute autonomie tout en garantissant un niveau de service premium pour nos clients expéditeurs.</p>
+   280→</div>
+   281→</div>
+   282→</section>
+   283→<!-- 3. Conditions d'Éligibilité -->
+   284→<section class="scroll-mt-32" id="eligibility">
+   285→<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+   286→<div class="flex items-center gap-4 mb-6">
+   287→<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center">
+   288→<span class="material-symbols-outlined text-secondary">badge</span>
+   289→</div>
+   290→<h2 class="font-headline-lg text-headline-lg text-on-surface">Conditions d'Éligibilité</h2>
+   291→</div>
+   292→<p class="text-body-md text-on-surface-variant mb-6">Pour rejoindre le réseau LogiFlow en tant que Freelancer TiiBnTick, vous devez satisfaire aux critères suivants :</p>
+   293→<ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+   294→<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+   295→<span class="material-symbols-outlined text-success-green">check_circle</span>
+   296→<div>
+   297→<p class="font-label-bold text-on-surface">Profil Vérifié</p>
+   298→<p class="text-label-sm text-on-surface-variant">Validation biométrique et vérification de l'identité en temps réel.</p>
+   299→</div>
+   300→</li>
+   301→<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+   302→<span class="material-symbols-outlined text-success-green">check_circle</span>
+   303→<div>
+   304→<p class="font-label-bold text-on-surface">Documents Requis</p>
+   305→<p class="text-label-sm text-on-surface-variant">Carte Nationale d'Identité (CNI) ou Passeport en cours de validité.</p>
+   306→</div>
+   307→</li>
+   308→<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+   309→<span class="material-symbols-outlined text-success-green">check_circle</span>
+   310→<div>
+   311→<p class="font-label-bold text-on-surface">Permis de Conduire</p>
+   312→<p class="text-label-sm text-on-surface-variant">Obligatoire pour les véhicules motorisés (moto, auto, utilitaire).</p>
+   313→</div>
+   314→</li>
+   315→<li class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+   316→<span class="material-symbols-outlined text-success-green">check_circle</span>
+   317→<div>
+   318→<p class="font-label-bold text-on-surface">Statut Indépendant</p>
+   319→<p class="text-label-sm text-on-surface-variant">Numéro d'immatriculation d'entreprise ou statut auto-entrepreneur.</p>
+   320→</div>
+   321→</li>
+   322→</ul>
+   323→</div>
+   324→</section>
+   325→<!-- Image Break -->
+   326→<div class="h-64 rounded-xl overflow-hidden shadow-inner relative group">
+   327→<div class="bg-cover bg-center w-full h-full transform group-hover:scale-105 transition-transform duration-700" data-alt="A professional courier wearing a modern branded LogiFlow vest scanning a QR code on a parcel with a smartphone." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjymlqklLr7InD9hs_A3r9aV_avn4HV8NFvWCyP4ZGBV-PiZPR8LcJ7UQlx5Hbz0xFGeddrOnbRxt8XZXDzJEkZhVsjasIwgkiGI7pJPxvJyOoK9rISrh0GKYz34XqWPgJUACZcHvugdL9ZKPp5xtydyYQR4y_K2REJy9D2voyhKGa6-d7eOQJKSXMCMW0436QCZHr-DxRT78h8hHprTUHkirG2AyCQyNXa3HigkBN2is0_gYEW4qp')"></div>
+   328→<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+   329→<p class="text-white font-headline-md italic">"Rapidité. Précision. Professionnalisme."</p>
+   330→</div>
+   331→</div>
+   332→<!-- 4. Règles de Conduite -->
+   333→<section class="scroll-mt-32" id="conduct">
+   334→<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+   335→<div class="flex items-center gap-4 mb-6">
+   336→<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center">
+   337→<span class="material-symbols-outlined text-tertiary">handshake</span>
+   338→</div>
+   339→<h2 class="font-headline-lg text-headline-lg text-on-surface">Règles de Conduite</h2>
+   340→</div>
+   341→<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+   342→<div class="space-y-3">
+   343→<span class="material-symbols-outlined text-primary">schedule</span>
+   344→<h3 class="font-label-bold text-on-surface">Ponctualité</h3>
+   345→<p class="text-body-md text-on-surface-variant">Respect strict des créneaux de ramassage et de livraison pour maintenir la fluidité du réseau.</p>
+   346→</div>
+   347→<div class="space-y-3">
+   348→<span class="material-symbols-outlined text-primary">sentiment_satisfied</span>
+   349→<h3 class="font-label-bold text-on-surface">Courtoisie</h3>
+   350→<p class="text-body-md text-on-surface-variant">Représenter TiiBnTick avec respect auprès des clients. Une communication claire est essentielle.</p>
+   351→</div>
+   352→<div class="space-y-3">
+   353→<span class="material-symbols-outlined text-primary">inventory_2</span>
+   354→<h3 class="font-label-bold text-on-surface">Manipulation Sécurisée</h3>
+   355→<p class="text-body-md text-on-surface-variant">Garantir l'intégrité physique de chaque colis confié, du point A au point B.</p>
+   356→</div>
+   357→</div>
+   358→</div>
+   359→</section>
+   360→<!-- 5. Politique de Paiement -->
+   361→<section class="scroll-mt-32" id="payment">
+   362→<div class="bg-on-background p-gutter rounded-xl text-white">
+   363→<div class="flex items-center gap-4 mb-8">
+   364→<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+   365→<span class="material-symbols-outlined text-white">payments</span>
+   366→</div>
+   367→<h2 class="font-headline-lg text-headline-lg">Politique de Paiement Garanti</h2>
+   368→</div>
+   369→<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+   370→<div class="space-y-6">
+   371→<div class="p-4 border border-white/20 rounded-lg">
+   372→<p class="font-label-bold mb-2">Commissions Transparentes</p>
+   373→<p class="text-body-md text-white/80">LogiFlow prélève une commission fixe sur chaque course, couvrant les frais de service et l'assurance.</p>
+   374→</div>
+   375→<div class="p-4 border border-white/20 rounded-lg">
+   376→<p class="font-label-bold mb-2">Délais de Versement</p>
+   377→<p class="text-body-md text-white/80">Choisissez votre rythme : versements journaliers pour une liquidité immédiate ou hebdomadaires pour une gestion simplifiée.</p>
+   378→</div>
+   379→</div>
+   380→<div class="bg-primary/20 p-6 rounded-lg border border-primary/40">
+   381→<h3 class="font-headline-md mb-4 flex items-center gap-2">
+   382→<span class="material-symbols-outlined">lock</span> Paiement Garanti
+   383→                            </h3>
+   384→<p class="text-body-md text-white/90 mb-4">
+   385→                                Pour protéger les deux parties, les fonds sont bloqués par la plateforme dès l'acceptation de la mission.
+   386→                            </p>
+   387→<p class="text-label-sm text-white/70">
+   388→                                Le virement est débloqué vers votre compte TiiBnTick dès la validation finale par le destinataire ou via le QR Code de sécurité.
+   389→                            </p>
+   390→</div>
+   391→</div>
+   392→</div>
+   393→</section>
+   394→<!-- 6. Sécurité et Assurance -->
+   395→<section class="scroll-mt-32" id="safety">
+   396→<div class="bg-surface-container-lowest p-gutter rounded-xl content-card">
+   397→<div class="flex flex-col md:flex-row gap-8">
+   398→<div class="md:w-1/2 space-y-6">
+   399→<div class="flex items-center gap-4">
+   400→<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center">
+   401→<span class="material-symbols-outlined text-tertiary">shield</span>
+   402→</div>
+   403→<h2 class="font-headline-lg text-headline-lg text-on-surface">Sécurité &amp; Assurance</h2>
+   404→</div>
+   405→<p class="text-body-md text-on-surface-variant">Votre sécurité et celle des biens transportés sont nos priorités absolues. Chaque mission effectuée sur TiiBnTick est couverte par notre programme de protection.</p>
+   406→<div class="space-y-4">
+   407→<div class="flex gap-4">
+   408→<span class="material-symbols-outlined text-primary">qr_code_scanner</span>
+   409→<div>
+   410→<p class="font-label-bold text-on-surface">Validation par QR Code</p>
+   411→<p class="text-body-md text-on-surface-variant">Preuve de livraison infalsifiable. Le paiement n'est débloqué qu'après le scan.</p>
+   412→</div>
+   413→</div>
+   414→<div class="flex gap-4">
+   415→<span class="material-symbols-outlined text-primary">health_and_safety</span>
+   416→<div>
+   417→<p class="font-label-bold text-on-surface">Couverture Incident</p>
+   418→<p class="text-body-md text-on-surface-variant">Assurance responsabilité civile incluse pour tout incident survenant durant la course.</p>
+   419→</div>
+   420→</div>
+   421→</div>
+   422→</div>
+   423→<div class="md:w-1/2 rounded-xl overflow-hidden">
+   424→<div class="w-full h-full min-h-[300px] bg-cover bg-center" data-alt="A macro shot of a hand holding a mobile phone displaying a QR code." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA4nx57HrgbrH8PNW5nWclmjzSNJatZjzTnuWXpV390LDuR-bzzxGzqQUhQorWRAW3lK7zoEj8411zRw7pF1g6naieQD1mdgDvDUpzQSr9gPmixoXCdKQ-sl8ip4K4h_nzjVb6zXUIsFjyW_L0fodJ5GuIXQmiy1v-i39TBtzhmDtAWJEEKVoUjJ_2_a5b-HMMT4XPMyhr9nSdAtVfwLgDqItCKbMamI0Kr50VZAEClVP3m9WtWIu53')"></div>
+   425→</div>
+   426→</div>
+   427→</div>
+   428→</section>
+   429→<!-- 7. Résiliation -->
+   430→<section class="scroll-mt-32" id="termination">
+   431→<div class="bg-error-container/30 p-gutter rounded-xl border border-error/20">
+   432→<div class="flex items-center gap-4 mb-6">
+   433→<div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center">
+   434→<span class="material-symbols-outlined text-error">report</span>
+   435→</div>
+   436→<h2 class="font-headline-lg text-headline-lg text-error">Résiliation et Suspension</h2>
+   437→</div>
+   438→<div class="text-body-md text-on-surface-variant space-y-4">
+   439→<p>Le non-respect répété ou grave de nos politiques peut entraîner une suspension temporaire ou définitive du compte Freelancer :</p>
+   440→<ul class="list-disc pl-6 space-y-2">
+   441→<li>Annulations de missions abusives et répétées (plus de 3 en 30 jours).</li>
+   442→<li>Comportement inapproprié ou non-professionnel envers les clients.</li>
+   443→<li>Fraude sur les documents ou utilisation de comptes tiers.</li>
+   444→<li>Manquement aux règles de sécurité routière ou manipulation dangereuse des colis.</li>
+   445→</ul>
+   446→<p class="pt-4 font-label-bold text-on-surface italic">TiiBnTick se réserve le droit de geler les avoirs en cours en cas d'enquête pour fraude avérée.</p>
+   447→</div>
+   448→</div>
+   449→</section>
+   450→</div>
+   451→</main>
+   452→<!-- Footer -->
+   453→<footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-border-subtle dark:border-outline-variant">
+   454→<div class="max-w-container-max mx-auto px-margin-desktop py-12 grid grid-cols-1 md:grid-cols-4 gap-gutter">
+   455→<div class="space-y-4">
+   456→<span class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-surface-bright">LogiFlow</span>
+   457→<p class="text-label-sm text-on-surface-variant dark:text-surface-variant">L'excellence logistique à portée de clic.</p>
+   458→</div>
+   459→<div class="flex flex-col gap-2">
+   460→<p class="font-label-bold text-primary dark:text-primary-fixed-dim">Plateforme</p>
+   461→<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Trouver des courses</a>
+   462→<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Mes livraisons</a>
+   463→<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Profil</a>
+   464→</div>
+   465→<div class="flex flex-col gap-2">
+   466→<p class="font-label-bold text-primary dark:text-primary-fixed-dim">Legal</p>
+   467→<a class="text-label-sm text-primary font-bold" href="#">Privacy Policy</a>
+   468→<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+   469→<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Carrier Terms</a>
+   470→</div>
+   471→<div class="flex flex-col gap-2">
+   472→<p class="font-label-bold text-primary dark:text-primary-fixed-dim">Support</p>
+   473→<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">Contact Us</a>
+   474→<a class="text-label-sm text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors" href="#">FAQ Freelancer</a>
+   475→</div>
+   476→</div>
+   477→<div class="max-w-container-max mx-auto px-margin-desktop py-6 border-t border-border-subtle/30 text-center">
+   478→<p class="text-label-sm text-on-surface-variant/60 dark:text-surface-variant/60">© 2024 LogiFlow Logistics. All rights reserved.</p>
+   479→</div>
+   480→</footer>
+   481→<script>
+   482→        // Simple Intersection Observer to highlight active sidebar link
+   483→        const sections = document.querySelectorAll('section');
+   484→        const navLinks = document.querySelectorAll('.sidebar-link');
+   485→
+   486→        window.addEventListener('scroll', () => {
+   487→            let current = '';
+   488→            sections.forEach(section => {
+   489→                const sectionTop = section.offsetTop;
+   490→                const sectionHeight = section.clientHeight;
+   491→                if (window.pageYOffset >= (sectionTop - 150)) {
+   492→                    current = section.getAttribute('id');
+   493→                }
+   494→            });
+   495→
+   496→            navLinks.forEach(link => {
+   497→                link.classList.remove('active');
+   498→                if (link.getAttribute('href').includes(current)) {
+   499→                    link.classList.add('active');
+   500→                }
+   501→            });
+   502→        });
+   503→
+   504→        // Smooth scroll for anchors
+   505→        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+   506→            anchor.addEventListener('click', function (e) {
+   507→                e.preventDefault();
+   508→                document.querySelector(this.getAttribute('href')).scrollIntoView({
+   509→                    behavior: 'smooth'
+   510→                });
+   511→            });
+   512→        });
+   513→    </script>
+   514→</body></html>

@@ -1,0 +1,614 @@
+     1→'use client';
+     2→import React, { useState, useEffect } from 'react';
+     3→import { useRouter } from 'next/navigation';
+     4→import {
+     5→  UserIcon as UserOutlineIcon,
+     6→  TruckIcon,
+     7→  MapPinIcon,
+     8→  CreditCardIcon,
+     9→  ArrowUturnLeftIcon,
+    10→  PencilIcon,
+    11→  SparklesIcon,
+    12→  ShieldCheckIcon,
+    13→  ClockIcon,
+    14→  DocumentTextIcon,
+    15→} from '@heroicons/react/24/outline';
+    16→import {
+    17→  CheckCircleIcon as SolidCheckCircleIcon,
+    18→  StarIcon,
+    19→  BoltIcon,
+    20→  GiftIcon,
+    21→} from '@heroicons/react/24/solid';
+    22→import { supabase } from '@/lib/supabase';
+    23→import { motion, AnimatePresence } from 'framer-motion';
+    24→import SenderInfoStep from './SenderInfoStep';
+    25→import RecipientInfoStep from './RecipientInfoStep';
+    26→import PackageInfoStep from './FormulaireColisExpedition';
+    27→import RouteSelectionStep from './RouteExpedition';
+    28→import SignatureStep from './SignatureStep';
+    29→import PaymentStep from './PaymentStepExpedition';
+    30→import { CheckCircleIcon, PrinterIcon } from '@heroicons/react/24/outline';
+    31→import { UserPlusIcon } from 'lucide-react';
+    32→import { pdfService } from '@/services/pdfService';
+    33→import { useAuth } from '@/context/AuthContext';
+    34→import { packageService, PackageCreationPayload } from '@/services/packageService';
+    35→
+    36→const EXPEDITION_FORM_STORAGE_KEY = 'expedition_form_in_progress';
+    37→
+    38→interface ExpeditionFormData {
+    39→  currentStep: number;
+    40→  senderData: SenderData;
+    41→  recipientData: RecipientData;
+    42→  packageData: PackageData;
+    43→  routeData: RouteData;
+    44→  signatureData: SignatureData;
+    45→  pricing: {
+    46→    basePrice: number;
+    47→    travelPrice: number;
+    48→    operatorFee: number;
+    49→    totalPrice: number;
+    50→  };
+    51→}
+    52→
+    53→interface SenderData {
+    54→  senderFirstName: string;
+    55→  senderLastName: string;
+    56→  senderPhone: string;
+    57→  senderEmail: string;
+    58→  senderCountry: string;
+    59→  senderRegion: string;
+    60→  senderCity: string;
+    61→  senderAddress: string;
+    62→  latitude?: number;
+    63→  longitude?: number;
+    64→}
+    65→
+    66→// 2. Mise à jour de l'interface RecipientData
+    67→interface RecipientData {
+    68→  recipientFirstName: string;
+    69→  recipientLastName: string;
+    70→  recipientPhone: string;
+    71→  recipientEmail: string;
+    72→  recipientCountry: string;
+    73→  recipientRegion: string;
+    74→  recipientCity: string;
+    75→  recipientAddress: string;
+    76→  recipientLatitude?: number;
+    77→  recipientLongitude?: number;
+    78→}
+    79→// << CORRIGÉ: Mise à jour de l'interface PackageData >>
+    80→interface PackageData {
+    81→  photo: File | string | null;
+    82→  designation: string;
+    83→  description: string;
+    84→  weight: string;
+    85→  length: string;
+    86→  width: string;
+    87→  height: string;
+    88→  isFragile: boolean;
+    89→  isPerishable: boolean;
+    90→  transportMethod: ('TRUCK' | 'MOTORBIKE' | 'BIKE' | 'CAR' | 'SCOOTER')[];
+    91→}
+    92→interface RouteData {
+    93→  departurePointId: string | null;
+    94→  arrivalPointId: string | null;
+    95→  departurePointName: string;
+    96→  arrivalPointName: string;
+    97→  distanceKm: number;
+    98→  durationMinutes?: number;
+    99→}
+   100→interface SignatureData {
+   101→  signatureUrl: string | null;
+   102→}
+   103→interface LoggedInUser {
+   104→  id: string;
+   105→  full_name: string | null;
+   106→  phone: string | null;
+   107→  email?: string;
+   108→  address?: string | null;
+   109→  lieu_dit?: string | null;
+   110→}
+   111→
+   112→const STORAGE_KEY = 'shipping_form_temp_data_v2';
+   113→
+   114→const ShippingSteps = ({ currentStep = 1 }: { currentStep?: number }) => {
+   115→  const steps = [
+   116→    { number: 1, title: "Expéditeur", icon: <UserOutlineIcon className="w-5 h-5" />, color: "from-orange-400 to-orange-500" },
+   117→    { number: 2, title: "Destinataire", icon: <UserOutlineIcon className="w-5 h-5" />, color: "from-orange-400 to-orange-600" },
+   118→    { number: 3, title: "Colis", icon: <TruckIcon className="w-5 h-5" />, color: "from-orange-500 to-orange-600" },
+   119→    { number: 4, title: "Trajet", icon: <MapPinIcon className="w-5 h-5" />, color: "from-orange-500 to-orange-700" },
+   120→    { number: 5, title: "Signature", icon: <PencilIcon className="w-5 h-5" />, color: "from-orange-600 to-orange-700" },
+   121→    { number: 6, title: "Paiement", icon: <CreditCardIcon className="w-5 h-5" />, color: "from-orange-600 to-orange-800" },
+   122→  ];
+   123→  return (
+   124→    <div className="flex justify-between items-start mb-6 w-full max-w-5xl mx-auto relative">
+   125→      <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700 rounded-full" />
+   126→      <motion.div
+   127→        className="absolute top-5 left-0 h-0.5 bg-orange-400 dark:bg-orange-500 rounded-full shadow-sm"
+   128→        initial={{ width: '0%' }}
+   129→        animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
+   130→        transition={{ duration: 0.6, ease: "easeInOut" }}
+   131→      />
+   132→      {steps.map((step, index) => (
+   133→        <div key={step.number} className="flex flex-col items-center group text-center relative z-10">
+   134→          <motion.div
+   135→            className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${step.number <= currentStep
+   136→              ? "bg-orange-500 dark:bg-orange-600 text-white shadow-md shadow-orange-500/20 dark:shadow-orange-600/30"
+   137→              : "bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 shadow-sm"
+   138→              }`}
+   139→            whileHover={{ scale: 1.05 }}
+   140→          >
+   141→            {step.number < currentStep ? (
+   142→              <motion.div
+   143→                initial={{ scale: 0 }}
+   144→                animate={{ scale: 1 }}
+   145→                transition={{ duration: 0.3 }}
+   146→              >
+   147→                <SolidCheckCircleIcon className="w-6 h-6" />
+   148→              </motion.div>
+   149→            ) : step.number === currentStep ? (
+   150→              <motion.div
+   151→                animate={{
+   152→                  scale: [1, 1.05, 1],
+   153→                }}
+   154→                transition={{ duration: 1.5, repeat: Infinity }}
+   155→              >
+   156→                {step.icon}
+   157→              </motion.div>
+   158→            ) : (
+   159→              step.icon
+   160→            )}
+   161→          </motion.div>
+   162→          <motion.p
+   163→            className={`text-xs font-semibold mt-1.5 transition-all duration-300 ${step.number <= currentStep
+   164→              ? "text-orange-600 dark:text-orange-400"
+   165→              : "text-gray-500 dark:text-gray-400"
+   166→              }`}
+   167→          >
+   168→            {step.title}
+   169→          </motion.p>
+   170→        </div>
+   171→      ))}
+   172→    </div>
+   173→  );
+   174→};
+   175→
+   176→
+   177→
+   178→export default function ShippingPage() {
+   179→  const router = useRouter();
+   180→  const { user: authUser } = useAuth();
+   181→  const [user, setUser] = useState<LoggedInUser | null>(null);
+   182→  const [isLoadingUser, setIsLoadingUser] = useState(true);
+   183→  const [isMounted, setIsMounted] = useState(false);
+   184→  const [formData, setFormData] = useState<ExpeditionFormData>({
+   185→    currentStep: 1,
+   186→    senderData: {
+   187→      senderFirstName: '', senderLastName: '', senderPhone: '', senderAddress: '',
+   188→      senderEmail: '', senderCountry: 'cameroun', senderRegion: 'centre', senderCity: 'Yaoundé'
+   189→    },
+   190→    recipientData: {
+   191→      recipientFirstName: '', recipientLastName: '', recipientPhone: '', recipientEmail: '', recipientAddress: '',
+   192→      recipientCountry: 'cameroun', recipientRegion: 'centre', recipientCity: 'Yaoundé'
+   193→    },
+   194→    packageData: {
+   195→      photo: null, designation: '', description: '', weight: '', length: '', width: '', height: '',
+   196→      isFragile: false, isPerishable: false,
+   197→      transportMethod: []
+   198→    },
+   199→    routeData: { departurePointId: null, arrivalPointId: null, departurePointName: '', arrivalPointName: '', distanceKm: 0 },
+   200→    signatureData: { signatureUrl: null },
+   201→    pricing: { basePrice: 0, travelPrice: 0, operatorFee: 0, totalPrice: 0 },
+   202→  });
+   203→
+   204→  // États pour l'écran de succès
+   205→  const [trackingNumber, setTrackingNumber] = useState('PDL0000000');
+   206→
+   207→  // Generate tracking number only on client side to avoid hydration mismatch
+   208→  useEffect(() => {
+   209→    if (formData.currentStep === 7 && trackingNumber === 'PDL0000000') {
+   210→      setTrackingNumber(`PDL${Date.now().toString().slice(-7)}`);
+   211→    }
+   212→  }, [formData.currentStep, trackingNumber]);
+   213→
+   214→  // Set mounted flag to prevent hydration issues
+   215→  useEffect(() => {
+   216→    setIsMounted(true);
+   217→  }, []);
+   218→
+   219→  useEffect(() => {
+   220→    if (formData.currentStep > 0 && formData.currentStep < 7) {
+   221→      try {
+   222→        // Protection contre l'objet File lors de la sauvegarde JSON
+   223→        const safeData = {
+   224→          ...formData,
+   225→          packageData: {
+   226→            ...formData.packageData,
+   227→            photo: typeof formData.packageData.photo === 'string' ? formData.packageData.photo : null
+   228→          }
+   229→        };
+   230→        localStorage.setItem(EXPEDITION_FORM_STORAGE_KEY, JSON.stringify(formData));
+   231→      } catch (e) {
+   232→        console.error("Erreur de sauvegarde localStorage:", e);
+   233→      }
+   234→    }
+   235→  }, [formData]);
+   236→
+   237→  useEffect(() => {
+   238→    if (formData.currentStep < 7 && formData.currentStep > 0) {
+   239→      try {
+   240→        localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+   241→      } catch (e) {
+   242→        console.error("Erreur de sauvegarde localStorage :", e)
+   243→      }
+   244→    }
+   245→  }, [formData]);
+   246→
+   247→  useEffect(() => {
+   248→    const checkUserAndLoadData = async () => {
+   249→      let restoredData: Partial<ExpeditionFormData> | null = null;
+   250→      let shouldAskToRestore = false;
+   251→
+   252→      try {
+   253→        const savedData = localStorage.getItem(EXPEDITION_FORM_STORAGE_KEY);
+   254→        if (savedData) {
+   255→          restoredData = JSON.parse(savedData);
+   256→          // Auto-restore: if a prefill exists (navigated from Publier), apply it immediately
+   257→          try {
+   258→            setFormData(prev => ({ ...prev, ...restoredData }));
+   259→            // remove saved prefill to avoid repeated restores
+   260→            localStorage.removeItem(EXPEDITION_FORM_STORAGE_KEY);
+   261→            restoredData = null;
+   262→            shouldAskToRestore = false;
+   263→          } catch (e) {
+   264→            console.warn('Impossible de restaurer automatiquement le formulaire:', e);
+   265→            shouldAskToRestore = true;
+   266→          }
+   267→        }
+   268→      } catch (e) {
+   269→        console.error("Erreur de parsing localStorage:", e);
+   270→        localStorage.removeItem(EXPEDITION_FORM_STORAGE_KEY);
+   271→      }
+   272→
+   273→      const { data: { session } } = await (supabase.auth.getSession() as any);
+   274→      if (session?.user) {
+   275→        const { data: profile } = await (supabase.from('profiles').select('*').eq('id', session.user.id).single() as any);
+   276→        if (profile) {
+   277→          const connectedUser: LoggedInUser = { id: profile.id, full_name: profile.full_name, phone: profile.phone, email: profile.email, address: profile.address, lieu_dit: profile.lieu_dit };
+   278→          setUser(connectedUser);
+   279→
+   280→          if (!restoredData) {
+   281→            setFormData(prev => ({
+   282→              ...prev,
+   283→              senderData: {
+   284→                // --- CORRECTION: Préserver les champs par défaut comme le pays tout en remplissant le profil ---
+   285→                ...prev.senderData,
+   286→                senderFirstName: connectedUser.full_name ? connectedUser.full_name.split(' ')[0] : '',
+   287→                senderLastName: connectedUser.full_name ? connectedUser.full_name.split(' ').slice(1).join(' ') : '',
+   288→                senderPhone: connectedUser.phone || '',
+   289→                senderEmail: connectedUser.email || '', // Email ajouté
+   290→                senderAddress: connectedUser.address || '',
+   291→              }
+   292→            }));
+   293→          }
+   294→        }
+   295→      }
+   296→
+   297→      // Fallback: if no Supabase session but backend auth is active, use authUser
+   298→      if (!user && authUser && !restoredData) {
+   299→        const backendUser: LoggedInUser = {
+   300→          id: authUser.id,
+   301→          full_name: `${authUser.firstName || ''} ${authUser.lastName || ''}`.trim() || null,
+   302→          phone: authUser.phone || null,
+   303→          email: authUser.email,
+   304→          address: authUser.street || null,
+   305→          lieu_dit: null,
+   306→        };
+   307→        setUser(backendUser);
+   308→        setFormData(prev => ({
+   309→          ...prev,
+   310→          senderData: {
+   311→            ...prev.senderData,
+   312→            senderFirstName: authUser.firstName || '',
+   313→            senderLastName: authUser.lastName || '',
+   314→            senderPhone: authUser.phone || '',
+   315→            senderEmail: authUser.email || '',
+   316→            senderAddress: authUser.street || '',
+   317→          }
+   318→        }));
+   319→      }
+   320→      setIsLoadingUser(false);
+   321→    };
+   322→
+   323→    checkUserAndLoadData();
+   324→  }, []);
+   325→
+   326→  const resetFormAndStartOver = () => {
+   327→    localStorage.removeItem(EXPEDITION_FORM_STORAGE_KEY);
+   328→    window.location.reload();
+   329→  };
+   330→
+   331→  const generateBordereauPDF = async () => {
+   332→    const allData = {
+   333→      senderLastName: formData.senderData.senderLastName,
+   334→      senderFirstName: formData.senderData.senderFirstName,
+   335→      senderPhone: formData.senderData.senderPhone,
+   336→      recipientName: `${formData.recipientData.recipientFirstName} ${formData.recipientData.recipientLastName}`,
+   337→      recipientPhone: formData.recipientData.recipientPhone,
+   338→      departurePointName: formData.routeData.departurePointName,
+   339→      arrivalPointName: formData.routeData.arrivalPointName,
+   340→      designation: formData.packageData.designation,
+   341→      weight: formData.packageData.weight,
+   342→      isFragile: formData.packageData.isFragile,
+   343→      isPerishable: formData.packageData.isPerishable,
+   344→      photo: typeof formData.packageData.photo === 'string' ? formData.packageData.photo : null,
+   345→      signatureUrl: formData.signatureData.signatureUrl,
+   346→      basePrice: formData.pricing.basePrice,
+   347→      travelPrice: formData.pricing.travelPrice,
+   348→    };
+   349→    await pdfService.generateBordereauPDF(
+   350→      allData,
+   351→      trackingNumber,
+   352→      formData.pricing.totalPrice,
+   353→      formData.pricing.operatorFee,
+   354→      'cash',
+   355→    );
+   356→  };
+   357→
+   358→  const handleCreateAccount = () => {
+   359→    // 1. Préparer les données de l'expéditeur pour le pré-remplissage
+   360→    const prefillData = {
+   361→      firstName: formData.senderData.senderFirstName,
+   362→      lastName: formData.senderData.senderLastName,
+   363→      email: formData.senderData.senderEmail,
+   364→      phone: formData.senderData.senderPhone,
+   365→    };
+   366→
+   367→    // 2. Stocker les données dans localStorage pour que la page d'inscription puisse les lire
+   368→    localStorage.setItem('registration_prefill', JSON.stringify(prefillData));
+   369→
+   370→    // 3. Rediriger vers la page d'inscription
+   371→    router.push('/register');
+   372→  };
+   373→
+   374→  const renderCurrentStep = () => {
+   375→    switch (formData.currentStep) {
+   376→      case 1:
+   377→        return <SenderInfoStep
+   378→          initialData={formData.senderData}
+   379→          onContinue={(data) => setFormData(prev => ({ ...prev, senderData: data, currentStep: 2 }))}
+   380→        />;
+   381→      case 2:
+   382→        return <RecipientInfoStep
+   383→          initialData={formData.recipientData}
+   384→          onContinue={(data) => setFormData(prev => ({ ...prev, recipientData: data, currentStep: 3 }))}
+   385→          onBack={() => setFormData(prev => ({ ...prev, currentStep: 1 }))}
+   386→        />;
+   387→      case 3:
+   388→        return <PackageInfoStep
+   389→          initialData={formData.packageData}
+   390→          onContinue={(data, totalPrice) => setFormData(prev => ({
+   391→            ...prev,
+   392→            packageData: data,
+   393→            pricing: { ...prev.pricing, basePrice: totalPrice },
+   394→            currentStep: 4
+   395→          }))}
+   396→          onBack={() => setFormData(prev => ({ ...prev, currentStep: 2 }))}
+   397→        />;
+   398→      case 4:
+   399→        return <RouteSelectionStep
+   400→          initialDepartureAddress={
+   401→            formData.senderData.senderAddress
+   402→              ? `${formData.senderData.senderAddress}, ${formData.senderData.senderCity}, ${formData.senderData.senderRegion}, ${formData.senderData.senderCountry}`
+   403→              : `${formData.senderData.senderCity}, ${formData.senderData.senderRegion}, ${formData.senderData.senderCountry}`
+   404→          }
+   405→          initialArrivalAddress={
+   406→            formData.recipientData.recipientAddress
+   407→              ? `${formData.recipientData.recipientAddress}, ${formData.recipientData.recipientCity}, ${formData.recipientData.recipientRegion}, ${formData.recipientData.recipientCountry}`
+   408→              : `${formData.recipientData.recipientCity}, ${formData.recipientData.recipientRegion}, ${formData.recipientData.recipientCountry}`
+   409→          }
+   410→          initialDepartureCoords={
+   411→            formData.senderData.latitude && formData.senderData.longitude
+   412→              ? { lat: formData.senderData.latitude, lon: formData.senderData.longitude }
+   413→              : undefined
+   414→          }
+   415→          initialArrivalCoords={
+   416→            formData.recipientData.recipientLatitude && formData.recipientData.recipientLongitude
+   417→              ? { lat: formData.recipientData.recipientLatitude, lon: formData.recipientData.recipientLongitude }
+   418→              : undefined
+   419→          }
+   420→          transportMethod={formData.packageData.transportMethod.join(',')}
+   421→          onContinue={(routeData, travelPrice) => setFormData(prev => ({ ...prev, routeData, pricing: { ...prev.pricing, travelPrice }, currentStep: 5 }))}
+   422→          onBack={() => setFormData(prev => ({ ...prev, currentStep: 3 }))}
+   423→        />;
+   424→      case 5:
+   425→        return <SignatureStep
+   426→          onSubmit={(signatureUrl) => setFormData(prev => ({ ...prev, signatureData: { signatureUrl }, currentStep: 6 }))}
+   427→          onBack={() => setFormData(prev => ({ ...prev, currentStep: 4 }))}
+   428→        />;
+   429→      case 6:
+   430→        // Construction de l'objet final pour le composant de paiement
+   431→        // Conversion forcée et nettoyage des types
+   432→        const fullDataForPayment: any = {
+   433→          ...formData.senderData,
+   434→          senderFirstName: formData.senderData.senderFirstName,
+   435→          senderLastName: formData.senderData.senderLastName,
+   436→          recipientFirstName: formData.recipientData.recipientFirstName,
+   437→          recipientLastName: formData.recipientData.recipientLastName,
+   438→          recipientPhone: formData.recipientData.recipientPhone,
+   439→          recipientEmail: formData.recipientData.recipientEmail,
+   440→          recipientCountry: formData.recipientData.recipientCountry,
+   441→          recipientRegion: formData.recipientData.recipientRegion,
+   442→          recipientCity: formData.recipientData.recipientCity,
+   443→          recipientAddress: formData.recipientData.recipientAddress,
+   444→          ...formData.packageData,
+   445→          transportMethod: formData.packageData.transportMethod,
+   446→          // Gérer explicitement le type File/String de la photo
+   447→          photo: typeof formData.packageData.photo === 'string' ? formData.packageData.photo : null,
+   448→          ...formData.routeData,
+   449→          ...formData.signatureData,
+   450→          // Ne pas caster en Number() si ce sont des UUIDs (chaines)
+   451→          departurePointId: (formData.routeData.departurePointId) as any,
+   452→          arrivalPointId: (formData.routeData.arrivalPointId) as any,
+   453→          basePrice: formData.pricing.basePrice,
+   454→          travelPrice: formData.pricing.travelPrice,
+   455→        };
+   456→        return <PaymentStep
+   457→          allData={fullDataForPayment}
+   458→          onPaymentFinalized={(finalPricing) => {
+   459→            setFormData(prev => ({ ...prev, pricing: finalPricing, currentStep: 7 }));
+   460→            localStorage.removeItem(EXPEDITION_FORM_STORAGE_KEY);
+   461→          }}
+   462→          onBack={() => setFormData(prev => ({ ...prev, currentStep: 5 }))}
+   463→          currentUser={user}
+   464→        />;
+   465→      case 7:
+   466→        return (
+   467→          <motion.div
+   468→            initial={{ opacity: 0, scale: 0.9 }}
+   469→            animate={{ opacity: 1, scale: 1 }}
+   470→            className="min-h-screen flex items-center justify-center bg-orange-50 dark:bg-gray-900 p-4"
+   471→          >
+   472→            <div className="max-w-md w-full text-center space-y-6">
+   473→              <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl">
+   474→                <motion.div
+   475→                  animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+   476→                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+   477→                >
+   478→                  <CheckCircleIcon className="w-24 h-24 text-green-500 mx-auto drop-shadow-lg" />
+   479→                </motion.div>
+   480→
+   481→                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-4 mb-2">Expédition confirmée !</h2>
+   482→                <p className="text-gray-600 dark:text-gray-300 mb-6">Votre colis a été enregistré.</p>
+   483→
+   484→                <div className="bg-orange-50 dark:bg-orange-900/30 rounded-2xl p-4 mb-6">
+   485→                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Numéro de suivi</p>
+   486→                  <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 break-all">{trackingNumber}</p>
+   487→                  <button
+   488→                    onClick={() => {
+   489→                      navigator.clipboard.writeText(trackingNumber);
+   490→                    }}
+   491→                    className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-100 dark:bg-orange-800/50 text-orange-700 dark:text-orange-300 rounded-lg text-sm font-medium hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors"
+   492→                  >
+   493→                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+   494→                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+   495→                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+   496→                    </svg>
+   497→                    Copier le numéro
+   498→                  </button>
+   499→                </div>
+   500→
+   501→                {/* Bouton télécharger le bordereau */}
+   502→                <motion.button
+   503→                  onClick={generateBordereauPDF}
+   504→                  className="w-full flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors shadow-lg"
+   505→                  whileHover={{ scale: 1.05 }}
+   506→                  whileTap={{ scale: 0.95 }}
+   507→                >
+   508→                  <PrinterIcon className="w-5 h-5 mr-2" />
+   509→                  Télécharger le Bordereau
+   510→                </motion.button>
+   511→              </div>
+   512→
+   513→              {/* Bloc d'incitation à l'inscription (seulement si pas connecté) */}
+   514→              {!user && (
+   515→                <motion.div
+   516→                  initial={{ opacity: 0, y: 20 }}
+   517→                  animate={{ opacity: 1, y: 0 }}
+   518→                  transition={{ delay: 0.5 }}
+   519→                  className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl border-2 border-dashed border-orange-300 dark:border-orange-600"
+   520→                >
+   521→                  <div className="flex items-center justify-center gap-2 mb-3">
+   522→                    <StarIcon className="w-6 h-6 text-orange-400" />
+   523→                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Devenez Client !</h3>
+   524→                  </div>
+   525→                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+   526→                    Créez votre compte pour suivre vos colis, voir votre historique et bénéficier d'offres exclusives. Vos informations sont déjà prêtes !
+   527→                  </p>
+   528→                  <motion.button
+   529→                    onClick={handleCreateAccount}
+   530→                    className="w-full flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all"
+   531→                    whileHover={{ scale: 1.05, y: -2 }}
+   532→                    whileTap={{ scale: 0.98 }}
+   533→                  >
+   534→                    <UserPlusIcon className="w-5 h-5 mr-2" />
+   535→                    Créer mon compte en 1 clic
+   536→                  </motion.button>
+   537→                </motion.div>
+   538→              )}
+   539→
+   540→              <button
+   541→                onClick={resetFormAndStartOver}
+   542→                className="text-gray-500 hover:text-orange-600 text-sm font-medium mt-4"
+   543→              >
+   544→                Effectuer une autre expédition
+   545→              </button>
+   546→            </div>
+   547→          </motion.div>
+   548→        );
+   549→      default:
+   550→        return null;
+   551→    }
+   552→  };
+   553→
+   554→  if (!isMounted || isLoadingUser) {
+   555→    return (
+   556→      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-gray-900">
+   557→        <motion.div
+   558→          className="text-center"
+   559→          initial={{ opacity: 0 }}
+   560→          animate={{ opacity: 1 }}
+   561→          transition={{ duration: 0.5 }}
+   562→        >
+   563→          <motion.div
+   564→            animate={{ rotate: 360 }}
+   565→            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+   566→            className="w-12 h-12 border-3 border-orange-200 dark:border-orange-800 border-t-orange-500 dark:border-t-orange-400 rounded-full mx-auto mb-3"
+   567→          />
+   568→          <p className="text-orange-600 dark:text-orange-400 font-semibold">Chargement de votre session...</p>
+   569→        </motion.div>
+   570→      </div>
+   571→    );
+   572→  }
+   573→
+   574→  return (
+   575→    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+   576→      <main className="container mx-auto px-4 py-4">
+   577→        <motion.div
+   578→          className="text-center mb-4"
+   579→          initial={{ opacity: 0, y: -20 }}
+   580→          animate={{ opacity: 1, y: 0 }}
+   581→          transition={{ duration: 0.5 }}
+   582→        >
+   583→          <button
+   584→            onClick={() => router.push('/go')}
+   585→            className="mb-2 group flex items-center mx-auto text-orange-600 dark:text-orange-400 text-sm hover:text-orange-700 dark:hover:text-orange-300 transition-colors duration-200"
+   586→          >
+   587→            <ArrowUturnLeftIcon className="w-4 h-4 mr-1" /> Retour à l'accueil
+   588→          </button>
+   589→          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-gray-100">Processus de Dépôt de Colis</h1>
+   590→          <p className="mt-1 text-sm text-slate-600 dark:text-gray-300 max-w-xl mx-auto">Suivez les étapes pour expédier votre colis en toute simplicité.</p>
+   591→        </motion.div>
+   592→
+   593→        <div className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm py-2 -mx-4 px-4 mb-3 border-b border-orange-100/50 dark:border-orange-800/30">
+   594→          <ShippingSteps currentStep={formData.currentStep} />
+   595→        </div>
+   596→
+   597→        <div className="bg-transparent rounded-xl p-4 md:p-1">
+   598→          <AnimatePresence mode="wait">
+   599→            <motion.div
+   600→              key={formData.currentStep}
+   601→              initial={{ opacity: 0, y: 15 }}
+   602→              animate={{ opacity: 1, y: 0 }}
+   603→              exit={{ opacity: 0, y: -15 }}
+   604→              transition={{ duration: 0.25, ease: 'easeInOut' }}
+   605→            >
+   606→              {renderCurrentStep()}
+   607→            </motion.div>
+   608→          </AnimatePresence>
+   609→        </div>
+   610→      </main>
+   611→    </div>
+   612→  );
+   613→}
+   614→

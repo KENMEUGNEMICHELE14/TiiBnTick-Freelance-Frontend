@@ -1,0 +1,582 @@
+     1→'use client'
+     2→
+     3→import { useState, useEffect, useCallback, useRef } from 'react'
+     4→import { useSearchParams, useRouter } from 'next/navigation'
+     5→import { motion, AnimatePresence, useDragControls } from 'framer-motion'
+     6→import {
+     7→  ArrowLeft,
+     8→  Phone,
+     9→  MessageCircle,
+    10→  ChevronUp,
+    11→  Navigation,
+    12→  Clock,
+    13→  Package,
+    14→  Mail,
+    15→  Truck,
+    16→  AlertTriangle,
+    17→  X,
+    18→  Send,
+    19→  CheckCircle2,
+    20→  CircleDot,
+    21→} from 'lucide-react'
+    22→import { Button } from '@/components/ui/button'
+    23→import { Badge } from '@/components/ui/badge'
+    24→import { Input } from '@/components/ui/input'
+    25→import dynamic from 'next/dynamic'
+    26→import { getAnnouncementById } from '@/services/announcementService'
+    27→import { getRoute } from '@/services/routing'
+    28→import { withAuth } from '@/components/hoc/withAuth'
+    29→import type { AnnouncementResponseDTO } from '@/services/announcementService'
+    30→
+    31→// Inline GeoJSON Feature type (avoid importing 'geojson' package — crashes Turbopack)
+    32→interface GeoJsonGeometry {
+    33→  type: string
+    34→  coordinates: number[][][]
+    35→}
+    36→interface RouteFeature {
+    37→  type: 'Feature'
+    38→  geometry?: GeoJsonGeometry
+    39→  properties?: Record<string, unknown>
+    40→  routes?: Array<{ geometry?: { coordinates: number[][] } }>
+    41→}
+    42→
+    43→const MapLeaflet = dynamic(() => import('@/components/MapLeaflet'), {
+    44→  ssr: false,
+    45→  loading: () => <div className="w-full h-full bg-gray-100 animate-pulse" />,
+    46→})
+    47→
+    48→// Deterministic number formatter
+    49→function fmt(n: number | undefined): string {
+    50→  if (n == null) return '0'
+    51→  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0')
+    52→}
+    53→
+    54→// Snap points for the sliding panel (fraction of viewport height)
+    55→const SNAP_POINTS = { peek: 0.125, half: 0.45, full: 0.88 }
+    56→
+    57→function DeliveryPage() {
+    58→  const searchParams = useSearchParams()
+    59→  const router = useRouter()
+    60→  const announcementId = searchParams.get('id') || ''
+    61→  const [announcement, setAnnouncement] = useState<AnnouncementResponseDTO | null>(null)
+    62→  const [loading, setLoading] = useState(true)
+    63→  const [route, setRoute] = useState<RouteFeature | null>(null)
+    64→  const [panelSnap, setPanelSnap] = useState<keyof typeof SNAP_POINTS>('peek')
+    65→  const [chatOpen, setChatOpen] = useState(false)
+    66→  const [chatMessages, setChatMessages] = useState<{ from: 'me' | 'client'; text: string; time: string }[]>([
+    67→    { from: 'client', text: 'Bonjour, êtes-vous en route ?', time: '14:32' },
+    68→    { from: 'me', text: 'Oui, j\'arrive dans 15 min !', time: '14:33' },
+    69→  ])
+    70→  const [chatInput, setChatInput] = useState('')
+    71→  const chatEndRef = useRef<HTMLDivElement>(null)
+    72→
+    73→  // Use state to avoid hydration mismatch with window.innerHeight
+    74→  const [viewportH, setViewportH] = useState(0)
+    75→  const [mounted, setMounted] = useState(false)
+    76→
+    77→  useEffect(() => {
+    78→    setViewportH(window.innerHeight)
+    79→    setMounted(true)
+    80→  }, [])
+    81→
+    82→  const panelHeight = mounted ? SNAP_POINTS[panelSnap] * viewportH : 0
+    83→  const dragControls = useDragControls()
+    84→
+    85→  // Fetch announcement data
+    86→  useEffect(() => {
+    87→    if (!announcementId) {
+    88→      setLoading(false)
+    89→      return
+    90→    }
+    91→    setLoading(true)
+    92→    getAnnouncementById(announcementId)
+    93→      .then((data) => {
+    94→        setAnnouncement(data)
+    95→        // Fetch route if coordinates exist
+    96→        if (data.pickupAddress?.latitude && data.deliveryAddress?.latitude) {
+    97→          getRoute(
+    98→            data.pickupAddress.latitude,
+    99→            data.pickupAddress.longitude,
+   100→            data.deliveryAddress.latitude,
+   101→            data.deliveryAddress.longitude,
+   102→            data.transportMethod === 'bike' ? 'bike' : 'driving'
+   103→          ).then(setRoute).catch(() => {})
+   104→        }
+   105→      })
+   106→      .catch(() => {})
+   107→      .finally(() => setLoading(false))
+   108→  }, [announcementId])
+   109→
+   110→  // Auto-scroll chat
+   111→  useEffect(() => {
+   112→    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+   113→  }, [chatMessages, chatOpen])
+   114→
+   115→  const handleSendChat = () => {
+   116→    if (!chatInput.trim()) return
+   117→    const now = new Date()
+   118→    setChatMessages((prev) => [
+   119→      ...prev,
+   120→      { from: 'me' as const, text: chatInput.trim(), time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}` },
+   121→    ])
+   122→    setChatInput('')
+   123→  }
+   124→
+   125→  const cyclePanel = () => {
+   126→    setPanelSnap((prev) => {
+   127→      if (prev === 'peek') return 'half'
+   128→      if (prev === 'half') return 'full'
+   129→      return 'peek'
+   130→    })
+   131→  }
+   132→
+   133→  const pickupCoords: [number, number] | null =
+   134→    announcement?.pickupAddress?.latitude && announcement?.pickupAddress?.longitude
+   135→      ? [announcement.pickupAddress.latitude, announcement.pickupAddress.longitude]
+   136→      : null
+   137→
+   138→  const deliveryCoords: [number, number] | null =
+   139→    announcement?.deliveryAddress?.latitude && announcement?.deliveryAddress?.longitude
+   140→      ? [announcement.deliveryAddress.latitude, announcement.deliveryAddress.longitude]
+   141→      : null
+   142→
+   143→  const mapCenter: [number, number] =
+   144→    pickupCoords && deliveryCoords
+   145→      ? [(pickupCoords[0] + deliveryCoords[0]) / 2, (pickupCoords[1] + deliveryCoords[1]) / 2]
+   146→      : [4.0511, 9.7679]
+   147→
+   148→  const markers = [
+   149→    ...(pickupCoords ? [{ position: pickupCoords, label: 'Retrait', color: '#f97316' }] : []),
+   150→    ...(deliveryCoords ? [{ position: deliveryCoords, label: 'Livraison', color: '#10b981' }] : []),
+   151→  ]
+   152→
+   153→  // Don't render panel until mounted (avoids hydration mismatch)
+   154→  if (!mounted) {
+   155→    return (
+   156→      <div className="h-screen w-screen overflow-hidden relative bg-gray-100">
+   157→        <div className="w-full h-full flex items-center justify-center">
+   158→          <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+   159→        </div>
+   160→      </div>
+   161→    )
+   162→  }
+   163→
+   164→  return (
+   165→    <div className="h-screen w-screen overflow-hidden relative bg-gray-100">
+   166→      {/* ── MAP (full screen behind panel) ── */}
+   167→      <div className="absolute inset-0">
+   168→        {loading ? (
+   169→          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+   170→            <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+   171→          </div>
+   172→        ) : (
+   173→          <MapLeaflet center={mapCenter} zoom={13} markers={markers} route={route} />
+   174→        )}
+   175→      </div>
+   176→
+   177→      {/* ── Back button overlay ── */}
+   178→      <div className="absolute top-4 left-4 z-30">
+   179→        <Button
+   180→          variant="ghost"
+   181→          size="icon"
+   182→          onClick={() => router.back()}
+   183→          className="bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white rounded-full w-10 h-10"
+   184→        >
+   185→          <ArrowLeft className="w-5 h-5 text-gray-700" />
+   186→        </Button>
+   187→      </div>
+   188→
+   189→      {/* ── SLIDING UP PANEL ── */}
+   190→      <motion.div
+   191→        className="absolute left-0 right-0 z-20 bg-white rounded-t-3xl shadow-[0_-4px_30px_rgba(0,0,0,0.12)]"
+   192→        style={{ bottom: 0 }}
+   193→        animate={{ height: panelHeight }}
+   194→        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+   195→        drag="y"
+   196→        dragControls={dragControls}
+   197→        dragConstraints={{ top: 0, bottom: 0 }}
+   198→        dragElastic={0.15}
+   199→        onDragEnd={(_, info) => {
+   200→          if (info.velocity.y > 300) {
+   201→            setPanelSnap('peek')
+   202→          } else if (info.velocity.y < -300) {
+   203→            setPanelSnap('full')
+   204→          }
+   205→        }}
+   206→      >
+   207→        {/* Drag handle */}
+   208→        <div
+   209→          className="flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing"
+   210→          onPointerDown={(e) => dragControls.start(e)}
+   211→        >
+   212→          <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+   213→        </div>
+   214→
+   215→        {/* SCROLLABLE CONTENT */}
+   216→        <div className="overflow-y-auto" style={{ maxHeight: panelHeight - 28 }}>
+   217→          {/* ── PEEK VIEW: client quick-actions bar ── */}
+   218→          <div className="px-4 pb-3">
+   219→            <div className="flex items-center justify-between">
+   220→              <div className="flex items-center gap-3">
+   221→                {/* Client avatar */}
+   222→                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+   223→                  {announcement?.shipperFirstName?.charAt(0) || '?'}
+   224→                </div>
+   225→                <div className="min-w-0">
+   226→                  <p className="text-sm font-bold text-gray-900 truncate">
+   227→                    {announcement?.shipperFirstName} {announcement?.shipperLastName}
+   228→                  </p>
+   229→                  <p className="text-xs text-gray-500">Expéditeur</p>
+   230→                </div>
+   231→              </div>
+   232→
+   233→              <div className="flex items-center gap-2">
+   234→                {/* Chat button */}
+   235→                <Button
+   236→                  variant="outline"
+   237→                  size="icon"
+   238→                  className="rounded-full w-10 h-10 border-orange-200 hover:bg-orange-50 hover:border-orange-300"
+   239→                  onClick={() => setChatOpen(true)}
+   240→                >
+   241→                  <MessageCircle className="w-5 h-5 text-orange-600" />
+   242→                </Button>
+   243→                {/* Call button */}
+   244→                <a
+   245→                  href={announcement?.shipperPhone ? `tel:${announcement.shipperPhone}` : '#'}
+   246→                  className="inline-flex items-center justify-center rounded-full w-10 h-10 border border-green-200 bg-green-50 hover:bg-green-100 transition-colors"
+   247→                >
+   248→                  <Phone className="w-5 h-5 text-green-600" />
+   249→                </a>
+   250→                {/* Expand button */}
+   251→                <Button
+   252→                  variant="ghost"
+   253→                  size="icon"
+   254→                  className="rounded-full w-10 h-10 text-gray-400 hover:text-gray-600"
+   255→                  onClick={cyclePanel}
+   256→                >
+   257→                  <ChevronUp className="w-5 h-5" />
+   258→                </Button>
+   259→              </div>
+   260→            </div>
+   261→          </div>
+   262→
+   263→          {/* ── EXPANDED CONTENT (visible when half or full) ── */}
+   264→          <AnimatePresence>
+   265→            {(panelSnap === 'half' || panelSnap === 'full') && (
+   266→              <motion.div
+   267→                initial={{ opacity: 0 }}
+   268→                animate={{ opacity: 1 }}
+   269→                exit={{ opacity: 0 }}
+   270→                transition={{ duration: 0.2 }}
+   271→                className="px-4 pb-6 space-y-5"
+   272→              >
+   273→                {/* Divider */}
+   274→                <div className="border-t border-gray-100" />
+   275→
+   276→                {/* Title row */}
+   277→                <div className="flex items-start justify-between gap-2">
+   278→                  <div className="flex items-center gap-2.5 min-w-0">
+   279→                    <div className="w-9 h-9 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+   280→                      <Package className="w-5 h-5 text-orange-600" />
+   281→                    </div>
+   282→                    <div className="min-w-0">
+   283→                      <h2 className="text-base font-bold text-gray-900 truncate">{announcement?.title || 'Livraison'}</h2>
+   284→                      <p className="text-xs text-gray-400 font-mono">{announcement?.id}</p>
+   285→                    </div>
+   286→                  </div>
+   287→                  <Badge className="bg-green-100 text-green-700 border-green-200 flex-shrink-0">
+   288→                    <CheckCircle2 className="w-3 h-3 mr-1" />
+   289→                    {announcement?.status || 'PUBLISHED'}
+   290→                  </Badge>
+   291→                </div>
+   292→
+   293→                {/* Route info */}
+   294→                <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+   295→                  <div className="flex items-start gap-3">
+   296→                    <div className="mt-1.5 w-3 h-3 bg-orange-500 rounded-full flex-shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />
+   297→                    <div>
+   298→                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Retrait</p>
+   299→                      <p className="text-sm text-gray-700">
+   300→                        {announcement?.pickupAddress?.street && `${announcement.pickupAddress.street}, `}
+   301→                        {announcement?.pickupAddress?.district && `${announcement.pickupAddress.district}, `}
+   302→                        {announcement?.pickupAddress?.city || 'N/A'}
+   303→                      </p>
+   304→                    </div>
+   305→                  </div>
+   306→                  <div className="ml-1.5 border-l-2 border-dashed border-gray-300 h-3" />
+   307→                  <div className="flex items-start gap-3">
+   308→                    <div className="mt-1.5 w-3 h-3 bg-green-500 rounded-full flex-shrink-0 shadow-[0_0_0_3px_rgba(16,185,129,0.15)]" />
+   309→                    <div>
+   310→                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Livraison</p>
+   311→                      <p className="text-sm text-gray-700">
+   312→                        {announcement?.deliveryAddress?.street && `${announcement.deliveryAddress.street}, `}
+   313→                        {announcement?.deliveryAddress?.district && `${announcement.deliveryAddress.district}, `}
+   314→                        {announcement?.deliveryAddress?.city || 'N/A'}
+   315→                      </p>
+   316→                    </div>
+   317→                  </div>
+   318→                </div>
+   319→
+   320→                {/* Stats row: distance / duration / price */}
+   321→                <div className="grid grid-cols-3 gap-2">
+   322→                  {announcement?.distance && (
+   323→                    <div className="bg-orange-50 rounded-xl p-3 text-center">
+   324→                      <Navigation className="w-4 h-4 text-orange-600 mx-auto mb-1" />
+   325→                      <p className="text-sm font-bold text-gray-900">{announcement.distance.toFixed(1)}</p>
+   326→                      <p className="text-[10px] text-gray-500">km</p>
+   327→                    </div>
+   328→                  )}
+   329→                  {announcement?.duration && (
+   330→                    <div className="bg-blue-50 rounded-xl p-3 text-center">
+   331→                      <Clock className="w-4 h-4 text-blue-600 mx-auto mb-1" />
+   332→                      <p className="text-sm font-bold text-gray-900">{Math.round(announcement.duration)}</p>
+   333→                      <p className="text-[10px] text-gray-500">min</p>
+   334→                    </div>
+   335→                  )}
+   336→                  {announcement?.amount && (
+   337→                    <div className="bg-green-50 rounded-xl p-3 text-center">
+   338→                      <span className="text-xs font-bold text-green-700">FCFA</span>
+   339→                      <p className="text-sm font-bold text-gray-900">{fmt(announcement.amount)}</p>
+   340→                      <p className="text-[10px] text-gray-500">Montant</p>
+   341→                    </div>
+   342→                  )}
+   343→                </div>
+   344→
+   345→                {/* Transport & Payment */}
+   346→                <div className="grid grid-cols-2 gap-2 text-sm">
+   347→                  {announcement?.transportMethod && (
+   348→                    <div className="bg-gray-50 p-3 rounded-lg">
+   349→                      <p className="text-[10px] text-gray-400 uppercase font-bold">Transport</p>
+   350→                      <p className="font-medium capitalize text-gray-800">{announcement.transportMethod}</p>
+   351→                    </div>
+   352→                  )}
+   353→                  {announcement?.paymentMethod && (
+   354→                    <div className="bg-gray-50 p-3 rounded-lg">
+   355→                      <p className="text-[10px] text-gray-400 uppercase font-bold">Paiement</p>
+   356→                      <p className="font-medium capitalize text-gray-800">{announcement.paymentMethod}</p>
+   357→                    </div>
+   358→                  )}
+   359→                </div>
+   360→
+   361→                {/* Description */}
+   362→                {announcement?.description && (
+   363→                  <div>
+   364→                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Description</h4>
+   365→                    <p className="text-sm text-gray-600 leading-relaxed">{announcement.description}</p>
+   366→                  </div>
+   367→                )}
+   368→
+   369→                {/* Packet Details */}
+   370→                {announcement?.packet && (
+   371→                  <div>
+   372→                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 border-b border-gray-100 pb-1.5">
+   373→                      Détails du Colis
+   374→                    </h4>
+   375→                    <div className="grid grid-cols-2 gap-y-2.5 gap-x-3 text-sm">
+   376→                      {announcement.packet.designation && (
+   377→                        <div>
+   378→                          <p className="text-[10px] text-gray-400">Désignation</p>
+   379→                          <p className="font-medium text-gray-800">{announcement.packet.designation}</p>
+   380→                        </div>
+   381→                      )}
+   382→                      {announcement.packet.fragile !== undefined && (
+   383→                        <div>
+   384→                          <p className="text-[10px] text-gray-400">Fragile</p>
+   385→                          <p className="font-medium text-gray-800">
+   386→                            {announcement.packet.fragile ? (
+   387→                              <span className="text-red-500 flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Oui</span>
+   388→                            ) : (
+   389→                              <span className="text-green-600">Non</span>
+   390→                            )}
+   391→                          </p>
+   392→                        </div>
+   393→                      )}
+   394→                      {announcement.packet.isPerishable !== undefined && (
+   395→                        <div>
+   396→                          <p className="text-[10px] text-gray-400">Périssable</p>
+   397→                          <p className="font-medium text-gray-800">{announcement.packet.isPerishable ? 'Oui' : 'Non'}</p>
+   398→                        </div>
+   399→                      )}
+   400→                      {announcement.packet.length && announcement.packet.width && (
+   401→                        <div>
+   402→                          <p className="text-[10px] text-gray-400">Dimensions</p>
+   403→                          <p className="font-medium text-gray-800">
+   404→                            {announcement.packet.length} × {announcement.packet.width}
+   405→                            {announcement.packet.thickness ? ` × ${announcement.packet.thickness}` : ''} cm
+   406→                          </p>
+   407→                        </div>
+   408→                      )}
+   409→                      {announcement.packet.description && (
+   410→                        <div className="col-span-2">
+   411→                          <p className="text-[10px] text-gray-400">Description du colis</p>
+   412→                          <p className="text-xs italic text-gray-500">{announcement.packet.description}</p>
+   413→                        </div>
+   414→                      )}
+   415→                    </div>
+   416→                  </div>
+   417→                )}
+   418→
+   419→                {/* Recipient info */}
+   420→                <div>
+   421→                  <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Destinataire</h4>
+   422→                  <div className="bg-orange-50/60 border border-orange-100 p-4 rounded-xl space-y-2.5">
+   423→                    <div className="flex items-center gap-3">
+   424→                      <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+   425→                        {announcement?.recipientFirstName?.charAt(0) || '?'}
+   426→                      </div>
+   427→                      <p className="font-bold text-gray-900">
+   428→                        {announcement?.recipientFirstName} {announcement?.recipientLastName}
+   429→                      </p>
+   430→                    </div>
+   431→                    {announcement?.recipientPhone && (
+   432→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   433→                        <Phone className="w-3.5 h-3.5 text-gray-400" />
+   434→                        <span>{announcement.recipientPhone}</span>
+   435→                      </div>
+   436→                    )}
+   437→                    {announcement?.recipientEmail && (
+   438→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   439→                        <Mail className="w-3.5 h-3.5 text-gray-400" />
+   440→                        <span>{announcement.recipientEmail}</span>
+   441→                      </div>
+   442→                    )}
+   443→                  </div>
+   444→                </div>
+   445→
+   446→                {/* Shipper info */}
+   447→                <div>
+   448→                  <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Expéditeur</h4>
+   449→                  <div className="bg-orange-50/60 border border-orange-100 p-4 rounded-xl space-y-2.5">
+   450→                    <div className="flex items-center gap-3">
+   451→                      <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+   452→                        {announcement?.shipperFirstName?.charAt(0) || '?'}
+   453→                      </div>
+   454→                      <p className="font-bold text-gray-900">
+   455→                        {announcement?.shipperFirstName} {announcement?.shipperLastName}
+   456→                      </p>
+   457→                    </div>
+   458→                    {announcement?.shipperPhone && (
+   459→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   460→                        <Phone className="w-3.5 h-3.5 text-gray-400" />
+   461→                        <span>{announcement.shipperPhone}</span>
+   462→                      </div>
+   463→                    )}
+   464→                    {announcement?.shipperEmail && (
+   465→                      <div className="flex items-center gap-2 text-sm text-gray-600">
+   466→                        <Mail className="w-3.5 h-3.5 text-gray-400" />
+   467→                        <span>{announcement.shipperEmail}</span>
+   468→                      </div>
+   469→                    )}
+   470→                  </div>
+   471→                </div>
+   472→
+   473→                {/* Action button */}
+   474→                <div className="pt-2 pb-2">
+   475→                  <Button className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-2xl shadow-lg">
+   476→                    <Truck className="w-5 h-5 mr-2" />
+   477→                    Démarrer la livraison
+   478→                  </Button>
+   479→                </div>
+   480→              </motion.div>
+   481→            )}
+   482→          </AnimatePresence>
+   483→        </div>
+   484→      </motion.div>
+   485→
+   486→      {/* ── CHAT OVERLAY ── */}
+   487→      <AnimatePresence>
+   488→        {chatOpen && (
+   489→          <motion.div
+   490→            initial={{ y: '100%' }}
+   491→            animate={{ y: 0 }}
+   492→            exit={{ y: '100%' }}
+   493→            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+   494→            className="absolute inset-x-0 bottom-0 z-40 bg-white rounded-t-3xl shadow-[0_-4px_30px_rgba(0,0,0,0.15)] flex flex-col"
+   495→            style={{ height: '75vh' }}
+   496→          >
+   497→            {/* Chat header */}
+   498→            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
+   499→              <div className="flex items-center gap-3">
+   500→                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm">
+   501→                  {announcement?.shipperFirstName?.charAt(0) || '?'}
+   502→                </div>
+   503→                <div>
+   504→                  <p className="text-sm font-bold text-gray-900">{announcement?.shipperFirstName} {announcement?.shipperLastName}</p>
+   505→                  <p className="text-[10px] text-green-500 flex items-center gap-1">
+   506→                    <CircleDot className="w-2.5 h-2.5" /> En ligne
+   507→                  </p>
+   508→                </div>
+   509→              </div>
+   510→              <Button
+   511→                variant="ghost"
+   512→                size="icon"
+   513→                className="rounded-full w-8 h-8"
+   514→                onClick={() => setChatOpen(false)}
+   515→              >
+   516→                <X className="w-5 h-5 text-gray-500" />
+   517→              </Button>
+   518→            </div>
+   519→
+   520→            {/* Chat messages */}
+   521→            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+   522→              {chatMessages.map((msg, i) => (
+   523→                <div
+   524→                  key={i}
+   525→                  className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'}`}
+   526→                >
+   527→                  <div
+   528→                    className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+   529→                      msg.from === 'me'
+   530→                        ? 'bg-orange-500 text-white rounded-br-md'
+   531→                        : 'bg-gray-100 text-gray-800 rounded-bl-md'
+   532→                    }`}
+   533→                  >
+   534→                    <p>{msg.text}</p>
+   535→                    <p className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-orange-200' : 'text-gray-400'}`}>
+   536→                      {msg.time}
+   537→                    </p>
+   538→                  </div>
+   539→                </div>
+   540→              ))}
+   541→              <div ref={chatEndRef} />
+   542→            </div>
+   543→
+   544→            {/* Chat input */}
+   545→            <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-2 flex-shrink-0">
+   546→              <Input
+   547→                value={chatInput}
+   548→                onChange={(e) => setChatInput(e.target.value)}
+   549→                onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
+   550→                placeholder="Écrire un message..."
+   551→                className="flex-1 rounded-full border-gray-200 focus:border-orange-400"
+   552→              />
+   553→              <Button
+   554→                size="icon"
+   555→                onClick={handleSendChat}
+   556→                className="rounded-full w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+   557→              >
+   558→                <Send className="w-4 h-4 text-white" />
+   559→              </Button>
+   560→            </div>
+   561→          </motion.div>
+   562→        )}
+   563→      </AnimatePresence>
+   564→
+   565→      {/* ── No announcement fallback ── */}
+   566→      {!loading && !announcement && (
+   567→        <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/80 backdrop-blur-sm">
+   568→          <div className="text-center p-6">
+   569→            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+   570→            <h3 className="text-lg font-bold text-gray-700 mb-2">Aucune livraison sélectionnée</h3>
+   571→            <p className="text-sm text-gray-500 mb-4">Accédez à cette page depuis une annonce.</p>
+   572→            <Button onClick={() => router.back()} variant="outline" className="rounded-full">
+   573→              <ArrowLeft className="w-4 h-4 mr-2" /> Retour
+   574→            </Button>
+   575→          </div>
+   576→        </div>
+   577→      )}
+   578→    </div>
+   579→  )
+   580→}
+   581→
+   582→export default withAuth(DeliveryPage, ['LIVREUR'])

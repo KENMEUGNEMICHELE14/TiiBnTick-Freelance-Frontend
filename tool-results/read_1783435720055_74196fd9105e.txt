@@ -1,0 +1,561 @@
+     1→$ next dev
+     2→▲ Next.js 16.2.10 (Turbopack)
+     3→- Local:         http://localhost:3000
+     4→- Network:       http://21.0.21.97:3000
+     5→- Environments: .env
+     6→✓ Ready in 302ms
+     7→
+     8→ GET / 200 in 3.4s (next.js: 2.9s, application-code: 482ms)
+     9→$ next dev
+    10→▲ Next.js 16.2.10 (Turbopack)
+    11→- Local:         http://localhost:3000
+    12→- Network:       http://21.0.21.97:3000
+    13→- Environments: .env
+    14→✓ Ready in 293ms
+    15→
+    16→ GET / 200 in 400ms (next.js: 158ms, application-code: 243ms)
+    17→ POST /api/auth/login 200 in 398ms (next.js: 320ms, application-code: 78ms)
+    18→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+    19→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+    20→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+    21→  73 |             },
+    22→  74 |             (error) => {
+    23→> 75 |                 console.error('Geolocation watch error:', error.message,
+    24→     |                         ^
+    25→  76 |                     '- Code:', error.code,
+    26→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+    27→  78 | (components/LocationTracker.tsx:75:25)
+    28→ GET /api/delivery-persons/cmraojrc20000qx39vctu2vvp 200 in 931ms (next.js: 899ms, application-code: 32ms)
+    29→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+    30→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+    31→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+    32→  73 |             },
+    33→  74 |             (error) => {
+    34→> 75 |                 console.error('Geolocation watch error:', error.message,
+    35→     |                         ^
+    36→  76 |                     '- Code:', error.code,
+    37→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+    38→  78 | (components/LocationTracker.tsx:75:25)
+    39→ GET /livreur 200 in 68ms (next.js: 14ms, application-code: 54ms)
+    40→ GET /api/announcements 200 in 93ms (next.js: 79ms, application-code: 14ms)
+    41→ GET /api/announcements 200 in 67ms (next.js: 17ms, application-code: 50ms)
+    42→ GET /api/notifications/stream/cmraojrc20000qx39vctu2vvp?token=local-token-cmraojrc20000qx39vctu2vvp 200 in 1010ms (next.js: 999ms, application-code: 11ms)
+    43→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 1184ms (next.js: 1142ms, application-code: 42ms)
+    44→[browser] SSE Error: [object Event] 
+    45→    at LivreurDashboard.useEffect (app/livreur/page.tsx:223:15)
+    46→  221 |
+    47→  222 |     eventSource.onerror = (err) => {
+    48→> 223 |       console.error('SSE Error:', err);
+    49→      |               ^
+    50→  224 |       eventSource.close();
+    51→  225 |     };
+    52→  226 | (app/livreur/page.tsx:223:15)
+    53→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 89ms (next.js: 63ms, application-code: 26ms)
+    54→ GET /api/announcements/undefined 404 in 1011ms (next.js: 981ms, application-code: 31ms)
+    55→[browser] ⨯ unhandledRejection: AxiosError: Request failed with status code 404
+    56→ GET / 200 in 55ms (next.js: 3ms, application-code: 51ms)
+    57→✓ Compiled in 252ms
+    58→ GET /api/announcements 200 in 24ms (next.js: 7ms, application-code: 18ms)
+    59→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 86ms (next.js: 71ms, application-code: 16ms)
+    60→✓ Compiled in 240ms
+    61→ GET /api/announcements 200 in 13ms (next.js: 3ms, application-code: 10ms)
+    62→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 59ms (next.js: 46ms, application-code: 13ms)
+    63→ GET / 200 in 120ms (next.js: 3ms, application-code: 117ms)
+    64→ GET / 200 in 42ms (next.js: 3ms, application-code: 39ms)
+    65→ GET / 200 in 108ms (next.js: 5ms, application-code: 102ms)
+    66→ GET / 200 in 57ms (next.js: 4ms, application-code: 54ms)
+    67→ GET /livreur 200 in 117ms (next.js: 5ms, application-code: 111ms)
+    68→ GET /api/announcements 200 in 20ms (next.js: 8ms, application-code: 12ms)
+    69→[browser] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+    70→[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+    71→
+    72→- A server/client branch `if (typeof window !== 'undefined')`.
+    73→- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+    74→- Date formatting in a user's locale which doesn't match the server.
+    75→- External changing data without sending a snapshot of it along with the HTML.
+    76→- Invalid HTML tag nesting.
+    77→
+    78→It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+    79→
+    80→https://react.dev/link/hydration-mismatch
+    81→
+    82→  ...
+    83→    <SegmentViewNode type="page" pagePath="livreur/pa...">
+    84→      <SegmentTrieNode>
+    85→      <ClientPageRoot Component={function ProtectedRoute} serverProvidedParams={{...}}>
+    86→        <ProtectedRoute params={Promise} searchParams={Promise}>
+    87→          <LivreurDashboard params={Promise} searchParams={Promise}>
+    88→            <div className="min-h-scre...">
+    89→              <header>
+    90→              <main className="flex-1 p-4...">
+    91→                <div className="max-w-7xl ...">
+    92→                  <div className="space-y-6">
+    93→                    <div>
+    94→                    <div>
+    95→                    <Card className="relative o...">
+    96→                      <div data-slot="card" className="text-card-...">
+    97→                        <div>
+    98→                        <CardHeader>
+    99→                        <CardContent>
+   100→                          <div data-slot="card-content" className="px-6">
+   101→                            <div className="flex items...">
+   102→                              <span className="text-3xl md:text-4xl font-bold text-gray-900">
+   103→+                               245 000
+   104→-                               245,000
+   105→                              ...
+   106→                            ...
+   107→                    ...
+   108→              ...
+   109→    ...
+   110→
+   111→    at <unknown> (https://react.dev/link/hydration-mismatch)
+   112→    at span (<anonymous>)
+   113→    at LivreurDashboard (app/livreur/page.tsx:621:21)
+   114→    at ProtectedRoute (components/hoc/withAuth.tsx:7:16)
+   115→  619 |                 <CardContent>
+   116→  620 |                   <div className="flex items-end gap-2">
+   117→> 621 |                     <span className="text-3xl md:text-4xl font-bold text-gray-900">{livre...
+   118→      |                     ^
+   119→  622 |                     <span className="text-sm text-gray-500 mb-1">FCFA</span>
+   120→  623 |                   </div>
+   121→  624 |                   <div className="flex items-center gap-1 mt-1 text-xs text-green-600">
+   122→ GET /api/announcements 200 in 10ms (next.js: 4ms, application-code: 6ms)
+   123→ GET / 200 in 47ms (next.js: 3ms, application-code: 44ms)
+   124→ GET / 200 in 51ms (next.js: 3ms, application-code: 47ms)
+   125→ GET / 200 in 44ms (next.js: 3ms, application-code: 42ms)
+   126→ GET / 200 in 44ms (next.js: 3ms, application-code: 41ms)
+   127→ GET / 200 in 82ms (next.js: 3ms, application-code: 78ms)
+   128→ GET / 200 in 46ms (next.js: 4ms, application-code: 42ms)
+   129→ GET / 200 in 37ms (next.js: 2ms, application-code: 34ms)
+   130→ GET / 200 in 43ms (next.js: 3ms, application-code: 40ms)
+   131→ GET / 200 in 40ms (next.js: 3ms, application-code: 37ms)
+   132→ GET / 200 in 41ms (next.js: 3ms, application-code: 38ms)
+   133→ GET / 200 in 41ms (next.js: 3ms, application-code: 38ms)
+   134→ GET / 200 in 48ms (next.js: 3ms, application-code: 44ms)
+   135→✓ Compiled in 293ms
+   136→ GET /api/announcements 200 in 11ms (next.js: 3ms, application-code: 7ms)
+   137→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 70ms (next.js: 48ms, application-code: 22ms)
+   138→✓ Compiled in 203ms
+   139→ GET /api/announcements 200 in 36ms (next.js: 16ms, application-code: 20ms)
+   140→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 64ms (next.js: 29ms, application-code: 34ms)
+   141→✓ Compiled in 225ms
+   142→ GET /api/announcements 200 in 15ms (next.js: 5ms, application-code: 10ms)
+   143→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 81ms (next.js: 65ms, application-code: 16ms)
+   144→ GET / 200 in 46ms (next.js: 3ms, application-code: 44ms)
+   145→✓ Compiled in 224ms
+   146→ GET /api/announcements 200 in 22ms (next.js: 7ms, application-code: 15ms)
+   147→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 60ms (next.js: 33ms, application-code: 27ms)
+   148→ GET /livreur 200 in 93ms (next.js: 12ms, application-code: 81ms)
+   149→ GET /livreur 200 in 43ms (next.js: 3ms, application-code: 40ms)
+   150→ GET / 200 in 24ms (next.js: 5ms, application-code: 19ms)
+   151→ GET / 200 in 31ms (next.js: 6ms, application-code: 26ms)
+   152→ GET /livreur 200 in 91ms (next.js: 4ms, application-code: 87ms)
+   153→ GET /api/announcements 200 in 17ms (next.js: 5ms, application-code: 12ms)
+   154→ GET /api/announcements 200 in 18ms (next.js: 6ms, application-code: 12ms)
+   155→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 213ms (next.js: 77ms, application-code: 137ms)
+   156→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   157→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   158→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   159→  73 |             },
+   160→  74 |             (error) => {
+   161→> 75 |                 console.error('Geolocation watch error:', error.message,
+   162→     |                         ^
+   163→  76 |                     '- Code:', error.code,
+   164→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   165→  78 | (components/LocationTracker.tsx:75:25)
+   166→ GET /api/delivery-persons/cmraojrc20000qx39vctu2vvp 200 in 261ms (next.js: 178ms, application-code: 83ms)
+   167→ GET /api/notifications/stream/cmraojrc20000qx39vctu2vvp?token=local-token-cmraojrc20000qx39vctu2vvp 200 in 104ms (next.js: 99ms, application-code: 5ms)
+   168→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   169→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   170→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   171→  73 |             },
+   172→  74 |             (error) => {
+   173→> 75 |                 console.error('Geolocation watch error:', error.message,
+   174→     |                         ^
+   175→  76 |                     '- Code:', error.code,
+   176→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   177→  78 | (components/LocationTracker.tsx:75:25)
+   178→ GET / 200 in 190ms (next.js: 3ms, application-code: 187ms)
+   179→ GET / 200 in 121ms (next.js: 15ms, application-code: 105ms)
+   180→ GET / 200 in 40ms (next.js: 3ms, application-code: 38ms)
+   181→ GET / 200 in 41ms (next.js: 3ms, application-code: 38ms)
+   182→ GET / 200 in 38ms (next.js: 2ms, application-code: 36ms)
+   183→ GET /livreur 200 in 57ms (next.js: 3ms, application-code: 54ms)
+   184→ GET /api/announcements 200 in 10ms (next.js: 3ms, application-code: 7ms)
+   185→ GET /livreur/profil 200 in 42ms (next.js: 17ms, application-code: 25ms)
+   186→ GET /livreur/profil 200 in 20ms (next.js: 3ms, application-code: 17ms)
+   187→ GET /livreur/profil 200 in 49ms (next.js: 4ms, application-code: 45ms)
+   188→ GET / 200 in 73ms (next.js: 10ms, application-code: 63ms)
+   189→ GET / 200 in 132ms (next.js: 3ms, application-code: 129ms)
+   190→ GET / 200 in 131ms (next.js: 3ms, application-code: 128ms)
+   191→ GET / 200 in 53ms (next.js: 4ms, application-code: 49ms)
+   192→ GET / 200 in 53ms (next.js: 3ms, application-code: 50ms)
+   193→ GET / 200 in 51ms (next.js: 2ms, application-code: 49ms)
+   194→ GET / 200 in 98ms (next.js: 3ms, application-code: 94ms)
+   195→ GET / 200 in 46ms (next.js: 5ms, application-code: 41ms)
+   196→ GET / 200 in 51ms (next.js: 3ms, application-code: 48ms)
+   197→ GET / 200 in 49ms (next.js: 3ms, application-code: 47ms)
+   198→ GET / 200 in 46ms (next.js: 3ms, application-code: 43ms)
+   199→ GET / 200 in 40ms (next.js: 3ms, application-code: 37ms)
+   200→ GET / 200 in 45ms (next.js: 3ms, application-code: 42ms)
+   201→ GET / 200 in 57ms (next.js: 3ms, application-code: 54ms)
+   202→ GET / 200 in 40ms (next.js: 3ms, application-code: 37ms)
+   203→ GET / 200 in 47ms (next.js: 3ms, application-code: 45ms)
+   204→ GET / 200 in 76ms (next.js: 3ms, application-code: 74ms)
+   205→ GET / 200 in 44ms (next.js: 2ms, application-code: 42ms)
+   206→ GET / 200 in 42ms (next.js: 3ms, application-code: 40ms)
+   207→✓ Compiled in 0ms
+   208→ GET /livreur 200 in 992ms (next.js: 715ms, application-code: 277ms)
+   209→ GET /livreur 200 in 237ms (next.js: 9ms, application-code: 229ms)
+   210→ GET /livreur 200 in 218ms (next.js: 8ms, application-code: 210ms)
+   211→ GET /livreur 200 in 204ms (next.js: 3ms, application-code: 201ms)
+   212→ GET /livreur 200 in 212ms (next.js: 4ms, application-code: 208ms)
+   213→ GET /livreur 200 in 173ms (next.js: 6ms, application-code: 167ms)
+   214→ GET /livreur 200 in 138ms (next.js: 3ms, application-code: 134ms)
+   215→ GET /livreur 200 in 212ms (next.js: 3ms, application-code: 209ms)
+   216→ GET /livreur 200 in 222ms (next.js: 10ms, application-code: 212ms)
+   217→ GET /livreur 200 in 187ms (next.js: 4ms, application-code: 184ms)
+   218→ GET /livreur 200 in 203ms (next.js: 3ms, application-code: 200ms)
+   219→ GET /livreur 200 in 199ms (next.js: 3ms, application-code: 195ms)
+   220→ GET /livreur 200 in 214ms (next.js: 5ms, application-code: 210ms)
+   221→ GET /livreur 200 in 134ms (next.js: 7ms, application-code: 127ms)
+   222→ GET /livreur 200 in 156ms (next.js: 5ms, application-code: 151ms)
+   223→ GET /livreur 200 in 141ms (next.js: 5ms, application-code: 136ms)
+   224→ GET /livreur 200 in 187ms (next.js: 6ms, application-code: 181ms)
+   225→ GET /livreur 200 in 172ms (next.js: 4ms, application-code: 168ms)
+   226→ GET /livreur 200 in 184ms (next.js: 4ms, application-code: 180ms)
+   227→ GET /livreur 200 in 194ms (next.js: 13ms, application-code: 181ms)
+   228→ GET /livreur 200 in 281ms (next.js: 3ms, application-code: 278ms)
+   229→ GET /livreur 200 in 230ms (next.js: 9ms, application-code: 220ms)
+   230→ GET /livreur 200 in 189ms (next.js: 8ms, application-code: 181ms)
+   231→ GET /livreur 200 in 103ms (next.js: 3ms, application-code: 99ms)
+   232→ GET /livreur 200 in 48ms (next.js: 5ms, application-code: 43ms)
+   233→ GET /livreur 200 in 199ms (next.js: 3ms, application-code: 196ms)
+   234→ GET /livreur 200 in 186ms (next.js: 10ms, application-code: 176ms)
+   235→ GET /livreur 200 in 135ms (next.js: 17ms, application-code: 118ms)
+   236→ GET /livreur 200 in 98ms (next.js: 3ms, application-code: 95ms)
+   237→ GET /livreur 200 in 107ms (next.js: 3ms, application-code: 104ms)
+   238→ GET /livreur 200 in 114ms (next.js: 2ms, application-code: 111ms)
+   239→ GET /livreur 200 in 180ms (next.js: 26ms, application-code: 154ms)
+   240→ GET /livreur 200 in 187ms (next.js: 5ms, application-code: 182ms)
+   241→ GET /livreur 200 in 211ms (next.js: 4ms, application-code: 207ms)
+   242→ GET /livreur 200 in 256ms (next.js: 4ms, application-code: 252ms)
+   243→ GET /livreur 200 in 256ms (next.js: 4ms, application-code: 252ms)
+   244→ GET /livreur 200 in 268ms (next.js: 4ms, application-code: 264ms)
+   245→ GET /livreur 200 in 207ms (next.js: 14ms, application-code: 193ms)
+   246→ GET /livreur 200 in 162ms (next.js: 3ms, application-code: 159ms)
+   247→ GET /livreur 200 in 132ms (next.js: 6ms, application-code: 127ms)
+   248→ GET /livreur 200 in 121ms (next.js: 4ms, application-code: 118ms)
+   249→ GET /livreur 200 in 154ms (next.js: 3ms, application-code: 151ms)
+   250→ GET /livreur 200 in 160ms (next.js: 3ms, application-code: 156ms)
+   251→ GET /livreur 200 in 172ms (next.js: 3ms, application-code: 169ms)
+   252→ GET /livreur 200 in 169ms (next.js: 3ms, application-code: 166ms)
+   253→ GET /livreur 200 in 127ms (next.js: 3ms, application-code: 124ms)
+   254→ GET /livreur 200 in 132ms (next.js: 3ms, application-code: 129ms)
+   255→ GET /livreur 200 in 111ms (next.js: 2ms, application-code: 108ms)
+   256→ GET /livreur 200 in 95ms (next.js: 2ms, application-code: 93ms)
+   257→ GET /livreur 200 in 75ms (next.js: 2ms, application-code: 72ms)
+   258→ GET /livreur 200 in 50ms (next.js: 3ms, application-code: 47ms)
+   259→ GET /livreur 200 in 93ms (next.js: 5ms, application-code: 88ms)
+   260→ GET /livreur 200 in 68ms (next.js: 4ms, application-code: 64ms)
+   261→ GET /livreur 200 in 58ms (next.js: 3ms, application-code: 55ms)
+   262→ GET /livreur 200 in 82ms (next.js: 4ms, application-code: 79ms)
+   263→ GET /livreur 200 in 50ms (next.js: 4ms, application-code: 45ms)
+   264→✓ Compiled in 234ms
+   265→ GET /api/announcements 200 in 104ms (next.js: 83ms, application-code: 21ms)
+   266→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 144ms (next.js: 89ms, application-code: 55ms)
+   267→✓ Compiled in 199ms
+   268→ GET /api/announcements 200 in 23ms (next.js: 10ms, application-code: 13ms)
+   269→ GET /api/announcements/subscriptions/delivery-person/cmraojrc20000qx39vctu2vvp 200 in 93ms (next.js: 47ms, application-code: 46ms)
+   270→○ Compiling /livreur/delivery ...
+   271→ GET /livreur/delivery?id=clrao2zcn0003qx39x5b9b5vs 200 in 6.3s (next.js: 5.8s, application-code: 473ms)
+   272→ GET /api/announcements/clrao2zcn0003qx39x5b9b5vs 404 in 297ms (next.js: 221ms, application-code: 76ms)
+   273→[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+   274→
+   275→- A server/client branch `if (typeof window !== 'undefined')`.
+   276→- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+   277→- Date formatting in a user's locale which doesn't match the server.
+   278→- External changing data without sending a snapshot of it along with the HTML.
+   279→- Invalid HTML tag nesting.
+   280→
+   281→It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+   282→
+   283→https://react.dev/link/hydration-mismatch
+   284→
+   285→  ...
+   286→    <LoadingBoundary name="delivery/" loading={null}>
+   287→      <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+   288→        <RedirectBoundary>
+   289→          <RedirectErrorBoundary router={{...}}>
+   290→            <InnerLayoutRouter url="/livreur/d..." tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+   291→              <SegmentViewNode type="page" pagePath="livreur/de...">
+   292→                <SegmentTrieNode>
+   293→                <ClientPageRoot Component={function ProtectedRoute} serverProvidedParams={{...}}>
+   294→                  <ProtectedRoute params={Promise} searchParams={Promise}>
+   295→                    <DeliveryPage params={Promise} searchParams={Promise}>
+   296→                      <div className="h-screen w...">
+   297→                        <div>
+   298→                        <div>
+   299→                        <motion.div className="absolute l..." style={{bottom:0}} animate={{height:72.125}} ...>
+   300→                          <MeasureLayout>
+   301→                          <div className="absolute l..." style={{bottom:0, ...}} draggable={false} ...>
+   302→                            <div>
+   303→                            <div
+   304→                              className="overflow-y-auto"
+   305→+                             style={{maxHeight:44.125}}
+   306→-                             style={{max-height:"72px"}}
+   307→                            >
+   308→                        ...
+   309→              ...
+   310→            ...
+   311→ 
+   312→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   313→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   314→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   315→  73 |             },
+   316→  74 |             (error) => {
+   317→> 75 |                 console.error('Geolocation watch error:', error.message,
+   318→     |                         ^
+   319→  76 |                     '- Code:', error.code,
+   320→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   321→  78 | (components/LocationTracker.tsx:75:25)
+   322→ GET /api/delivery-persons/cmraojrc20000qx39vctu2vvp 200 in 404ms (next.js: 340ms, application-code: 65ms)
+   323→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   324→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   325→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   326→  73 |             },
+   327→  74 |             (error) => {
+   328→> 75 |                 console.error('Geolocation watch error:', error.message,
+   329→     |                         ^
+   330→  76 |                     '- Code:', error.code,
+   331→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   332→  78 | (components/LocationTracker.tsx:75:25)
+   333→[browser] Error fetching announcement by ID: Announcement not found 
+   334→    at getAnnouncementById (services/announcementService.ts:67:17)
+   335→  65 |         return response.data;
+   336→  66 |     } catch (error: any) {
+   337→> 67 |         console.error('Error fetching announcement by ID:', error.response?.data?.message ...
+   338→     |                 ^
+   339→  68 |         throw error;
+   340→  69 |     }
+   341→  70 | }; (services/announcementService.ts:67:17)
+   342→ GET / 200 in 99ms (next.js: 12ms, application-code: 86ms)
+   343→ GET / 200 in 146ms (next.js: 7ms, application-code: 139ms)
+   344→ GET / 200 in 93ms (next.js: 9ms, application-code: 83ms)
+   345→ GET /livreur/delivery?id=cmraojrcc000kqx39gemnadxb 200 in 161ms (next.js: 11ms, application-code: 151ms)
+   346→ GET /api/announcements/cmraojrcc000kqx39gemnadxb 200 in 202ms (next.js: 48ms, application-code: 154ms)
+   347→ GET /api/delivery-persons/cmraojrc20000qx39vctu2vvp 200 in 207ms (next.js: 127ms, application-code: 80ms)
+   348→[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+   349→
+   350→- A server/client branch `if (typeof window !== 'undefined')`.
+   351→- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+   352→- Date formatting in a user's locale which doesn't match the server.
+   353→- External changing data without sending a snapshot of it along with the HTML.
+   354→- Invalid HTML tag nesting.
+   355→
+   356→It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+   357→
+   358→https://react.dev/link/hydration-mismatch
+   359→
+   360→  ...
+   361→    <LoadingBoundary name="delivery/" loading={null}>
+   362→      <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+   363→        <RedirectBoundary>
+   364→          <RedirectErrorBoundary router={{...}}>
+   365→            <InnerLayoutRouter url="/livreur/d..." tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+   366→              <SegmentViewNode type="page" pagePath="livreur/de...">
+   367→                <SegmentTrieNode>
+   368→                <ClientPageRoot Component={function ProtectedRoute} serverProvidedParams={{...}}>
+   369→                  <ProtectedRoute params={Promise} searchParams={Promise}>
+   370→                    <DeliveryPage params={Promise} searchParams={Promise}>
+   371→                      <div className="h-screen w...">
+   372→                        <div>
+   373→                        <div>
+   374→                        <motion.div className="absolute l..." style={{bottom:0}} animate={{height:72.125}} ...>
+   375→                          <MeasureLayout>
+   376→                          <div className="absolute l..." style={{bottom:0, ...}} draggable={false} ...>
+   377→                            <div>
+   378→                            <div
+   379→                              className="overflow-y-auto"
+   380→+                             style={{maxHeight:44.125}}
+   381→-                             style={{max-height:"72px"}}
+   382→                            >
+   383→                        ...
+   384→              ...
+   385→            ...
+   386→ 
+   387→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   388→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   389→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   390→  73 |             },
+   391→  74 |             (error) => {
+   392→> 75 |                 console.error('Geolocation watch error:', error.message,
+   393→     |                         ^
+   394→  76 |                     '- Code:', error.code,
+   395→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   396→  78 | (components/LocationTracker.tsx:75:25)
+   397→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   398→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   399→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   400→  73 |             },
+   401→  74 |             (error) => {
+   402→> 75 |                 console.error('Geolocation watch error:', error.message,
+   403→     |                         ^
+   404→  76 |                     '- Code:', error.code,
+   405→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   406→  78 | (components/LocationTracker.tsx:75:25)
+   407→ GET / 200 in 40ms (next.js: 3ms, application-code: 37ms)
+   408→ GET /livreur/delivery?id=cmraojrcc000kqx39gemnadxb 200 in 54ms (next.js: 3ms, application-code: 51ms)
+   409→[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+   410→
+   411→- A server/client branch `if (typeof window !== 'undefined')`.
+   412→- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+   413→- Date formatting in a user's locale which doesn't match the server.
+   414→- External changing data without sending a snapshot of it along with the HTML.
+   415→- Invalid HTML tag nesting.
+   416→
+   417→It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+   418→
+   419→https://react.dev/link/hydration-mismatch
+   420→
+   421→  ...
+   422→    <LoadingBoundary name="delivery/" loading={null}>
+   423→      <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+   424→        <RedirectBoundary>
+   425→          <RedirectErrorBoundary router={{...}}>
+   426→            <InnerLayoutRouter url="/livreur/d..." tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+   427→              <SegmentViewNode type="page" pagePath="livreur/de...">
+   428→                <SegmentTrieNode>
+   429→                <ClientPageRoot Component={function ProtectedRoute} serverProvidedParams={{...}}>
+   430→                  <ProtectedRoute params={Promise} searchParams={Promise}>
+   431→                    <DeliveryPage params={Promise} searchParams={Promise}>
+   432→                      <div className="h-screen w...">
+   433→                        <div>
+   434→                        <div>
+   435→                        <motion.div className="absolute l..." style={{bottom:0}} animate={{height:72.125}} ...>
+   436→                          <MeasureLayout>
+   437→                          <div className="absolute l..." style={{bottom:0, ...}} draggable={false} ...>
+   438→                            <div>
+   439→                            <div
+   440→                              className="overflow-y-auto"
+   441→+                             style={{maxHeight:44.125}}
+   442→-                             style={{max-height:"72px"}}
+   443→                            >
+   444→                        ...
+   445→              ...
+   446→            ...
+   447→ 
+   448→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   449→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   450→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   451→  73 |             },
+   452→  74 |             (error) => {
+   453→> 75 |                 console.error('Geolocation watch error:', error.message,
+   454→     |                         ^
+   455→  76 |                     '- Code:', error.code,
+   456→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   457→  78 | (components/LocationTracker.tsx:75:25)
+   458→ GET /api/announcements/cmraojrcc000kqx39gemnadxb 200 in 262ms (next.js: 94ms, application-code: 168ms)
+   459→ GET /api/delivery-persons/cmraojrc20000qx39vctu2vvp 200 in 273ms (next.js: 166ms, application-code: 106ms)
+   460→[browser] Initial geolocation attempt failed: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) (components/LocationTracker.tsx:57:25)
+   461→[browser] Geolocation watch error: User denied Geolocation - Code: 1 (1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT) 
+   462→    at LocationTracker.useEffect (components/LocationTracker.tsx:75:25)
+   463→  73 |             },
+   464→  74 |             (error) => {
+   465→> 75 |                 console.error('Geolocation watch error:', error.message,
+   466→     |                         ^
+   467→  76 |                     '- Code:', error.code,
+   468→  77 |                     '(1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT)');
+   469→  78 | (components/LocationTracker.tsx:75:25)
+   470→ GET / 200 in 41ms (next.js: 3ms, application-code: 38ms)
+   471→ GET / 200 in 64ms (next.js: 4ms, application-code: 60ms)
+   472→ GET / 200 in 80ms (next.js: 4ms, application-code: 76ms)
+   473→ GET / 200 in 44ms (next.js: 3ms, application-code: 40ms)
+   474→ GET / 200 in 54ms (next.js: 3ms, application-code: 50ms)
+   475→ GET / 200 in 56ms (next.js: 5ms, application-code: 51ms)
+   476→ GET /livreur/delivery 200 in 55ms (next.js: 3ms, application-code: 52ms)
+   477→[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+   478→
+   479→- A server/client branch `if (typeof window !== 'undefined')`.
+   480→- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+   481→- Date formatting in a user's locale which doesn't match the server.
+   482→- External changing data without sending a snapshot of it along with the HTML.
+   483→- Invalid HTML tag nesting.
+   484→
+   485→It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+   486→
+   487→https://react.dev/link/hydration-mismatch
+   488→
+   489→  ...
+   490→    <LoadingBoundary name="delivery/" loading={null}>
+   491→      <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+   492→        <RedirectBoundary>
+   493→          <RedirectErrorBoundary router={{...}}>
+   494→            <InnerLayoutRouter url="/livreur/d..." tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+   495→              <SegmentViewNode type="page" pagePath="livreur/de...">
+   496→                <SegmentTrieNode>
+   497→                <ClientPageRoot Component={function ProtectedRoute} serverProvidedParams={{...}}>
+   498→                  <ProtectedRoute params={Promise} searchParams={Promise}>
+   499→                    <DeliveryPage params={Promise} searchParams={Promise}>
+   500→                      <div className="h-screen w...">
+   501→                        <div>
+   502→                        <div>
+   503→                        <motion.div className="absolute l..." style={{bottom:0}} animate={{height:90.75}} ...>
+   504→                          <MeasureLayout>
+   505→                          <div className="absolute l..." style={{bottom:0, ...}} draggable={false} ...>
+   506→                            <div>
+   507→                            <div
+   508→                              className="overflow-y-auto"
+   509→+                             style={{maxHeight:62.75}}
+   510→-                             style={{max-height:"72px"}}
+   511→                            >
+   512→                        ...
+   513→              ...
+   514→            ...
+   515→ 
+   516→ GET / 200 in 47ms (next.js: 3ms, application-code: 44ms)
+   517→ GET /livreur 200 in 81ms (next.js: 4ms, application-code: 76ms)
+   518→ GET /api/announcements 200 in 10ms (next.js: 3ms, application-code: 7ms)
+   519→ GET /livreur/historique 200 in 49ms (next.js: 21ms, application-code: 28ms)
+   520→ GET /livreur/delivery 200 in 44ms (next.js: 3ms, application-code: 41ms)
+   521→[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+   522→
+   523→- A server/client branch `if (typeof window !== 'undefined')`.
+   524→- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+   525→- Date formatting in a user's locale which doesn't match the server.
+   526→- External changing data without sending a snapshot of it along with the HTML.
+   527→- Invalid HTML tag nesting.
+   528→
+   529→It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+   530→
+   531→https://react.dev/link/hydration-mismatch
+   532→
+   533→  ...
+   534→    <LoadingBoundary name="delivery/" loading={null}>
+   535→      <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+   536→        <RedirectBoundary>
+   537→          <RedirectErrorBoundary router={{...}}>
+   538→            <InnerLayoutRouter url="/livreur/d..." tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+   539→              <SegmentViewNode type="page" pagePath="livreur/de...">
+   540→                <SegmentTrieNode>
+   541→                <ClientPageRoot Component={function ProtectedRoute} serverProvidedParams={{...}}>
+   542→                  <ProtectedRoute params={Promise} searchParams={Promise}>
+   543→                    <DeliveryPage params={Promise} searchParams={Promise}>
+   544→                      <div className="h-screen w...">
+   545→                        <div>
+   546→                        <div>
+   547→                        <motion.div className="absolute l..." style={{bottom:0}} animate={{height:90.75}} ...>
+   548→                          <MeasureLayout>
+   549→                          <div className="absolute l..." style={{bottom:0, ...}} draggable={false} ...>
+   550→                            <div>
+   551→                            <div
+   552→                              className="overflow-y-auto"
+   553→+                             style={{maxHeight:62.75}}
+   554→-                             style={{max-height:"72px"}}
+   555→                            >
+   556→                        ...
+   557→              ...
+   558→            ...
+   559→ 
+   560→ GET / 200 in 70ms (next.js: 3ms, application-code: 68ms)
+   561→
