@@ -107,6 +107,8 @@ export function FreelancerDashboard() {
   const [activeLoading, setActiveLoading] = useState(false)
   const [selectedDelivery, setSelectedDelivery] = useState<any>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [missionDetailsOpen, setMissionDetailsOpen] = useState(false)
+  const [selectedMission, setSelectedMission] = useState<any>(null)
   const [activeRoute, setActiveRoute] = useState<any>(null)
   const [pendingSubscriptions, setPendingSubscriptions] = useState<Set<string>>(new Set())
   const [subscribedIds, setSubscribedIds] = useState<Set<string>>(() => {
@@ -1061,10 +1063,229 @@ export function FreelancerDashboard() {
 
             {/* ── Tab: Missions ── */}
             {activeTab === 'missions' && (
+              <>
+                <div className="grid lg:grid-cols-2 gap-4">
+                  {[
+                    {
+                      id: 'MSN-001',
+                      title: 'Colis express',
+                      description: 'Livraison d\'un colis de vêtements — fragile, manier avec soin.',
+                      pickupCity: 'Bastos',
+                      pickupStreet: 'Rue Bastos, Yaoundé',
+                      deliveryCity: 'Mvan',
+                      deliveryStreet: 'Carrefour Mvan, Yaoundé',
+                      distance: 4.2,
+                      amount: 2500,
+                      status: 'EN_COURS',
+                      recipientFirstName: 'Kouamé',
+                      recipientLastName: 'Yves',
+                      recipientPhone: '+237 677 001 002',
+                      transportMethod: 'moto',
+                      paymentMethod: 'Mobile Money',
+                      duration: 18,
+                      pickupLat: 3.8667, pickupLng: 11.5167,
+                      deliveryLat: 3.8500, deliveryLng: 11.5100,
+                      packet: { designation: 'Vêtements', weight: '2', length: '40', width: '30', height: '20' },
+                    },
+                    {
+                      id: 'MSN-002',
+                      title: 'Documents urgents',
+                      description: 'Dossier administratif à remettre en mains propres au destinataire.',
+                      pickupCity: 'Plateau Ateme',
+                      pickupStreet: 'Plateau Ateme, Yaoundé',
+                      deliveryCity: 'Centre-ville',
+                      deliveryStreet: 'Avenue Kennedy, Yaoundé',
+                      distance: 6.8,
+                      amount: 3500,
+                      status: 'ASSIGNEE',
+                      recipientFirstName: 'Marie',
+                      recipientLastName: 'Biya',
+                      recipientPhone: '+237 699 200 300',
+                      transportMethod: 'voiture',
+                      paymentMethod: 'Espèces',
+                      duration: 29,
+                      pickupLat: 3.8800, pickupLng: 11.5300,
+                      deliveryLat: 3.8650, deliveryLng: 11.5200,
+                      packet: { designation: 'Documents', weight: '0.5', length: '30', width: '20', height: '5' },
+                    },
+                    {
+                      id: 'MSN-003',
+                      title: 'Colis alimentaire',
+                      description: 'Courses du marché — sacs lourds, prévoir deux voyages si nécessaire.',
+                      pickupCity: 'Mokolo',
+                      pickupStreet: 'Marché Mokolo, Yaoundé',
+                      deliveryCity: 'Ngousso',
+                      deliveryStreet: 'Ngousso Village, Yaoundé',
+                      distance: 3.1,
+                      amount: 1800,
+                      status: 'TERMINEE',
+                      recipientFirstName: 'Aimé',
+                      recipientLastName: 'Ngono',
+                      recipientPhone: '+237 655 400 500',
+                      transportMethod: 'moto',
+                      paymentMethod: 'Mobile Money',
+                      duration: 14,
+                      pickupLat: 3.8720, pickupLng: 11.5080,
+                      deliveryLat: 3.8600, deliveryLng: 11.5250,
+                      packet: { designation: 'Alimentaire', weight: '8', length: '50', width: '40', height: '30' },
+                    },
+                  ].map(mission => (
+                    <Card key={mission.id} className="bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow rounded-xl">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <CardTitle className="text-base">{mission.title}</CardTitle>
+                            <p className="text-[10px] text-orange-600 font-medium italic">{mission.pickupCity} → {mission.deliveryCity}</p>
+                          </div>
+                          <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded">
+                            <DollarSign className="w-3 h-3 text-green-600" />
+                            <span className="text-sm font-semibold text-green-700">{fmt(mission.amount)} FCFA</span>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <p className="text-sm text-gray-500 line-clamp-2">{mission.description}</p>
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                          <div className="space-y-1 flex-1">
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full" /><p className="text-sm text-gray-700"><span className="font-medium">Retrait:</span> {mission.pickupStreet}</p></div>
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 bg-red-500 rounded-full" /><p className="text-sm text-gray-700"><span className="font-medium">Livraison:</span> {mission.deliveryStreet}</p></div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-sm text-gray-600 pt-2 border-t">
+                          <div className="flex items-center gap-2"><Navigation className="w-4 h-4" /><span>{mission.distance.toFixed(1)} km</span></div>
+                          <Badge variant="outline" className={cn(
+                            'text-[10px]',
+                            mission.status === 'EN_COURS' && 'bg-blue-50 text-blue-700 border-blue-200',
+                            mission.status === 'ASSIGNEE' && 'bg-orange-50 text-orange-700 border-orange-200',
+                            mission.status === 'TERMINEE' && 'bg-green-50 text-green-700 border-green-200',
+                          )}>
+                            {mission.status === 'EN_COURS' && <><Truck className="w-2.5 h-2.5 mr-1 inline" />En cours</>}
+                            {mission.status === 'ASSIGNEE' && <><Clock className="w-2.5 h-2.5 mr-1 inline" />Assignée</>}
+                            {mission.status === 'TERMINEE' && <><CheckCircle2 className="w-2.5 h-2.5 mr-1 inline" />Terminée</>}
+                          </Badge>
+                          <div className="flex items-center gap-1"><DollarSign className="w-4 h-4 text-green-600" /><span className="font-semibold text-green-600">{fmt(mission.amount)} FCFA</span></div>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                          <Button size="sm" variant="outline" className="flex-1 border-orange-500 text-orange-600 hover:bg-orange-50" onClick={() => { setSelectedMission(mission); setMissionDetailsOpen(true) }}>Voir les détails</Button>
+                          <Button size="sm" className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium">Accepter la mission</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Dialog Détails Mission */}
+                <Dialog open={missionDetailsOpen} onOpenChange={o => { setMissionDetailsOpen(o); if (!o) setSelectedMission(null) }}>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader className="border-b pb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                          <Package className="w-6 h-6 text-orange-600" />
+                        </div>
+                        <div>
+                          <DialogTitle className="text-xl">{selectedMission?.title || 'Détails de la mission'}</DialogTitle>
+                          <DialogDescription className="text-xs font-mono text-orange-600">{selectedMission?.id}</DialogDescription>
+                        </div>
+                      </div>
+                    </DialogHeader>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+                      {/* Colonne gauche : trajet + carte */}
+                      <div className="space-y-4">
+                        <div className="bg-gray-50 p-4 rounded-xl space-y-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
+                            <div>
+                              <p className="text-xs text-gray-500 uppercase font-bold">Lieu de Retrait</p>
+                              <p className="text-sm text-gray-700">{selectedMission?.pickupStreet}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-red-500 rounded-full mt-2" />
+                            <div>
+                              <p className="text-xs text-gray-500 uppercase font-bold">Lieu de Livraison</p>
+                              <p className="text-sm text-gray-700">{selectedMission?.deliveryStreet}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm h-64 relative z-0">
+                          {selectedMission?.pickupLat && selectedMission?.deliveryLat && (
+                            <MapLeaflet
+                              center={[(selectedMission.pickupLat + selectedMission.deliveryLat) / 2, (selectedMission.pickupLng + selectedMission.deliveryLng) / 2]}
+                              zoom={13}
+                              markers={[
+                                { position: [selectedMission.pickupLat, selectedMission.pickupLng], label: 'Retrait', color: '#f97316' },
+                                { position: [selectedMission.deliveryLat, selectedMission.deliveryLng], label: 'Livraison', color: '#10b981' },
+                              ]}
+                              route={null}
+                            />
+                          )}
+                        </div>
+                        <div className="flex justify-between items-center p-4 bg-orange-50 rounded-xl">
+                          <div className="flex items-center gap-2"><Navigation className="w-5 h-5 text-orange-600" /><span className="font-bold">{selectedMission?.distance} km</span></div>
+                          <div className="flex items-center gap-2"><Clock className="w-5 h-5 text-orange-600" /><span className="font-bold">{selectedMission?.duration} min</span></div>
+                          <div className="text-lg font-black text-orange-600">{selectedMission ? fmt(selectedMission.amount) : ''} FCFA</div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <p className="text-xs text-gray-500">Mode de transport</p>
+                            <p className="font-medium capitalize">{selectedMission?.transportMethod}</p>
+                          </div>
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <p className="text-xs text-gray-500">Paiement</p>
+                            <p className="font-medium">{selectedMission?.paymentMethod}</p>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Colonne droite : description + colis + destinataire */}
+                      <div className="space-y-4">
+                        {selectedMission?.description && (
+                          <div>
+                            <h4 className="text-sm font-bold uppercase tracking-wider mb-2">Description</h4>
+                            <p className="text-sm text-gray-600">{selectedMission.description}</p>
+                          </div>
+                        )}
+                        {selectedMission?.packet && (
+                          <div>
+                            <h4 className="text-sm font-bold uppercase tracking-wider mb-3 border-b pb-1">Détails du Colis</h4>
+                            <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
+                              <div><p className="text-xs text-gray-500">Désignation</p><p className="font-medium">{selectedMission.packet.designation}</p></div>
+                              <div><p className="text-xs text-gray-500">Poids</p><p className="font-medium">{selectedMission.packet.weight} kg</p></div>
+                              <div className="col-span-2"><p className="text-xs text-gray-500">Dimensions (L×l×H)</p><p className="font-medium">{selectedMission.packet.length} × {selectedMission.packet.width} × {selectedMission.packet.height} cm</p></div>
+                            </div>
+                          </div>
+                        )}
+                        <div className="border-t pt-4">
+                          <h4 className="text-sm font-bold uppercase tracking-wider mb-3">Destinataire</h4>
+                          <div className="bg-blue-50 p-4 rounded-xl space-y-2">
+                            {(selectedMission?.recipientFirstName || selectedMission?.recipientLastName) && (
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                                  {selectedMission?.recipientFirstName?.charAt(0) || '?'}
+                                </div>
+                                <p className="font-bold text-gray-900">{selectedMission?.recipientFirstName} {selectedMission?.recipientLastName}</p>
+                              </div>
+                            )}
+                            {selectedMission?.recipientPhone && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Phone className="w-4 h-4" /><span>{selectedMission.recipientPhone}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
+
+            {/* ── Tab: Politiques ── */}
+            {activeTab === 'politiques' && (
               <div className="max-w-4xl mx-auto space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Missions</h2>
-                  <p className="text-sm text-gray-500 mt-1">Gérez vos disponibilités, tarifs et préférences de colis</p>
+                  <h2 className="text-2xl font-bold text-gray-900">Politiques Freelancer</h2>
+                  <p className="text-sm text-gray-500 mt-1">Paramètres de disponibilités, tarifs et colis acceptés</p>
                 </div>
 
                 {/* Disponibilités */}
@@ -1173,82 +1394,7 @@ export function FreelancerDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            )}
 
-            {/* ── Tab: Politiques ── */}
-            {activeTab === 'politiques' && (
-              <div className="max-w-4xl mx-auto space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Politiques Freelancer</h2>
-                  <p className="text-sm text-gray-500 mt-1">Règles de conduite et engagements de la plateforme</p>
-                </div>
-
-                {/* Engagement */}
-                <Card>
-                  <CardHeader><CardTitle className="flex items-center gap-2"><Shield className="w-5 h-5 text-orange-600" />Engagement pour une logistique professionnelle</CardTitle></CardHeader>
-                  <CardContent className="text-sm text-gray-600 space-y-3 leading-relaxed">
-                    <p>Chez TiiBnTick Freelancer, nous redéfinissons la logistique du dernier kilomètre par l'excellence et la confiance. Notre plateforme n'est pas seulement un outil de mise en relation, c'est un écosystème où chaque livraison compte.</p>
-                    <p>Nous nous engageons à fournir une infrastructure robuste permettant aux freelancers de travailler en toute autonomie tout en garantissant un niveau de service premium.</p>
-                  </CardContent>
-                </Card>
-
-                {/* Règles de conduite */}
-                <Card>
-                  <CardHeader><CardTitle className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-orange-600" />Règles de conduite</CardTitle></CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {[
-                        { icon: <Clock className="w-6 h-6 text-orange-500" />, title: 'Ponctualité', desc: 'Respect strict des créneaux de ramassage et de livraison pour maintenir la fluidité du réseau.' },
-                        { icon: <Star className="w-6 h-6 text-orange-500" />, title: 'Courtoisie', desc: 'Représenter TiiBnTick avec respect auprès des clients. Une communication claire est essentielle.' },
-                        { icon: <Package className="w-6 h-6 text-orange-500" />, title: 'Manipulation Sécurisée', desc: 'Garantir l\'intégrité physique de chaque colis confié, du point A au point B.' },
-                      ].map(r => (
-                        <div key={r.title} className="space-y-2">
-                          {r.icon}
-                          <h4 className="font-semibold text-gray-800">{r.title}</h4>
-                          <p className="text-sm text-gray-500">{r.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Politique de paiement */}
-                <Card className="bg-gray-900 text-white border-0">
-                  <CardHeader><CardTitle className="flex items-center gap-2 text-white"><DollarSign className="w-5 h-5 text-orange-400" />Politique de Paiement Garanti</CardTitle></CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="p-4 border border-white/20 rounded-lg">
-                        <p className="font-semibold mb-1">Commissions Transparentes</p>
-                        <p className="text-sm text-white/70">TiiBnTick prélève une commission fixe sur chaque course, couvrant les frais de service et l'assurance.</p>
-                      </div>
-                      <div className="p-4 border border-white/20 rounded-lg">
-                        <p className="font-semibold mb-1">Délais de Versement</p>
-                        <p className="text-sm text-white/70">Versements journaliers pour une liquidité immédiate ou hebdomadaires pour une gestion simplifiée.</p>
-                      </div>
-                    </div>
-                    <div className="bg-orange-500/20 p-5 rounded-lg border border-orange-500/40">
-                      <h4 className="font-semibold mb-3 flex items-center gap-2"><Shield className="w-4 h-4" />Paiement Garanti</h4>
-                      <p className="text-sm text-white/80 mb-2">Les fonds sont bloqués par la plateforme dès l'acceptation de la mission.</p>
-                      <p className="text-xs text-white/60">Le virement est débloqué vers votre compte TiiBnTick dès la validation finale par le destinataire via QR Code de sécurité.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Résiliation */}
-                <Card className="border-red-200 bg-red-50/50">
-                  <CardHeader><CardTitle className="flex items-center gap-2 text-red-700"><AlertTriangle className="w-5 h-5" />Résiliation et Suspension</CardTitle></CardHeader>
-                  <CardContent className="text-sm text-gray-600 space-y-3">
-                    <p>Le non-respect répété ou grave de nos politiques peut entraîner une suspension temporaire ou définitive du compte Freelancer :</p>
-                    <ul className="list-disc pl-5 space-y-1.5">
-                      <li>Annulations de missions abusives et répétées (plus de 3 en 30 jours).</li>
-                      <li>Comportement inapproprié ou non-professionnel envers les clients.</li>
-                      <li>Fraude sur les documents ou utilisation de comptes tiers.</li>
-                      <li>Manquement aux règles de sécurité routière ou manipulation dangereuse des colis.</li>
-                    </ul>
-                    <p className="font-semibold text-gray-800 italic pt-2">TiiBnTick se réserve le droit de geler les avoirs en cours en cas d'enquête pour fraude avérée.</p>
-                  </CardContent>
-                </Card>
               </div>
             )}
 
