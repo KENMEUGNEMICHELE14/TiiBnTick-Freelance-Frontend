@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
@@ -59,6 +59,7 @@ import {
   Edit,
   Trash2,
   AlertTriangle,
+  Contact,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { withAuth } from '@/components/hoc/withAuth'
@@ -89,6 +90,13 @@ export function GoLanding() {
   const { user, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('accueil')
+
+  // Contacts state
+  const [savedContacts, setSavedContacts] = useState<
+    { id: string; lastName: string; firstName: string; phone: string; email: string; isDefault: boolean }[]
+  >([])
+  const [showAddContactDialog, setShowAddContactDialog] = useState(false)
+  const [newContact, setNewContact] = useState({ lastName: '', firstName: '', phone: '', email: '' })
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<any>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -389,32 +397,7 @@ export function GoLanding() {
               </h1>
             </div>
 
-            {/* Desktop right: profil pill + settings + logout */}
-            <div className="hidden md:flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
-                <Bell className="w-5 h-5" />
-              </Button>
-              <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 rounded-lg border border-orange-200">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 leading-tight">
-                    {clientInfo.lastName} {clientInfo.firstName}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    <span className="text-xs text-gray-600">{clientInfo.rating}</span>
-                  </div>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
-                <Settings className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-orange-500 hover:text-orange-600 hover:bg-orange-50" onClick={logout}>
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
+
 
             {/* Mobile Menu Hamburger */}
             <div className="md:hidden flex items-center gap-2">
@@ -527,6 +510,18 @@ export function GoLanding() {
                 Historique
               </Button>
 
+              <Button
+                variant="ghost"
+                className={cn(
+                  'w-full justify-start gap-3 rounded-lg py-3 h-auto',
+                  activeTab === 'contacts' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700'
+                )}
+                onClick={() => { setActiveTab('contacts'); setMobileMenuOpen(false); }}
+              >
+                <Contact className="w-5 h-5 shrink-0" />
+                Contacts
+              </Button>
+
               <div className="h-px bg-gray-100 my-1 mx-2" />
 
               <Button
@@ -631,6 +626,15 @@ export function GoLanding() {
               Historique
             </Button>
 
+            <Button
+              variant="ghost"
+              className={cn('w-full justify-start gap-3 rounded-lg', activeTab === 'contacts' ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-gray-700')}
+              onClick={() => setActiveTab('contacts')}
+            >
+              <Contact className="w-5 h-5 shrink-0" />
+              Contacts
+            </Button>
+
             <div className="h-px bg-gray-100 my-1" />
 
             <Button
@@ -683,7 +687,7 @@ export function GoLanding() {
                       <h2 className="text-2xl font-bold text-gray-900">Mes Missions</h2>
                       <Button
                         className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
-                        onClick={() => router.push('/expedition/user')}
+                        onClick={() => router.push('/pre-expedition?next=/expedition/user')}
                       >
                         <Plus className="w-5 h-5 mr-2" />
                         Créer une mission
@@ -799,7 +803,7 @@ export function GoLanding() {
                     </p>
                     <Button
                       className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold h-12 px-8 shadow-lg shadow-orange-500/20"
-                      onClick={() => router.push('/expedition/user')}
+                      onClick={() => router.push('/pre-expedition?next=/expedition/user')}
                     >
                       <Plus className="w-5 h-5 mr-2" />
                       Créer ma première mission
@@ -1300,7 +1304,7 @@ export function GoLanding() {
                       };
                       localStorage.setItem('expedition_form_in_progress', JSON.stringify(expeditionPrefill));
                     } catch (e) { console.error('Erreur préfill', e); }
-                    router.push('/expedition/user');
+                    router.push('/pre-expedition?next=/expedition/user');
                   }}>
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition-colors">
@@ -1343,6 +1347,15 @@ export function GoLanding() {
                         <UserCircle className="w-5 h-5 text-purple-600" />
                       </div>
                       <span className="text-sm font-medium text-gray-800">Profil</span>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="cursor-pointer hover:shadow-md transition-shadow group" onClick={() => setActiveTab('contacts')}>
+                    <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition-colors">
+                        <Contact className="w-5 h-5 text-teal-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-800">Contacts</span>
                     </CardContent>
                   </Card>
                 </div>
@@ -1428,7 +1441,7 @@ export function GoLanding() {
                   </div>
                   <Button
                     className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
-                    onClick={() => router.push('/expedition/user')}
+                    onClick={() => router.push('/pre-expedition?next=/expedition/user')}
                   >
                     <Plus className="w-5 h-5 mr-2" />
                     Nouvelle mission
@@ -1705,8 +1718,152 @@ export function GoLanding() {
               )}
             </div>
           )}
+
+          {/* Contacts Tab */}
+          {activeTab === 'contacts' && (
+            <section className="py-8 sm:py-12 bg-white min-h-[60vh]">
+              <div className="max-w-3xl mx-auto">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Contacts</h2>
+                    <p className="text-sm text-gray-500 mt-1">Gérez vos destinataires fréquents</p>
+                  </div>
+                  <Button
+                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
+                    onClick={() => setShowAddContactDialog(true)}
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Ajouter
+                  </Button>
+                </div>
+
+                {savedContacts.length === 0 ? (
+                  <Card className="py-16">
+                    <CardContent className="flex flex-col items-center justify-center text-center">
+                      <Contact className="w-12 h-12 text-gray-300 mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">Aucun contact enregistré</h3>
+                      <p className="text-sm text-gray-500 max-w-md">Ajoutez vos destinataires fréquents pour les sélectionner rapidement lors de vos expéditions.</p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-3">
+                    {savedContacts.map((contact) => (
+                      <Card key={contact.id} className="border border-gray-200 hover:shadow-md transition-shadow">
+                        <CardContent className="p-4 flex items-start gap-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-bold text-sm">{contact.firstName.charAt(0).toUpperCase()}{contact.lastName.charAt(0).toUpperCase()}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-gray-900">{contact.firstName} {contact.lastName}</span>
+                              {contact.isDefault && (
+                                <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-[10px]">Par défaut</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600">{contact.email}</p>
+                            <p className="text-sm text-gray-600">{contact.phone}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0"
+                            onClick={() => setSavedContacts(prev => prev.filter(c => c.id !== contact.id))}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
         </main>
       </div>
+
+      {/* Add Contact Dialog */}
+      <Dialog open={showAddContactDialog} onOpenChange={setShowAddContactDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Contact className="w-5 h-5 text-orange-500" />
+              Ajouter un contact
+            </DialogTitle>
+            <DialogDescription>Enregistrez un destinataire fréquent</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label htmlFor="uc-lastname">Nom <span className="text-red-500">*</span></Label>
+              <Input
+                id="uc-lastname"
+                placeholder="Ex: Dupont"
+                value={newContact.lastName}
+                onChange={(e) => setNewContact({ ...newContact, lastName: e.target.value })}
+                className="mt-1.5"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="uc-firstname">Prénom <span className="text-red-500">*</span></Label>
+              <Input
+                id="uc-firstname"
+                placeholder="Ex: Jean"
+                value={newContact.firstName}
+                onChange={(e) => setNewContact({ ...newContact, firstName: e.target.value })}
+                className="mt-1.5"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="uc-email">Email <span className="text-red-500">*</span></Label>
+              <Input
+                id="uc-email"
+                type="email"
+                placeholder="Ex: jean.dupont@email.com"
+                value={newContact.email}
+                onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
+                className="mt-1.5"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="uc-phone">Numéro de téléphone <span className="text-red-500">*</span></Label>
+              <Input
+                id="uc-phone"
+                placeholder="Ex: +237 6XX XXX XXX"
+                value={newContact.phone}
+                onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                className="mt-1.5"
+                required
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowAddContactDialog(false)}>Annuler</Button>
+            <Button
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+              onClick={() => {
+                if (!newContact.lastName || !newContact.firstName || !newContact.email || !newContact.phone) {
+                  toast.error('Veuillez remplir tous les champs')
+                  return
+                }
+                setSavedContacts(prev => [...prev, {
+                  id: Date.now().toString(),
+                  ...newContact,
+                  isDefault: savedContacts.length === 0,
+                }])
+                setNewContact({ lastName: '', firstName: '', phone: '', email: '' })
+                setShowAddContactDialog(false)
+                toast.success('Contact ajouté avec succès')
+              }}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div>
   )

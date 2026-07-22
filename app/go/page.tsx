@@ -154,7 +154,7 @@ export function GoLanding() {
     { id: string; lastName: string; firstName: string; phone: string; isDefault: boolean }[]
   >([])
   const [showAddContactDialog, setShowAddContactDialog] = useState(false)
-  const [newContact, setNewContact] = useState({ lastName: '', firstName: '', phone: '' })
+  const [newContact, setNewContact] = useState({ lastName: '', firstName: '', phone: '', email: '' })
 
   const fetchAnnouncements = useCallback(async () => {
     if (!user?.clientId) return
@@ -479,32 +479,7 @@ export function GoLanding() {
               </h1>
             </div>
 
-            {/* Desktop right: profil pill + settings + logout */}
-            <div className="hidden md:flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
-                <Bell className="w-5 h-5" />
-              </Button>
-              <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 rounded-lg border border-orange-200">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 leading-tight">
-                    {clientInfo.lastName} {clientInfo.firstName}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    <span className="text-xs text-gray-600">{clientInfo.rating}</span>
-                  </div>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
-                <Settings className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-orange-500 hover:text-orange-600 hover:bg-orange-50" onClick={logout}>
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
+
 
             {/* Mobile Menu Hamburger */}
             <div className="md:hidden flex items-center gap-2">
@@ -816,7 +791,7 @@ export function GoLanding() {
                       <h2 className="text-2xl font-bold text-gray-900">Mes Annonces</h2>
                       <Button
                         className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
-                        onClick={() => router.push('/expedition')}
+                        onClick={() => router.push('/pre-expedition?next=/expedition')}
                       >
                         <Plus className="w-5 h-5 mr-2" />
                         Ajouter une annonce
@@ -932,7 +907,7 @@ export function GoLanding() {
                     </p>
                     <Button
                       className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold h-12 px-8 shadow-lg shadow-orange-500/20"
-                      onClick={() => router.push('/expedition')}
+                      onClick={() => router.push('/pre-expedition?next=/expedition')}
                     >
                       <Plus className="w-5 h-5 mr-2" />
                       Créer ma première annonce
@@ -1477,7 +1452,7 @@ export function GoLanding() {
                       };
                       localStorage.setItem('expedition_form_in_progress', JSON.stringify(expeditionPrefill));
                     } catch (e) { console.error('Erreur préfill', e); }
-                    router.push('/expedition');
+                    router.push('/pre-expedition?next=/expedition');
                   }}>
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition-colors">
@@ -1632,7 +1607,7 @@ export function GoLanding() {
                   </div>
                   <Button
                     className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
-                    onClick={() => router.push('/expedition')}
+                    onClick={() => router.push('/pre-expedition?next=/expedition')}
                   >
                     <Plus className="w-5 h-5 mr-2" />
                     Nouvelle annonce
@@ -2156,33 +2131,48 @@ export function GoLanding() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label htmlFor="contact-lastname">Nom</Label>
+              <Label htmlFor="contact-lastname">Nom <span className="text-red-500">*</span></Label>
               <Input
                 id="contact-lastname"
                 placeholder="Ex: Dupont"
                 value={newContact.lastName}
                 onChange={(e) => setNewContact({ ...newContact, lastName: e.target.value })}
                 className="mt-1.5"
+                required
               />
             </div>
             <div>
-              <Label htmlFor="contact-firstname">Prénom</Label>
+              <Label htmlFor="contact-firstname">Prénom <span className="text-red-500">*</span></Label>
               <Input
                 id="contact-firstname"
                 placeholder="Ex: Jean"
                 value={newContact.firstName}
                 onChange={(e) => setNewContact({ ...newContact, firstName: e.target.value })}
                 className="mt-1.5"
+                required
               />
             </div>
             <div>
-              <Label htmlFor="contact-phone">Numéro de téléphone</Label>
+              <Label htmlFor="contact-email">Email <span className="text-red-500">*</span></Label>
+              <Input
+                id="contact-email"
+                type="email"
+                placeholder="Ex: jean.dupont@email.com"
+                value={newContact.email}
+                onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
+                className="mt-1.5"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="contact-phone">Numéro de téléphone <span className="text-red-500">*</span></Label>
               <Input
                 id="contact-phone"
                 placeholder="Ex: +237 6XX XXX XXX"
                 value={newContact.phone}
                 onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
                 className="mt-1.5"
+                required
               />
             </div>
           </div>
@@ -2191,7 +2181,7 @@ export function GoLanding() {
             <Button
               className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
               onClick={() => {
-                if (!newContact.lastName || !newContact.firstName || !newContact.phone) {
+                if (!newContact.lastName || !newContact.firstName || !newContact.email || !newContact.phone) {
                   toast.error('Veuillez remplir tous les champs')
                   return
                 }
@@ -2200,7 +2190,7 @@ export function GoLanding() {
                   ...newContact,
                   isDefault: savedContacts.length === 0,
                 }])
-                setNewContact({ lastName: '', firstName: '', phone: '' })
+                setNewContact({ lastName: '', firstName: '', phone: '', email: '' })
                 setShowAddContactDialog(false)
                 toast.success('Contact ajouté avec succès')
               }}

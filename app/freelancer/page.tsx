@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog'
 import {
-  Package, MapPin, Clock, DollarSign, Star, CheckCircle2, Navigation, Bell, User,
+  Flame, Package, MapPin, Clock, DollarSign, Star, CheckCircle2, Navigation, Bell, User,
   Settings, LogOut, Menu, X, Phone, Map as MapIcon, TrendingUp, TrendingDown,
   LayoutDashboard, Megaphone, Truck, History, UserCircle, Target, ArrowUpRight,
   ArrowDownLeft, Wallet as WalletIcon, Eye, EyeOff, Shield, Building2, Send,
@@ -113,7 +113,7 @@ export function FreelancerDashboard() {
   const [pendingSubscriptions, setPendingSubscriptions] = useState<Set<string>>(new Set())
   const [subscribedIds, setSubscribedIds] = useState<Set<string>>(() => {
     if (typeof window !== 'undefined') {
-      try { const s = localStorage.getItem('freelancer_subscribed_ids'); if (s) return new Set(JSON.parse(s)) } catch {}
+      try { const s = localStorage.getItem('freelancer_subscribed_ids'); if (s) return new Set(JSON.parse(s)) } catch { }
     }
     return new Set()
   })
@@ -137,7 +137,7 @@ export function FreelancerDashboard() {
       const apiIds = data.map((a: AnnouncementResponseDTO) => a.id)
       setSubscribedIds(prev => {
         const merged = new Set(prev); apiIds.forEach((id: string) => merged.add(id))
-        try { localStorage.setItem('freelancer_subscribed_ids', JSON.stringify([...merged])) } catch {}
+        try { localStorage.setItem('freelancer_subscribed_ids', JSON.stringify([...merged])) } catch { }
         return merged
       })
     } catch (e) { console.error(e) } finally { setActiveLoading(false) }
@@ -159,7 +159,7 @@ export function FreelancerDashboard() {
           setAvailableDeliveries(prev => prev.find(d => d.id === a.id) ? prev : [a, ...prev])
           toast({ title: 'Nouvelle course disponible !', description: a.title || 'Une nouvelle course correspond à votre position.' })
         })
-      } catch {}
+      } catch { }
     }
     es.onerror = () => es.close()
     return () => es.close()
@@ -177,7 +177,7 @@ export function FreelancerDashboard() {
     try {
       const res = await apiClient.post(`/api/announcements/${deliveryId}/subscribe`, { deliveryPersonId: user.deliveryPersonId || user.id })
       if ([200, 201, 202].includes(res.status)) {
-        setSubscribedIds(prev => { const n = new Set(prev); n.add(deliveryId); try { localStorage.setItem('freelancer_subscribed_ids', JSON.stringify([...n])) } catch {}; return n })
+        setSubscribedIds(prev => { const n = new Set(prev); n.add(deliveryId); try { localStorage.setItem('freelancer_subscribed_ids', JSON.stringify([...n])) } catch { }; return n })
         toast({ title: 'Demande envoyée', description: 'Votre souscription est en cours de traitement.' })
       } else { toast({ title: 'Erreur', description: 'Impossible d\'envoyer la demande.', variant: 'destructive' }) }
     } catch { toast({ title: 'Erreur', description: 'Une erreur réseau est survenue.', variant: 'destructive' }) }
@@ -291,30 +291,7 @@ export function FreelancerDashboard() {
               </div>
             </div>
 
-            {/* Desktop right: profil pill + settings + logout */}
-            <div className="hidden md:flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
-                <Bell className="w-5 h-5" />
-              </Button>
-              <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 rounded-lg border border-orange-200">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 leading-tight">{freelancerInfo.displayName}</p>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    <span className="text-xs text-gray-600">{freelancerInfo.rating}</span>
-                  </div>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" className="opacity-50 cursor-not-allowed" disabled>
-                <Settings className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-orange-500 hover:text-orange-600 hover:bg-orange-50" onClick={logout}>
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
+
 
             {/* Mobile hamburger */}
             <div className="md:hidden flex items-center gap-2">
@@ -1374,14 +1351,13 @@ export function FreelancerDashboard() {
                       <p className="text-sm font-semibold text-gray-800 mb-3">Styles de colis acceptés</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {[
-                          { label: 'Standard', checked: true },
-                          { label: 'Électronique', checked: true },
-                          { label: 'Fragile', checked: false },
-                          { label: 'Documents', checked: true },
+                          { label: 'Standard', checked: true, icon: <Package className="w-7 h-7 mb-2 text-gray-500" /> },
+                          { label: 'Fragile', checked: false, icon: <AlertTriangle className="w-7 h-7 mb-2 text-gray-500" /> },
+                          { label: 'Périssable', checked: false, icon: <Flame className="w-7 h-7 mb-2 text-gray-500" /> },
                         ].map(c => (
                           <label key={c.label} className="flex flex-col items-center p-4 rounded-xl border border-gray-200 hover:border-orange-300 cursor-pointer transition-all has-[:checked]:bg-orange-50 has-[:checked]:border-orange-400">
                             <input type="checkbox" defaultChecked={c.checked} className="hidden" />
-                            <Package className="w-7 h-7 mb-2 text-gray-500" />
+                            {c.icon}
                             <span className="text-xs font-bold text-gray-700">{c.label}</span>
                           </label>
                         ))}
