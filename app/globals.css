@@ -153,14 +153,14 @@
   --tt-surface-gray: #F8FAFC;
   --tt-on-background: #131b2e;
   --tt-on-surface: #131b2e;
-  --tt-on-surface-variant: #5a4138;
-  --tt-primary: #a33900;
+  --tt-on-surface-variant: #6b4c3b;
+  --tt-primary: #f97316;
   --tt-on-primary: #ffffff;
-  --tt-primary-container: #cc4900;
-  --tt-primary-fixed: #ffdbce;
-  --tt-on-primary-fixed: #370e00;
-  --tt-on-primary-fixed-variant: #7f2b00;
-  --tt-inverse-primary: #ffb599;
+  --tt-primary-container: #ea580c;
+  --tt-primary-fixed: #ffedd5;
+  --tt-on-primary-fixed: #431407;
+  --tt-on-primary-fixed-variant: #c2410c;
+  --tt-inverse-primary: #fdba74;
   --tt-secondary: #0058be;
   --tt-on-secondary: #ffffff;
   --tt-secondary-container: #2170e4;
@@ -178,13 +178,13 @@
   --tt-error: #ba1a1a;
   --tt-on-error: #ffffff;
   --tt-error-container: #ffdad6;
-  --tt-outline: #8e7166;
-  --tt-outline-variant: #e2bfb2;
+  --tt-outline: #b07050;
+  --tt-outline-variant: #f0cdb8;
   --tt-border-subtle: #E2E8F0;
   --tt-success-green: #10B981;
   --tt-inverse-surface: #283044;
   --tt-inverse-on-surface: #eef0ff;
-  --tt-surface-variant: #dae2fd;
+  --tt-surface-variant: #ffeadc;
   color-scheme: light;
 
   /* ── Font ── */

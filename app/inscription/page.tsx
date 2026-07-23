@@ -607,13 +607,13 @@ export default function RegisterPage() {
               {/* Header logo + titre */}
               <div className="flex flex-col items-center gap-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-10 h-10 bg-[var(--tt-primary,#a33900)] rounded-xl flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-md">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                   </div>
                   <span className="text-2xl font-bold text-gray-900 tracking-tight">
-                    TiiB<span className="text-orange-500">n</span>Tick
+                    TiiB<span className="text-orange-600">n</span>Tick
                   </span>
                 </div>
                 <div className="text-center">
@@ -634,14 +634,14 @@ export default function RegisterPage() {
                   <div className="relative overflow-hidden rounded-xl border-2 border-gray-200 bg-white transition-all duration-200 group-hover:border-orange-500 group-hover:shadow-md group-active:scale-[0.99] p-4 flex items-center gap-4">
                     <div className="absolute top-0 left-0 w-1 h-full bg-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="font-bold text-gray-900 text-base block">User</span>
                     </div>
-                    <svg className="w-5 h-5 text-gray-500 group-hover:text-orange-500 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-orange-600 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -656,14 +656,14 @@ export default function RegisterPage() {
                   <div className="relative overflow-hidden rounded-xl border-2 border-gray-200 bg-white transition-all duration-200 group-hover:border-orange-500 group-hover:shadow-md group-active:scale-[0.99] p-4 flex items-center gap-4">
                     <div className="absolute top-0 left-0 w-1 h-full bg-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="font-bold text-gray-900 text-base block">Go</span>
                     </div>
-                    <svg className="w-5 h-5 text-gray-500 group-hover:text-orange-500 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-orange-600 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -678,14 +678,14 @@ export default function RegisterPage() {
                   <div className="relative overflow-hidden rounded-xl border-2 border-gray-200 bg-white transition-all duration-200 group-hover:border-orange-500 group-hover:shadow-md group-active:scale-[0.99] p-4 flex items-center gap-4">
                     <div className="absolute top-0 left-0 w-1 h-full bg-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="font-bold text-gray-900 text-base block">Freelancer</span>
                     </div>
-                    <svg className="w-5 h-5 text-gray-500 group-hover:text-orange-500 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-orange-600 group-hover:translate-x-1 transition-all duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -696,7 +696,7 @@ export default function RegisterPage() {
               {/* Lien connexion */}
               <p className="text-center text-sm text-gray-600 pt-2">
                 Déjà un compte ?{' '}
-                <Link href="/" className="text-orange-500 font-semibold hover:underline">Se connecter</Link>
+                <Link href="/" className="text-orange-600 font-semibold hover:underline">Se connecter</Link>
               </p>
             </div>
           )}
