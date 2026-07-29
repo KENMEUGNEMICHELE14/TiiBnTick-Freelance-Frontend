@@ -1,0 +1,795 @@
+TiiBnTick
+
+A YOWYOB SYSTEM / UN SYSTÈME YOWYOB
+
+AVIS DE CONFIDENTIALITÉ ET DE PROTECTION DES DONNÉES
+
+PRIVACY AND PERSONAL DATA PROTECTION NOTICE
+
+Avis transversal applicable aux utilisateurs, partenaires et intégrateurs TiiBnTick
+
+Cross-platform notice for TiiBnTick users, partners and integrators
+
+Statut / Status
+
+Bêta publiée / Published Beta
+
+Version
+
+1.0
+
+Date
+
+25 juillet 2026 / 25 July 2026
+
+Code document / Document code
+
+TBT-LEGAL-PRIVACY-ENFR-1.0
+
+Éditeur / Publisher
+
+Yowyob Inc. Ltd
+
+Portée / Scope
+
+Toutes les plateformes et applications TiiBnTick / All TiiBnTick platforms and applications
+
+IMPORTANT / IMPORTANT — Ce document régit une version bêta publiée susceptible d’évoluer. Il doit être lu avec les avis ou conditions spécifiques affichés dans un module, une commande, une offre, un contrat partenaire ou une intégration API. / This document governs a published beta that may evolve. It must be read together with module-specific notices, order terms, offers, partner agreements or API integration terms.
+
+Contrôle du document / Document control
+
+Version
+
+Date
+
+Statut / Status
+
+Portée / Scope
+
+Évolution / Change
+
+1.0
+
+25 juillet 202625 July 2026
+
+Bêta publiéePublished Beta
+
+Suite TiiBnTick complèteFull TiiBnTick suite
+
+Première version consolidée conforme au périmètre fonctionnel TiiBnTick et à la loi camerounaise de 2024.First consolidated version aligned with TiiBnTick functions and Cameroon’s 2024 personal-data law.
+
+Périmètre des plateformes / Platform scope
+
+Plateforme / Platform
+
+Adresse / Address
+
+Fonction indicative / Indicative function
+
+TiiBnTick Link
+
+https://tiibntick.yowyob.com/en
+
+Public portal, shipment initiation, tracking and recipient interactions / Portail public, création d’envois, suivi et interactions destinataires
+
+TiiBnTick Go
+
+https://tiibntick-go.yowyob.com/
+
+Courier and delivery opportunity marketplace / Place de marché des opportunités de livraison
+
+TiiBnTick Point
+
+https://tiibntick-point.yowyob.com/
+
+Relay points and micro-hubs / Points relais et micro-hubs
+
+TiiBnTick Core
+
+https://tiibntick-core.yowyob.com/
+
+Shared identity, trust, security and synchronization services / Services communs d’identité, confiance, sécurité et synchronisation
+
+TiiBnTick Market
+
+https://tiibntick-market.yowyob.com/en
+
+Public logistics and service marketplace / Place de marché publique de services logistiques
+
+TiiBnTick Agency
+
+https://tiibntick-agency.yowyob.com/
+
+Agency, branch, fleet, mission, billing and operational management / Gestion d’agences, antennes, flotte, missions, facturation et opérations
+
+TiiBnTick API
+
+https://tiibntick-api.yowyob.com/
+
+APIs, webhooks and integrations / API, webhooks et intégrations
+
+Clause d’extension / Extension clause. Le présent document s’applique également aux applications mobiles, PWA, interfaces administratives, domaines de préproduction rendus publics, modules intégrés, services de confiance, API, webhooks, SDK, QR codes, notifications et fonctionnalités futures commercialisées sous les marques TiiBnTick ou Yowyob lorsqu’elles renvoient au présent document. / This document also applies to mobile apps, PWAs, administrative interfaces, publicly accessible pre-production domains, embedded modules, trust services, APIs, webhooks, SDKs, QR codes, notifications and future features marketed under the TiiBnTick or Yowyob brands where they link to this document.
+
+Principales références juridiques / Main legal references
+
+France / Français
+
+Loi n° 2024/017 du 23 décembre 2024 relative à la protection des données à caractère personnel au Cameroun, ainsi que ses textes d’application lorsqu’ils entrent en vigueur.
+
+Loi n° 2010/021 du 21 décembre 2010 régissant le commerce électronique au Cameroun et décret n° 2011/1521/PM du 15 juin 2011 fixant ses modalités d’application.
+
+Loi n° 2010/012 du 21 décembre 2010 relative à la cybersécurité et à la cybercriminalité au Cameroun, telle que modifiée ou remplacée.
+
+Actes uniformes OHADA applicables, droit camerounais des obligations, de la consommation, de la fiscalité, des transports, de la preuve et de la propriété intellectuelle.
+
+Règlementations sectorielles et territoriales applicables aux opérateurs, agences, transporteurs, points relais, paiements, télécommunications, publicité et protection des consommateurs.
+
+English
+
+Law No. 2024/017 of 23 December 2024 relating to personal data protection in Cameroon, together with implementing instruments as they enter into force.
+
+Law No. 2010/021 of 21 December 2010 governing electronic commerce in Cameroon and Decree No. 2011/1521/PM of 15 June 2011 implementing that law.
+
+Law No. 2010/012 of 21 December 2010 on cybersecurity and cybercrime in Cameroon, as amended or replaced.
+
+Applicable OHADA Uniform Acts and Cameroonian rules on contracts, consumer protection, taxation, transport, evidence and intellectual property.
+
+Sectoral and territorial rules applicable to operators, agencies, carriers, relay points, payments, telecommunications, advertising and consumer protection.
+
+Règle de prudence / Compliance qualification. Les références ci-dessus ne constituent pas une liste exhaustive. Une activité de transport, de point relais, de paiement, de publicité ou de traitement de données peut nécessiter des autorisations, assurances, licences, formalités ou contrats supplémentaires à la charge de l’opérateur concerné. / The references above are not exhaustive. Transport, relay-point, payment, advertising or data-processing activities may require additional authorisations, insurance, licences, filings or contracts for which the relevant operator remains responsible.
+
+PARTIE I — AVIS DE CONFIDENTIALITÉ — FRANÇAIS
+
+Entrée en vigueur : 25 juillet 2026
+
+Le présent Avis explique comment Yowyob collecte, utilise, partage, conserve et protège les données personnelles dans TiiBnTick. Il complète les CGU, le Cookies & Ads Notice et les avis contextuels affichés au moment d’une collecte. Il ne décrit pas intégralement les traitements autonomes réalisés par une agence, un marchand, un point relais, un transporteur, un payeur ou un intégrateur dans ses propres systèmes.
+
+1. Responsable du traitement et contacts
+
+Yowyob Inc. Ltd, société à responsabilité limitée de droit camerounais, au capital social de 1 000 000 FCFA, immatriculée au Registre du Commerce et du Crédit Mobilier sous le numéro RC/YAO/2020/B/1614, NIF M102015282478U, siège social : Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroun.
+
+Pour les traitements déterminés par Yowyob — création et sécurité des comptes, exploitation de la plateforme commune, support, prévention de la fraude, amélioration, communications propres et gouvernance de la suite — Yowyob agit comme responsable du traitement. Contact vie privée : privacy@yowyob.com. Contact sécurité : support@yowyob.com. Contact juridique : legal@yowyob.com.
+
+Yowyob peut désigner ou publier les coordonnées d’un délégué, représentant ou point de contact supplémentaire lorsque la loi ou l’organisation du service l’exige. Toute correspondance doit préciser le nom, le compte ou numéro de suivi, la plateforme et la demande.
+
+2. Portée et personnes concernées
+
+Cet Avis s’applique aux visiteurs, prospects, expéditeurs, destinataires, représentants, salariés des clients, agences et antennes, points relais, chauffeurs, livreurs, freelances, transporteurs, marchands, administrateurs, intégrateurs API, contacts d’urgence, bénéficiaires de paiements et personnes apparaissant dans une preuve opérationnelle.
+
+Il couvre les sites, applications, PWA, interfaces administratives, QR codes, formulaires, API, webhooks, notifications, support, réseaux sociaux et opérations physiques lorsqu’une donnée est saisie, reçue ou synchronisée dans TiiBnTick.
+
+3. Répartition des rôles entre Yowyob et les partenaires
+
+Un partenaire professionnel peut agir comme responsable de traitement indépendant lorsqu’il décide pourquoi et comment traiter les données de ses clients, employés, coursiers, destinataires ou prospects. Il peut également demander à Yowyob de traiter certaines données pour son compte, selon le module et le contrat. Dans certains flux, Yowyob et le partenaire déterminent chacun des finalités distinctes.
+
+Le partenaire doit fournir ses propres informations de confidentialité, identifier sa base légale, gérer les droits portant sur ses systèmes, encadrer ses sous-traitants et respecter les règles de travail, transport, consommation et prospection. Yowyob transmet raisonnablement une demande au partenaire lorsqu’elle concerne principalement le traitement de celui-ci.
+
+4. Catégories de données collectées
+
+Identité et compte : noms, pseudonyme, date de naissance lorsque nécessaire, photo de profil, sexe ou civilité facultative, identifiants internes, langue, pays, rôle et organisation.
+
+Coordonnées : téléphone, e-mail, adresse, repères, ville, zone et contacts d’urgence.
+
+Données professionnelles et KYC : entreprise, RCCM/NIF, fonction, justificatifs, pièce d’identité, selfie ou vérification, permis, carte grise, assurance, licences, coordonnées bancaires ou mobile money, bénéficiaire effectif.
+
+Données de commande et d’Envoi : expéditeur, destinataire, description, catégorie, poids, dimensions, valeur, adresse, itinéraire, créneau, instructions, contenu déclaré, photos, facture, documents douaniers et historiques de statut.
+
+Données opérationnelles : mission, disponibilité, affectation, agence, hub, véhicule, tournée, scans, QR, OTP, signature, preuve de livraison, incidents, retours, réclamations, qualité et performance.
+
+Données de localisation et appareil : GPS précis ou approximatif selon l’autorisation, adresses IP, identifiants d’appareil ou application, système, navigateur, langue, réseau, fuseau, journaux, événements et diagnostics.
+
+Données financières : prix, taxe, commission, facture, paiement, encaissement, remboursement, reversement, statut de transaction et références fournies par le prestataire de paiement; Yowyob ne reçoit pas nécessairement les données complètes de carte ou portefeuille.
+
+Communications : tickets, e-mails, SMS, notifications, appels ou enregistrements lorsqu’annoncés, messages et interactions avec les réseaux sociaux.
+
+Préférences et consentements : choix de cookies, marketing, notifications, langue, favoris, recherche, paramètres de confidentialité et historique des autorisations.
+
+Données dérivées : indicateurs de risque, correspondance, distance, temps estimé, score opérationnel, qualité de service, détection d’anomalies, segmentation ou statistiques agrégées.
+
+5. Sources des données
+
+Les données proviennent directement de la personne, d’un expéditeur saisissant les coordonnées du destinataire, d’une organisation ou d’un administrateur, d’un prestataire exécutant une mission, d’un point relais, d’un marchand, d’une API partenaire, d’un prestataire de paiement ou d’identité, d’un terminal et de ses capteurs, de cookies/SDK, de sources publiques autorisées ou d’une autorité.
+
+Lorsqu’un utilisateur fournit les données d’un tiers, il doit s’assurer qu’elles sont pertinentes, exactes et licitement communiquées, et informer ce tiers de TiiBnTick au plus tard lors du premier contact, sauf exception légale. Il ne doit pas communiquer de données excessives ou sensibles non requises.
+
+6. Données sensibles et données à risque élevé
+
+TiiBnTick n’a pas pour finalité générale de traiter des données de santé, biométriques d’identification, opinions, religion, orientation sexuelle, données génétiques, infractions ou autres catégories sensibles. Leur transmission est interdite sauf fonctionnalité expressément prévue, nécessité légale ou accord spécifique assorti de garanties renforcées.
+
+Une pièce d’identité, un selfie de vérification, une signature, une géolocalisation précise, une image du domicile ou un document contenant des données sensibles exige une minimisation stricte. Une photo de livraison ne doit pas montrer inutilement des personnes, l’intérieur d’un logement, un document d’identité, un écran ou des informations médicales.
+
+7. Finalités et bases juridiques
+
+Exécuter un contrat ou des mesures précontractuelles : créer le compte, rechercher une offre, calculer une estimation, traiter une commande, affecter une mission, suivre, livrer, facturer, payer, rembourser, assister et gérer une réclamation.
+
+Respecter une obligation légale : facturation et fiscalité, KYC lorsque requis, tenue de registres, réponse aux autorités, sécurité, conservation probatoire, droits des personnes et notification des violations.
+
+Intérêt légitime de Yowyob ou d’un partenaire, après mise en balance : sécurité, prévention de fraude, protection des personnes et biens, amélioration, statistiques, gestion du réseau, défense des droits, communications professionnelles raisonnables et continuité.
+
+Consentement : cookies non essentiels, publicité personnalisée lorsque utilisée, certaines géolocalisations en arrière-plan, accès optionnel au carnet d’adresses, enregistrement facultatif, communications marketing et traitements sensibles lorsque le consentement est une base valable.
+
+Protection d’intérêts vitaux ou mission d’intérêt public, uniquement dans les cas prévus par la loi et documentés.
+
+8. Caractère obligatoire et conséquences du refus
+
+Les champs signalés obligatoires sont nécessaires à l’inscription, à la sécurité, au contrat, à la livraison, au paiement ou à une exigence légale. Sans adresse ou contact destinataire, la livraison peut être impossible; sans vérification requise, une mission ou un reversement peut être bloqué; sans preuve, une remise peut être refusée.
+
+Les données facultatives améliorent la personnalisation ou la commodité. Le refus d’un cookie analytique ou publicitaire n’empêche pas l’accès aux fonctions essentielles. Le refus de la géolocalisation précise peut nécessiter la saisie manuelle, réduire le suivi ou rendre indisponible une fonction de mission qui dépend objectivement de la position.
+
+9. Destinataires et catégories de partage
+
+Personnel Yowyob autorisé et sociétés ou équipes du groupe ayant besoin d’en connaître.
+
+Expéditeur, destinataire, agence, coursier, transporteur, point relais, marchand ou organisation impliqué, chacun dans la mesure nécessaire à l’opération.
+
+Prestataires d’hébergement, sécurité, messagerie, SMS, push, cartographie, paiement, identité, analytique, support, assurance, signature, sauvegarde, conseil et audit soumis à des obligations appropriées.
+
+Autorités, juridictions, forces de l’ordre, régulateurs, administrations fiscales ou douanières lorsque la loi l’exige ou pour protéger des droits et la sécurité.
+
+Acquéreur, investisseur ou conseil dans le cadre d’une restructuration, sous confidentialité et avec les garanties requises.
+
+10. Visibilité entre utilisateurs et suivi public
+
+TiiBnTick affiche uniquement les informations nécessaires au rôle : par exemple, le coursier reçoit les contacts et instructions nécessaires; le destinataire voit les informations de suivi et d’identification utiles; l’agence voit ses opérations; le point relais voit les Envois qu’il garde; un intégrateur voit les champs autorisés par ses scopes.
+
+Un lien de suivi public doit être limité, révocable ou expirant lorsque possible. L’écran public ne doit pas révéler la valeur complète, le contenu détaillé, les documents, les coordonnées bancaires ni une position de personne plus précise que nécessaire. L’utilisateur qui partage le lien avec un tiers assume le risque de cette divulgation.
+
+11. Géolocalisation, itinéraires et surveillance professionnelle
+
+La position peut être utilisée pour rechercher un service proche, calculer une distance, affecter ou suivre une mission, documenter une collecte ou livraison, prévenir la fraude et protéger les biens. La collecte en arrière-plan, lorsqu’elle existe, doit être signalée dans l’application et limitée aux périodes et rôles pertinents.
+
+Une organisation qui utilise TiiBnTick pour géolocaliser ses employés, chauffeurs ou prestataires doit respecter le droit du travail, informer individuellement les personnes, limiter la surveillance au besoin professionnel, définir les destinataires et durées, et prévoir un mécanisme pour les périodes privées ou hors mission lorsque cela est applicable.
+
+12. Photos, signatures, OTP, QR et preuves de livraison
+
+Les preuves servent à confirmer une étape, résoudre un litige, prévenir la fraude et protéger les parties. Elles ne doivent pas être utilisées pour un autre objectif incompatible. Les signatures dans TiiBnTick ne sont pas présentées comme une signature électronique qualifiée sauf mention et dispositif spécifiques.
+
+Un OTP ou QR code de remise est confidentiel et temporaire. Le destinataire ne doit le communiquer qu’au moment de la remise et via le canal attendu. Une preuve contestée est évaluée avec les autres journaux; aucune technologie isolée n’est infaillible.
+
+13. KYC, lutte contre la fraude et vérification
+
+Des contrôles peuvent vérifier l’identité, l’entreprise, les justificatifs, la cohérence d’un appareil, d’une transaction, d’une adresse, d’une mission ou d’un compte de paiement. Ils peuvent combiner règles, listes de contrôle autorisées, analyse de risque et examen humain.
+
+Yowyob limite l’accès aux justificatifs, masque lorsque possible les champs non nécessaires et définit des durées spécifiques. Une copie d’identité ne doit pas être demandée pour une opération courante lorsqu’un contrôle moins intrusif suffit.
+
+14. Profilage, recommandations et décisions automatisées
+
+TiiBnTick peut recommander un prestataire, une mission, un itinéraire, un prix indicatif, un point ou une priorité à partir de distance, disponibilité, capacité, préférences, historique, performance, risque et qualité des données. Ces traitements visent l’efficacité, la pertinence et la sécurité.
+
+Yowyob ne prend pas, sans garanties légales, une décision produisant un effet juridique ou affectant significativement une personne uniquement sur la base d’un traitement automatisé. Lorsqu’une telle décision est autorisée, la personne reçoit les informations requises et peut demander une intervention humaine, exprimer son point de vue et contester la décision.
+
+15. Analytique, recherche, amélioration et intelligence artificielle
+
+Yowyob analyse l’usage, les incidents, délais, zones, échecs, performances et demandes afin de corriger, dimensionner et améliorer TiiBnTick. Les données sont agrégées, pseudonymisées ou minimisées lorsque possible. Des jeux de données anonymisés peuvent être utilisés pour la recherche, la statistique et la planification.
+
+Les données personnelles ou contenus confidentiels ne sont pas utilisés pour entraîner un modèle d’IA généraliste accessible à des tiers sans base, information et garanties appropriées. Tout usage de données d’un partenaire pour un modèle spécifique est encadré par le contrat, les finalités, les droits et la sécurité.
+
+16. Registres distribués, empreintes et immutabilité
+
+Lorsqu’un service de confiance utilise une empreinte, un horodatage distribué ou une blockchain, Yowyob privilégie des références, hash ou preuves minimisées. Les données personnelles brutes, documents d’identité, coordonnées et images ne doivent pas être inscrits sur une chaîne publique.
+
+Une donnée hors chaîne reste rectifiable ou supprimable selon les règles applicables. Une empreinte peut subsister lorsqu’elle ne permet raisonnablement plus d’identifier la personne ou lorsqu’une conservation est nécessaire à la preuve, sous réserve des droits et de la loi.
+
+17. Transferts internationaux et hébergement
+
+Les données peuvent être hébergées ou accessibles depuis le Cameroun ou un autre pays par Yowyob et ses prestataires. Avant un transfert international, Yowyob évalue les exigences applicables, la localisation, les garanties contractuelles, la sécurité, la nécessité et, le cas échéant, les autorisations ou consentements requis.
+
+Lorsque le pays destinataire ne garantit pas un niveau adéquat, Yowyob met en place des mesures appropriées ou limite le transfert. Les partenaires qui exportent des données vers leurs propres clouds ou prestataires sont responsables de leurs transferts.
+
+18. Données hors du Yowyob Cloud
+
+Une donnée exportée, téléchargée, imprimée, copiée, synchronisée, mise en cache, envoyée par API/webhook ou stockée dans un système partenaire hors du Yowyob Cloud relève de la responsabilité de l’entité qui détermine ce traitement externe. Elle doit informer les personnes, sécuriser, limiter les accès, tenir compte des droits, conserver uniquement le temps nécessaire et notifier les violations selon la loi.
+
+Yowyob ne contrôle pas les copies, terminaux, sauvegardes, messageries, tableurs et clouds du partenaire. Yowyob assiste raisonnablement lorsque le contrat le prévoit, mais ne répond pas d’un incident exclusivement externe qui ne résulte pas de sa faute. Les obligations de la personne concernée suivent les données après export.
+
+Point d’attention : Les administrateurs doivent interdire les exports non justifiés et documenter chaque destination, propriétaire, durée et mécanisme de suppression.
+
+19. Durées de conservation
+
+Yowyob conserve les données pendant la durée nécessaire aux finalités, au contrat, aux obligations légales, à la sécurité et à la défense des droits. La durée est déterminée selon la nature de la donnée, le rôle, le statut du compte, le risque, la prescription et les exigences fiscales, commerciales, sociales ou de transport.
+
+À l’expiration, les données sont supprimées, anonymisées ou archivées avec accès restreint. Une demande de suppression peut être différée pour une mission en cours, une facture, une fraude, une réclamation, une obligation de conservation ou un litige. Les copies de sauvegarde sont purgées selon leurs cycles, sauf gel légal.
+
+Repères indicatifs de conservation
+
+Compte actif : pendant la relation; compte clôturé : durée de gestion, prescription et obligations applicables.
+
+Commandes, missions, preuves, factures et paiements : durée opérationnelle puis durée légale/comptable ou de défense.
+
+KYC : durée strictement nécessaire à la vérification et aux obligations applicables, avec accès renforcé.
+
+Tickets et réclamations : durée de résolution puis prescription pertinente.
+
+Journaux de sécurité : durée proportionnée au risque, aux investigations et à la détection.
+
+Consentements et oppositions : durée nécessaire à démontrer le choix et respecter l’opposition.
+
+Cookies : selon la durée indiquée dans le registre de cookies, sans renouvellement artificiel.
+
+20. Sécurité et confidentialité
+
+Yowyob met en œuvre des mesures organisationnelles et techniques proportionnées : contrôle des accès et rôles, authentification, journalisation, chiffrement approprié en transit et selon le risque au repos, segmentation, sauvegarde, surveillance, correction, tests, gestion des secrets, procédures d’incident, sensibilisation et encadrement des sous-traitants.
+
+La sécurité est partagée. L’utilisateur doit protéger son appareil et ses identifiants, mettre à jour ses logiciels, vérifier les destinataires, limiter les exports, ne pas réutiliser les mots de passe et signaler immédiatement un OTP divulgué, un téléphone perdu, une clé API compromise ou une activité suspecte.
+
+Aucune mesure ne supprime tous les risques. Yowyob adapte les contrôles à la sensibilité, au coût, à l’état de l’art, au contexte et à la probabilité et gravité des impacts.
+
+21. Violations de données et incidents
+
+Yowyob évalue les incidents, contient leur propagation, préserve les preuves, remédie et documente les décisions. Lorsqu’une violation est susceptible d’engendrer un risque ou remplit les conditions légales, Yowyob notifie l’autorité compétente et les personnes concernées selon les délais et modalités applicables.
+
+Un partenaire, utilisateur ou intégrateur doit signaler sans délai à privacy@yowyob.com et support@yowyob.com toute perte, accès, divulgation, altération, destruction, extraction ou utilisation non autorisée impliquant TiiBnTick. Le signalement doit indiquer les données, personnes, dates, systèmes, mesures et point de contact, sans retarder l’alerte faute d’informations complètes.
+
+22. Vos droits
+
+Droit à l’information et à une communication compréhensible sur le traitement.
+
+Droit d’accès aux données et, lorsque la loi le permet, à une copie.
+
+Droit de rectification et de mise à jour des données inexactes ou incomplètes.
+
+Droit à l’effacement dans les cas prévus, sous réserve des obligations et droits concurrents.
+
+Droit d’opposition, notamment à certaines prospections et à des traitements fondés sur l’intérêt légitime.
+
+Droit à la limitation du traitement dans les cas prévus.
+
+Droit à la portabilité pour les données concernées, dans un format structuré et exploitable lorsque cela est applicable.
+
+Droit de retirer un consentement sans affecter la licéité antérieure.
+
+Droit de ne pas faire l’objet d’une décision exclusivement automatisée produisant des effets significatifs, sous réserve des exceptions et garanties.
+
+Droit de définir ou faire valoir les instructions reconnues par la loi pour les données après le décès.
+
+Droit d’introduire une réclamation auprès de l’autorité compétente et d’exercer un recours.
+
+23. Comment exercer vos droits
+
+Adressez la demande à privacy@yowyob.com avec l’objet « Exercice de droit TiiBnTick ». Indiquez le droit, la plateforme, l’e-mail ou téléphone du compte, le numéro de suivi si pertinent et les précisions nécessaires. N’envoyez pas spontanément une pièce d’identité complète; Yowyob demandera une vérification proportionnée uniquement en cas de doute raisonnable.
+
+Yowyob répond dans le délai légal applicable ou informe d’une prolongation motivée. Une demande manifestement infondée, excessive, répétitive ou portant atteinte aux droits d’autrui peut être limitée ou facturée dans les conditions légales. La réponse peut nécessiter l’intervention d’un partenaire responsable de ses propres données.
+
+Pour une opposition marketing, utilisez le lien de désinscription, les paramètres ou privacy@yowyob.com. Pour les notifications opérationnelles indispensables à une mission, une désinscription totale peut ne pas être possible tant que l’opération est active.
+
+24. Enfants et mineurs
+
+TiiBnTick n’est pas conçu comme un service destiné aux jeunes enfants. Les comptes professionnels, missions, paiements et opérations logistiques sont réservés aux personnes ayant la capacité requise. Lorsqu’un destinataire mineur est désigné, l’expéditeur et le prestataire doivent organiser une remise sûre et licite avec un adulte ou une procédure autorisée.
+
+Yowyob ne collecte sciemment une donnée de mineur que si elle est nécessaire, proportionnée et couverte par une base légale et les autorisations requises. En cas de collecte inappropriée, le représentant peut contacter privacy@yowyob.com.
+
+25. Communications, marketing et préférences
+
+Les messages opérationnels concernent le compte, la sécurité, une commande, un incident, un paiement, une livraison ou une modification essentielle. Ils sont nécessaires au service et distincts du marketing.
+
+Les messages commerciaux de Yowyob ou d’un partenaire sont envoyés selon la base applicable et les préférences. Le retrait est possible via le lien, les paramètres ou le contact vie privée. Une opposition est enregistrée afin d’éviter une nouvelle sollicitation, sans empêcher les messages transactionnels.
+
+Yowyob ne vend pas les données personnelles au sens d’une cession de fichiers contre paiement. Une campagne sponsorisée ou une mesure publicitaire, lorsqu’elle existe, est encadrée par le Cookies & Ads Notice et ne permet pas à l’annonceur de recevoir les données brutes sans information et base appropriées.
+
+26. Cookies, SDK, stockage local et identifiants
+
+Les sites et applications utilisent des technologies nécessaires à la session, à la sécurité, aux préférences, à la synchronisation et au fonctionnement hors ligne. Avec le choix requis, ils peuvent aussi utiliser des mesures d’audience, des outils d’amélioration ou de publicité.
+
+Le détail des catégories, finalités, fournisseurs, durées et contrôles figure dans le Cookies & Ads Notice et le gestionnaire de consentement. Les paramètres du navigateur ou du système peuvent compléter ces contrôles, mais le blocage des technologies essentielles peut dégrader le service.
+
+27. Sous-traitants et gouvernance
+
+Yowyob sélectionne ses sous-traitants selon leur capacité, sécurité, localisation et nécessité, conclut des obligations de confidentialité et de traitement, limite leurs accès et réévalue les risques. La liste ou les catégories peuvent évoluer avec l’infrastructure et les fonctionnalités.
+
+Yowyob tient les registres requis, documente les finalités, bases, catégories, destinataires, durées et mesures, et réalise une analyse d’impact lorsqu’un traitement est susceptible d’engendrer un risque élevé. Les partenaires doivent réaliser leur propre analyse pour leurs choix et usages.
+
+28. Autorité de protection et réclamations
+
+La loi camerounaise n° 2024/017 institue une autorité chargée de la protection des données. Les coordonnées et procédures officielles doivent être consultées auprès des sources institutionnelles à mesure de leur mise en place. La personne peut également contacter Yowyob afin de rechercher une résolution rapide, sans renoncer à son droit de saisir l’autorité ou la juridiction compétente.
+
+Lorsque le traitement relève d’un partenaire, une réclamation peut aussi être adressée à ce partenaire. Yowyob coopère avec les autorités compétentes dans les limites de la loi.
+
+29. Modifications de l’Avis
+
+Yowyob peut modifier cet Avis pour refléter une loi, un fournisseur, une architecture, une fonctionnalité ou un traitement. La date et la version sont mises à jour. Les changements importants sont signalés par l’application, le site, l’e-mail ou un autre moyen approprié avant ou au moment de leur prise d’effet lorsque cela est requis.
+
+Le présent Avis remplace les anciennes politiques TiiBnTick pour les mêmes traitements à compter de sa date d’entrée en vigueur. Les traitements antérieurs restent appréciés selon les textes et informations applicables à leur date.
+
+30. Langue et contacts
+
+Les versions française et anglaise visent le même effet. Pour les traitements principalement rattachés aux opérations camerounaises, la version française prévaut en cas de divergence, sous réserve des droits impératifs.
+
+Vie privée : privacy@yowyob.com. Sécurité/support : support@yowyob.com. Juridique : legal@yowyob.com. Téléphone : +237 675 518 880; +237 656 168 129. Adresse : Yowyob Inc. Ltd, Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroun.
+
+PART II — PRIVACY NOTICE — ENGLISH
+
+Effective date: 25 July 2026
+
+This Notice explains how Yowyob collects, uses, shares, retains and protects personal data in TiiBnTick. It supplements the Terms, the Cookies & Ads Notice and contextual notices displayed at collection. It does not fully describe independent processing performed by an agency, merchant, relay point, carrier, payer or integrator in its own systems.
+
+1. Controller and contacts
+
+Yowyob Inc. Ltd, a limited liability company incorporated under Cameroonian law, with share capital of XAF 1,000,000, registered with the Trade and Personal Property Credit Register under number RC/YAO/2020/B/1614, Tax Identification Number M102015282478U, registered office at Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroon.
+
+For processing determined by Yowyob — including common account creation and security, platform operation, support, fraud prevention, improvement, Yowyob communications and suite governance — Yowyob acts as controller. Privacy contact: privacy@yowyob.com. Security contact: support@yowyob.com. Legal contact: legal@yowyob.com.
+
+Yowyob may appoint or publish a data protection officer, representative or additional contact where required by law or service organisation. Correspondence should identify the name, account or tracking number, platform and request.
+
+2. Scope and data subjects
+
+This Notice applies to visitors, prospects, Senders, Recipients, representatives, customer staff, agencies and branches, Relay Points, drivers, delivery workers, freelancers, carriers, merchants, administrators, API Integrators, emergency contacts, payment beneficiaries and persons appearing in Operational Evidence.
+
+It covers websites, apps, PWAs, administrative interfaces, QR codes, forms, APIs, webhooks, notifications, support, social media and physical operations where data is entered, received or synchronised into TiiBnTick.
+
+3. Roles of Yowyob and partners
+
+A professional partner may be an independent controller where it decides why and how to process data of customers, staff, couriers, Recipients or prospects. It may also instruct Yowyob to process certain data on its behalf depending on the module and agreement. In some flows, Yowyob and the partner each determine separate purposes.
+
+The partner must provide its own privacy information, identify a lawful basis, handle rights for its systems, govern processors and comply with employment, transport, consumer and marketing rules. Yowyob will reasonably forward a request where it primarily concerns the partner’s processing.
+
+4. Categories of data
+
+Identity and account: names, alias, date of birth where needed, profile image, optional title or gender, internal identifiers, language, country, role and organisation.
+
+Contact data: telephone, email, address, landmarks, city, area and emergency contacts.
+
+Professional and KYC data: company, registration and tax details, position, documents, identity document, selfie or verification result, driving licence, vehicle registration, insurance, permits, bank or mobile-money details and beneficial owner.
+
+Order and Shipment data: Sender, Recipient, description, category, weight, dimensions, value, address, route, time window, instructions, declared contents, photographs, invoices, customs records and status history.
+
+Operational data: mission, availability, assignment, agency, hub, vehicle, route, scans, QR, OTP, signature, proof of delivery, incidents, returns, complaints, quality and performance.
+
+Location and device data: precise or approximate GPS subject to permission, IP address, device or app identifiers, system, browser, language, network, time zone, logs, events and diagnostics.
+
+Financial data: price, tax, commission, invoice, payment, collection, refund, payout, transaction status and references received from payment providers; Yowyob may not receive full card or wallet data.
+
+Communications: tickets, email, SMS, notifications, calls or recordings where announced, messages and social-media interactions.
+
+Preferences and consent: cookie choices, marketing, notifications, language, favourites, searches, privacy settings and permission history.
+
+Derived data: risk indicators, matching, distance, estimated time, operational score, service quality, anomaly detection, segments and aggregate statistics.
+
+5. Sources of data
+
+Data may come directly from the person, from a Sender entering Recipient details, from an organisation or administrator, from a provider performing a mission, a Relay Point, merchant, partner API, payment or identity provider, a device and its sensors, cookies/SDKs, permitted public sources or an authority.
+
+A User providing third-party data must ensure it is relevant, accurate and lawfully shared and must inform that person about TiiBnTick by first contact at the latest unless an exception applies. Excessive or unnecessary sensitive data must not be submitted.
+
+6. Sensitive and high-risk data
+
+TiiBnTick is not generally intended to process health data, identification biometrics, opinions, religion, sexual orientation, genetic data, offences or other sensitive categories. Submission is prohibited unless an expressly designed function, legal necessity or specific agreement with enhanced safeguards applies.
+
+Identity documents, verification selfies, signatures, precise location, home images and documents containing sensitive information require strict minimisation. A delivery photograph should not unnecessarily show people, the inside of a home, an identity document, screen or medical information.
+
+7. Purposes and lawful bases
+
+Contract or pre-contract steps: create accounts, search offers, estimate, process orders, assign missions, track, deliver, invoice, pay, refund, support and manage complaints.
+
+Legal obligation: tax and invoicing, KYC where required, records, authority responses, security, evidence retention, rights handling and breach notification.
+
+Legitimate interests of Yowyob or a partner after balancing: security, fraud prevention, protection of people and goods, improvement, statistics, network management, legal defence, reasonable business communications and continuity.
+
+Consent: non-essential cookies, personalised advertising where used, certain background location, optional address-book access, optional recordings, marketing and sensitive processing where consent is a valid basis.
+
+Vital interests or public-interest tasks only where provided by law and documented.
+
+8. Mandatory data and consequences of refusal
+
+Fields marked mandatory are required for registration, security, contract, delivery, payment or law. Without a Recipient address or contact delivery may be impossible; without required verification a mission or payout may be blocked; without appropriate proof a handover may be refused.
+
+Optional data improves convenience or personalisation. Refusal of analytics or advertising cookies does not prevent essential use. Refusal of precise location may require manual entry, reduce tracking or make an objectively location-dependent mission function unavailable.
+
+9. Recipients and sharing categories
+
+Authorised Yowyob staff and group entities or teams with a need to know.
+
+The Sender, Recipient, agency, courier, carrier, Relay Point, merchant or organisation involved, each to the extent necessary.
+
+Hosting, security, messaging, SMS, push, mapping, payment, identity, analytics, support, insurance, signature, backup, advisory and audit providers under appropriate duties.
+
+Authorities, courts, law enforcement, regulators, tax or customs bodies where required or to protect rights and safety.
+
+A buyer, investor or adviser in a restructuring under confidentiality and required safeguards.
+
+10. Visibility between Users and public tracking
+
+TiiBnTick displays data according to role: a courier receives required contact and instructions; a Recipient sees useful tracking and identification; an agency sees its operations; a Relay Point sees Shipments in its custody; and an Integrator sees fields allowed by its scopes.
+
+A public tracking link should be limited, revocable or expiring where possible. The public view should not expose full value, detailed contents, documents, financial details or unnecessarily precise personal position. A User sharing the link with a third party accepts the disclosure risk.
+
+11. Location, routes and workplace monitoring
+
+Location may be used to find nearby services, calculate distance, assign or track a mission, document pickup or delivery, prevent fraud and protect goods. Background collection, where used, must be disclosed in the app and limited to relevant periods and roles.
+
+An organisation using TiiBnTick to locate employees, drivers or providers must comply with employment law, individually inform people, limit monitoring to business need, define recipients and periods, and provide a mechanism for private or off-mission periods where applicable.
+
+12. Photographs, signatures, OTPs, QR codes and delivery evidence
+
+Evidence is used to confirm a step, resolve disputes, prevent fraud and protect parties. It must not be repurposed incompatibly. Signatures in TiiBnTick are not represented as qualified electronic signatures unless a specific process expressly says so.
+
+A handover OTP or QR code is confidential and temporary. It should be shared only at handover through the expected channel. Disputed evidence is considered together with other logs; no single technology is infallible.
+
+13. KYC, fraud prevention and verification
+
+Checks may verify identity, business, documents, device, transaction, address, mission or payment account. They may combine rules, authorised watchlists, risk analysis and human review.
+
+Yowyob restricts access to verification documents, masks unnecessary fields where possible and sets specific retention periods. A full identity copy should not be requested for a routine operation where a less intrusive check is sufficient.
+
+14. Profiling, recommendations and automated decisions
+
+TiiBnTick may recommend a provider, mission, route, indicative price, point or priority based on distance, availability, capacity, preferences, history, performance, risk and data quality. These processes aim at efficiency, relevance and safety.
+
+Without legally required safeguards, Yowyob does not make a decision producing legal or similarly significant effects solely through automated processing. Where such a decision is permitted, the person receives required information and may request human intervention, state their view and challenge it.
+
+15. Analytics, research, improvement and artificial intelligence
+
+Yowyob analyses use, incidents, delays, areas, failures, performance and requests to repair, scale and improve TiiBnTick. Data is aggregated, pseudonymised or minimised where possible. Anonymised datasets may support research, statistics and planning.
+
+Personal data or confidential content is not used to train a general-purpose AI model accessible to third parties without an appropriate basis, transparency and safeguards. Use of partner data for a specific model is governed by contract, purposes, rights and security.
+
+16. Distributed ledgers, fingerprints and immutability
+
+Where a trust service uses a hash, distributed timestamp or blockchain, Yowyob favours minimised references or proofs. Raw personal data, identity documents, contacts and images must not be written to a public chain.
+
+Off-chain data remains rectifiable or erasable under applicable rules. A hash may remain where it no longer reasonably identifies a person or where retention is necessary for evidence, subject to rights and law.
+
+17. International transfers and hosting
+
+Data may be hosted or accessed from Cameroon or another country by Yowyob and its providers. Before an international transfer, Yowyob assesses applicable requirements, location, contractual safeguards, security, necessity and any required authorisation or consent.
+
+Where the destination does not provide adequate protection, Yowyob applies appropriate measures or limits the transfer. Partners exporting data to their own clouds or providers are responsible for their transfers.
+
+18. Data outside the Yowyob Cloud
+
+Data exported, downloaded, printed, copied, synchronised, cached, sent by API/webhook or stored in a partner system outside the Yowyob Cloud is the responsibility of the entity determining that external processing. It must provide notice, secure the data, limit access, honour rights, retain only as needed and notify breaches as required.
+
+Yowyob does not control partner copies, devices, backups, mailboxes, spreadsheets or clouds. Yowyob provides reasonable assistance where agreed but is not responsible for an exclusively external incident not caused by Yowyob. Data-subject obligations follow the data after export.
+
+Attention: Administrators should prohibit unjustified exports and document each destination, owner, retention period and deletion mechanism.
+
+19. Retention periods
+
+Yowyob retains data for the time needed for the purposes, contract, legal duties, security and legal defence. The period depends on data type, role, account status, risk, limitation periods and tax, commercial, employment or transport requirements.
+
+At expiry, data is deleted, anonymised or archived under restricted access. Erasure may be deferred for an ongoing mission, invoice, fraud matter, complaint, retention duty or dispute. Backup copies are purged through their cycles unless subject to legal hold.
+
+Indicative retention guide
+
+Active account: during the relationship; closed account: for administration, limitation and applicable duties.
+
+Orders, missions, evidence, invoices and payments: operational period followed by statutory, accounting or defence period.
+
+KYC: only as long as needed for verification and applicable duties, with enhanced restrictions.
+
+Tickets and complaints: resolution period followed by the relevant limitation period.
+
+Security logs: a period proportionate to risk, investigations and detection.
+
+Consent and objections: as needed to demonstrate the choice and honour the objection.
+
+Cookies: according to the cookie register, without artificial renewal.
+
+20. Security and confidentiality
+
+Yowyob applies proportionate organisational and technical measures, including access and role controls, authentication, logging, appropriate encryption in transit and according to risk at rest, segmentation, backup, monitoring, patching, testing, secret management, incident procedures, training and processor governance.
+
+Security is shared. Users must protect devices and credentials, update software, verify recipients, restrict exports, avoid password reuse, and immediately report a disclosed OTP, lost telephone, compromised API key or suspicious activity.
+
+No measure removes every risk. Controls are adapted to sensitivity, cost, state of the art, context, probability and severity of impact.
+
+21. Personal-data breaches and incidents
+
+Yowyob assesses incidents, contains spread, preserves evidence, remedies and documents decisions. Where a breach is likely to create a risk or meets legal conditions, Yowyob notifies the competent authority and affected persons within applicable times and procedures.
+
+A partner, User or Integrator must immediately report to privacy@yowyob.com and support@yowyob.com any loss, access, disclosure, alteration, destruction, extraction or unauthorised use involving TiiBnTick. The initial notice should identify data, persons, dates, systems, measures and contact, but must not be delayed because information is incomplete.
+
+22. Your rights
+
+The right to information and understandable communication about processing.
+
+The right of access and, where the law allows, a copy.
+
+The right to correction and updating of inaccurate or incomplete data.
+
+The right to erasure in applicable cases, subject to competing duties and rights.
+
+The right to object, particularly to certain marketing and legitimate-interest processing.
+
+The right to restriction of processing in applicable cases.
+
+The right to portability for covered data in a structured, usable format where applicable.
+
+The right to withdraw consent without affecting earlier lawful processing.
+
+The right not to be subject to a solely automated decision producing significant effects, subject to exceptions and safeguards.
+
+The right to issue or enforce instructions recognised by law for data after death.
+
+The right to complain to the competent authority and seek a remedy.
+
+23. How to exercise rights
+
+Email privacy@yowyob.com with the subject “TiiBnTick rights request”. State the right, platform, account email or telephone, relevant tracking number and necessary detail. Do not spontaneously send a full identity document; Yowyob will request proportionate verification only where reasonable doubt exists.
+
+Yowyob responds within the applicable legal period or explains a justified extension. A manifestly unfounded, excessive, repetitive or third-party-infringing request may be limited or charged where the law allows. A partner controller may need to participate where the request concerns its data.
+
+For marketing objections, use the unsubscribe link, settings or privacy contact. Essential operational messages may continue while an operation is active.
+
+24. Children and minors
+
+TiiBnTick is not designed as a service for young children. Professional accounts, missions, payments and logistics operations require legal capacity. Where a minor is a Recipient, the Sender and provider must arrange lawful and safe handover through an adult or authorised procedure.
+
+Yowyob knowingly collects a minor’s data only where necessary, proportionate and supported by a lawful basis and required permissions. A representative may contact privacy@yowyob.com regarding inappropriate collection.
+
+25. Communications, marketing and preferences
+
+Operational messages concern an account, security, order, incident, payment, delivery or material change. They are necessary for the service and distinct from marketing.
+
+Commercial messages from Yowyob or a partner are sent under the applicable basis and preferences. Users may opt out using the link, settings or privacy contact. An objection is retained to prevent renewed solicitation without blocking transaction messages.
+
+Yowyob does not sell personal data as a paid transfer of contact databases. Sponsored campaigns or advertising measurement, where used, are governed by the Cookies & Ads Notice and do not give an advertiser raw personal data without appropriate notice and basis.
+
+26. Cookies, SDKs, local storage and identifiers
+
+Websites and apps use technologies required for sessions, security, preferences, synchronisation and offline operation. Subject to the required choice, they may also use audience measurement, improvement or advertising tools.
+
+Categories, purposes, providers, periods and controls are described in the Cookies & Ads Notice and consent manager. Browser and operating-system settings may supplement those controls, although blocking essential technology may degrade the service.
+
+27. Processors and governance
+
+Yowyob selects processors based on capability, security, location and necessity, enters confidentiality and processing obligations, restricts access and reassesses risk. The list or categories may change with infrastructure and features.
+
+Yowyob maintains required processing records, documents purposes, bases, categories, recipients, retention and measures, and performs an impact assessment where processing is likely to create high risk. Partners must conduct their own assessment for choices under their control.
+
+28. Data protection authority and complaints
+
+Cameroon Law No. 2024/017 establishes a personal data protection authority. Official contact details and procedures should be checked through institutional sources as implementation progresses. A person may also contact Yowyob to seek prompt resolution without waiving the right to complain to an authority or competent court.
+
+Where processing belongs to a partner, a complaint may also be made to that partner. Yowyob cooperates with competent authorities within law.
+
+29. Changes to this Notice
+
+Yowyob may amend this Notice to reflect law, a supplier, architecture, feature or processing activity. The date and version are updated. Material changes are announced through the app, website, email or another appropriate means before or when they take effect where required.
+
+This Notice supersedes earlier TiiBnTick privacy policies for the same processing from its effective date. Earlier processing remains assessed under the law and notices applicable at that time.
+
+30. Language and contacts
+
+The French and English versions are intended to have the same effect. For processing primarily connected with Cameroon operations, the French version prevails in case of discrepancy, subject to mandatory rights.
+
+Privacy: privacy@yowyob.com. Security/support: support@yowyob.com. Legal: legal@yowyob.com. Telephone: +237 675 518 880; +237 656 168 129. Address: Yowyob Inc. Ltd, Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroon.
+
+ANNEXE A / ANNEX A — CARTOGRAPHIE INDICATIVE DES DONNÉES / INDICATIVE DATA MAP
+
+Module
+
+Données clés / Key data
+
+Finalité / Purpose
+
+Partages typiques / Typical sharing
+
+Risque à contrôler / Risk to control
+
+Link
+
+Contacts, adresse, Envoi, suivi / Contacts, address, Shipment, tracking
+
+Commande et livraison / Order and delivery
+
+Prestataire, destinataire / Provider, Recipient
+
+Lien public et sur-collecte / Public link and overcollection
+
+Go
+
+Profil, véhicule, disponibilité, GPS, missions / Profile, vehicle, availability, GPS, missions
+
+Matching et exécution / Matching and performance
+
+Agence, client / Agency, customer
+
+Surveillance et scoring / Monitoring and scoring
+
+Point
+
+Identité, inventaire, scans, retraits / Identity, inventory, scans, collections
+
+Garde et remise / Custody and handover
+
+Agence, destinataire / Agency, Recipient
+
+Accès local et photo / Local access and images
+
+Core
+
+Identité, rôles, audit, confiance / Identity, roles, audit, trust
+
+Sécurité et services communs / Security and common services
+
+Modules autorisés / Authorised modules
+
+Corrélation excessive / Excessive correlation
+
+Market
+
+Offres, recherches, préférences, avis / Offers, searches, preferences, reviews
+
+Découverte et classement / Discovery and ranking
+
+Fournisseurs, annonceurs limités / Providers, limited advertisers
+
+Profilage et transparence / Profiling and transparency
+
+Agency
+
+Personnel, flotte, missions, incidents, factures / Staff, fleet, missions, incidents, invoices
+
+Gestion d’exploitation / Operations management
+
+Organisation, prestataires / Organisation, providers
+
+Rôles et exports / Roles and exports
+
+API
+
+Clés, appels, payloads, webhooks, logs / Keys, calls, payloads, webhooks, logs
+
+Intégration / Integration
+
+Intégrateur / Integrator
+
+Secrets, scopes, réutilisation / Secrets, scopes, reuse
+
+ANNEXE B / ANNEX B — CHECKLIST D’EXPORT PARTENAIRE / PARTNER EXPORT CHECKLIST
+
+☐ Finalité documentée et base légale / Documented purpose and lawful basis
+
+☐ Personnes informées et accès limité / People informed and access limited
+
+☐ Destination, propriétaire et sous-traitant enregistrés / Destination, owner and processor recorded
+
+☐ Chiffrement, sauvegarde, journalisation et mise à jour / Encryption, backup, logging and patching
+
+☐ Durée et suppression automatique définies / Retention and automatic deletion defined
+
+☐ Procédure de droits et de violation testée / Rights and breach procedure tested
+
+☐ Transfert international et contrat vérifiés / International transfer and contract checked
+
+☐ Réimportation et suppression des doublons maîtrisées / Re-import and duplicate deletion controlled
+
+Contacts et réseaux sociaux / Contacts and social media
+
+Canal / Channel
+
+Coordonnée / Detail
+
+Legal / Juridique
+
+legal@yowyob.com
+
+Privacy / Vie privée
+
+privacy@yowyob.com
+
+Support
+
+support@yowyob.com
+
+General information / Informations générales
+
+info@yowyob.com
+
+Telephone / Téléphone
+
++237 675 518 880; +237 656 168 129
+
+Facebook
+
+https://www.facebook.com/YowyobInc
+
+X (Twitter)
+
+https://twitter.com/yowyob
+
+Instagram
+
+https://www.instagram.com/yowyob
+
+Sécurité des échanges / Communication security. Ne transmettez jamais un mot de passe, un code à usage unique, une clé API, un secret webhook, un numéro complet de carte ou un document d’identité non sollicité par message privé sur un réseau social. / Never send a password, one-time code, API key, webhook secret, full card number or unsolicited identity document through a social-media direct message.

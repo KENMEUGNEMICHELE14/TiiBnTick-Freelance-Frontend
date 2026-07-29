@@ -1,0 +1,831 @@
+TiiBnTick
+
+A YOWYOB SYSTEM / UN SYSTÈME YOWYOB
+
+CONDITIONS GÉNÉRALES D’UTILISATION ET DE SERVICES
+
+TERMS OF USE AND SERVICES
+
+Conditions transversales applicables à l’ensemble de l’écosystème TiiBnTick
+
+Cross-platform terms applicable to the entire TiiBnTick ecosystem
+
+Statut / Status
+
+Bêta publiée / Published Beta
+
+Version
+
+1.0
+
+Date
+
+25 juillet 2026 / 25 July 2026
+
+Code document / Document code
+
+TBT-LEGAL-TOU-ENFR-1.0
+
+Éditeur / Publisher
+
+Yowyob Inc. Ltd
+
+Portée / Scope
+
+Toutes les plateformes et applications TiiBnTick / All TiiBnTick platforms and applications
+
+IMPORTANT / IMPORTANT — Ce document régit une version bêta publiée susceptible d’évoluer. Il doit être lu avec les avis ou conditions spécifiques affichés dans un module, une commande, une offre, un contrat partenaire ou une intégration API. / This document governs a published beta that may evolve. It must be read together with module-specific notices, order terms, offers, partner agreements or API integration terms.
+
+Contrôle du document / Document control
+
+Version
+
+Date
+
+Statut / Status
+
+Portée / Scope
+
+Évolution / Change
+
+1.0
+
+25 juillet 202625 July 2026
+
+Bêta publiéePublished Beta
+
+Suite TiiBnTick complèteFull TiiBnTick suite
+
+Première version consolidée et augmentée couvrant toute la suite TiiBnTick.First consolidated and expanded version covering the entire TiiBnTick suite.
+
+Périmètre des plateformes / Platform scope
+
+Plateforme / Platform
+
+Adresse / Address
+
+Fonction indicative / Indicative function
+
+TiiBnTick Link
+
+https://tiibntick.yowyob.com/en
+
+Public portal, shipment initiation, tracking and recipient interactions / Portail public, création d’envois, suivi et interactions destinataires
+
+TiiBnTick Go
+
+https://tiibntick-go.yowyob.com/
+
+Courier and delivery opportunity marketplace / Place de marché des opportunités de livraison
+
+TiiBnTick Point
+
+https://tiibntick-point.yowyob.com/
+
+Relay points and micro-hubs / Points relais et micro-hubs
+
+TiiBnTick Core
+
+https://tiibntick-core.yowyob.com/
+
+Shared identity, trust, security and synchronization services / Services communs d’identité, confiance, sécurité et synchronisation
+
+TiiBnTick Market
+
+https://tiibntick-market.yowyob.com/en
+
+Public logistics and service marketplace / Place de marché publique de services logistiques
+
+TiiBnTick Agency
+
+https://tiibntick-agency.yowyob.com/
+
+Agency, branch, fleet, mission, billing and operational management / Gestion d’agences, antennes, flotte, missions, facturation et opérations
+
+TiiBnTick API
+
+https://tiibntick-api.yowyob.com/
+
+APIs, webhooks and integrations / API, webhooks et intégrations
+
+Clause d’extension / Extension clause. Le présent document s’applique également aux applications mobiles, PWA, interfaces administratives, domaines de préproduction rendus publics, modules intégrés, services de confiance, API, webhooks, SDK, QR codes, notifications et fonctionnalités futures commercialisées sous les marques TiiBnTick ou Yowyob lorsqu’elles renvoient au présent document. / This document also applies to mobile apps, PWAs, administrative interfaces, publicly accessible pre-production domains, embedded modules, trust services, APIs, webhooks, SDKs, QR codes, notifications and future features marketed under the TiiBnTick or Yowyob brands where they link to this document.
+
+Principales références juridiques / Main legal references
+
+France / Français
+
+Loi n° 2024/017 du 23 décembre 2024 relative à la protection des données à caractère personnel au Cameroun, ainsi que ses textes d’application lorsqu’ils entrent en vigueur.
+
+Loi n° 2010/021 du 21 décembre 2010 régissant le commerce électronique au Cameroun et décret n° 2011/1521/PM du 15 juin 2011 fixant ses modalités d’application.
+
+Loi n° 2010/012 du 21 décembre 2010 relative à la cybersécurité et à la cybercriminalité au Cameroun, telle que modifiée ou remplacée.
+
+Actes uniformes OHADA applicables, droit camerounais des obligations, de la consommation, de la fiscalité, des transports, de la preuve et de la propriété intellectuelle.
+
+Règlementations sectorielles et territoriales applicables aux opérateurs, agences, transporteurs, points relais, paiements, télécommunications, publicité et protection des consommateurs.
+
+English
+
+Law No. 2024/017 of 23 December 2024 relating to personal data protection in Cameroon, together with implementing instruments as they enter into force.
+
+Law No. 2010/021 of 21 December 2010 governing electronic commerce in Cameroon and Decree No. 2011/1521/PM of 15 June 2011 implementing that law.
+
+Law No. 2010/012 of 21 December 2010 on cybersecurity and cybercrime in Cameroon, as amended or replaced.
+
+Applicable OHADA Uniform Acts and Cameroonian rules on contracts, consumer protection, taxation, transport, evidence and intellectual property.
+
+Sectoral and territorial rules applicable to operators, agencies, carriers, relay points, payments, telecommunications, advertising and consumer protection.
+
+Règle de prudence / Compliance qualification. Les références ci-dessus ne constituent pas une liste exhaustive. Une activité de transport, de point relais, de paiement, de publicité ou de traitement de données peut nécessiter des autorisations, assurances, licences, formalités ou contrats supplémentaires à la charge de l’opérateur concerné. / The references above are not exhaustive. Transport, relay-point, payment, advertising or data-processing activities may require additional authorisations, insurance, licences, filings or contracts for which the relevant operator remains responsible.
+
+PARTIE I — CONDITIONS GÉNÉRALES D’UTILISATION ET DE SERVICES — FRANÇAIS
+
+Entrée en vigueur : 25 juillet 2026
+
+Les présentes CGU constituent le socle contractuel commun du système TiiBnTick. Les conditions particulières d’une commande, d’un abonnement, d’une agence, d’un point relais, d’un transporteur, d’une intégration API ou d’une offre commerciale complètent ces CGU. En cas de contradiction, l’ordre de priorité défini à l’article 3 s’applique.
+
+1. Identité de l’éditeur et objet
+
+Yowyob Inc. Ltd, société à responsabilité limitée de droit camerounais, au capital social de 1 000 000 FCFA, immatriculée au Registre du Commerce et du Crédit Mobilier sous le numéro RC/YAO/2020/B/1614, NIF M102015282478U, siège social : Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroun.
+
+TiiBnTick est un sous-système numérique de Yowyob destiné à faciliter la découverte, la mise en relation, la réservation, l’organisation, l’exécution, la traçabilité, la preuve et la gestion administrative de services logistiques, de collecte, d’acheminement, de relais, de livraison et de services associés. Selon le module, Yowyob fournit une infrastructure logicielle, un environnement de confiance, un marché numérique, des outils d’exploitation, des interfaces de suivi ou des services d’intégration.
+
+Les présentes CGU définissent les règles d’accès et d’usage des plateformes, les obligations des catégories d’utilisateurs, le statut de Yowyob, les règles applicables aux commandes, données, paiements, contenus, preuves, API, incidents et responsabilités.
+
+2. Définitions
+
+« Utilisateur » : toute personne physique ou morale accédant à une plateforme TiiBnTick, avec ou sans compte.
+
+« Client » ou « Expéditeur » : personne demandant ou finançant un service de collecte, transport, relais ou livraison.
+
+« Destinataire » : personne indiquée pour recevoir, retirer, refuser ou faire remettre un Envoi.
+
+« Prestataire logistique » : agence, transporteur, entreprise, coursier, livreur, chauffeur ou freelance proposant ou exécutant un service.
+
+« Point relais » ou « Micro-hub » : établissement ou opérateur chargé d’une réception, garde temporaire, remise, retour ou opération de proximité.
+
+« Marchand » : vendeur, commerçant, plateforme ou professionnel utilisant TiiBnTick pour organiser des livraisons ou publier une offre.
+
+« Envoi » : colis, pli, marchandise, document ou bien déclaré dans une demande, à l’exclusion des éléments interdits.
+
+« Mission » ou « Opportunité » : opération logistique publiée, proposée, réservée, attribuée ou exécutée dans TiiBnTick Go, Agency ou un module connecté.
+
+« Preuve opérationnelle » : journal horodaté, géolocalisation, QR code, OTP, photo, signature, accusé, statut, scan, reçu, message ou autre élément généré pendant le cycle de service.
+
+« Yowyob Cloud » : environnement d’hébergement, de stockage, de sauvegarde et de services contrôlé ou contracté par Yowyob pour le fonctionnement du système.
+
+3. Acceptation, formation du contrat et hiérarchie documentaire
+
+L’accès à une fonctionnalité, la création d’un compte, la validation d’une case, la transmission d’une commande, l’utilisation d’une clé API, l’acceptation d’une mission, le dépôt ou retrait d’un colis, ou la poursuite d’utilisation après notification d’une mise à jour vaut acceptation des présentes CGU dans la mesure permise par la loi.
+
+Le contrat électronique est formé lorsque l’utilisateur confirme une opération et que TiiBnTick ou le prestataire concerné en accuse réception, sous réserve d’une vérification, d’une disponibilité, d’un paiement, d’un contrôle KYC, d’une confirmation tarifaire ou d’une acceptation par le prestataire.
+
+Ordre de priorité : (1) conditions impératives de la loi; (2) contrat signé ou conditions particulières expressément acceptées; (3) fiche de commande, devis ou offre confirmée; (4) conditions sectorielles ou module; (5) présentes CGU; (6) documentation, FAQ et communications générales.
+
+Les anciennes pages juridiques TiiBnTick sont remplacées, pour le même objet, à compter de la date d’entrée en vigueur de la présente version.
+
+4. Éligibilité, capacité et représentation
+
+L’utilisateur doit disposer de la capacité juridique requise. Une personne agissant au nom d’une entreprise, agence, ONG, administration, marchand, point relais ou transporteur déclare être habilitée à l’engager. Les comptes professionnels peuvent être soumis à validation documentaire et à des droits d’administration internes.
+
+Un mineur ne peut créer un compte professionnel, accepter une mission, publier une offre, conclure une opération payante ou transmettre des données d’un tiers sans l’intervention et l’autorisation vérifiable de son représentant légal, sauf disposition légale contraire.
+
+5. Comptes, rôles, identifiants et sécurité
+
+Les informations d’inscription doivent être exactes, actuelles et complètes. L’utilisateur met à jour sans délai les informations devenues inexactes et protège ses identifiants, appareils, sessions, codes OTP, QR codes privés, clés API et secrets webhook.
+
+Un compte est personnel, sauf compte organisationnel comportant des utilisateurs autorisés. L’administrateur d’une organisation attribue les rôles selon le principe du moindre privilège, retire rapidement les accès des personnes sortantes et contrôle les journaux d’activité. Les opérations réalisées au moyen d’identifiants valides sont présumées autorisées jusqu’à signalement crédible d’un compromis.
+
+Yowyob peut imposer une authentification renforcée, une vérification d’adresse, de téléphone, d’identité, d’entreprise, de véhicule, de permis, d’assurance, de compte de paiement ou de bénéficiaire effectif lorsque cela est nécessaire à la sécurité, à la confiance, à une obligation légale ou à la gestion des risques.
+
+6. Rôle de Yowyob et indépendance des opérateurs physiques
+
+Sauf mention expresse dans une offre ou un contrat, Yowyob agit comme éditeur, opérateur technique, fournisseur d’outils, place de marché ou intermédiaire numérique. Yowyob n’est pas automatiquement le transporteur, l’employeur, le mandant, l’assureur, le dépositaire, le vendeur ou le représentant des prestataires indépendants.
+
+Les agences, transporteurs, coursiers, chauffeurs, points relais, marchands et autres partenaires demeurent responsables de leurs autorisations, employés, sous-traitants, véhicules, locaux, assurances, taxes, sécurité physique, emballage accepté, garde, conduite, exécution, remises, retours et obligations envers les consommateurs. L’affichage d’un profil, badge, score, disponibilité, tarif ou mention « vérifié » ne constitue pas une garantie absolue ni une certification réglementaire, sauf indication précise.
+
+Lorsque Yowyob fournit directement un service identifié comme tel, sa responsabilité est appréciée selon les conditions particulières de ce service et les règles impératives applicables.
+
+7. Statut Bêta publiée et évolution du service
+
+La version « Bêta publiée » est accessible au public mais demeure en amélioration continue. Certaines fonctions peuvent être expérimentales, limitées à un territoire, soumises à liste d’attente, indisponibles hors ligne, modifiées, migrées ou retirées. Des incohérences d’interface, retards de synchronisation, doublons de notification ou indisponibilités temporaires peuvent survenir.
+
+Yowyob met en œuvre des efforts raisonnables pour corriger les anomalies et préserver les données, sans promettre une disponibilité ininterrompue ni l’absence totale d’erreur. Une fonction bêta critique ne doit pas constituer l’unique moyen de satisfaire une obligation légale, de sécurité, de santé ou de conservation probatoire sans dispositif de secours approprié.
+
+8. Demandes, commandes, devis et données de l’Envoi
+
+L’expéditeur doit fournir des informations exactes : identité et contacts des parties, adresses et repères, nature des biens, quantité, dimensions, poids, valeur déclarée, contraintes de manutention, créneau, conditions de remise, prix à encaisser, documents nécessaires et risques particuliers. Une estimation automatique n’est pas une mesure certifiée et peut être révisée après contrôle.
+
+Le prestataire peut accepter, refuser ou proposer une modification. Une commande n’est définitive qu’après confirmation des éléments essentiels et, le cas échéant, paiement, préautorisation ou dépôt. Toute omission susceptible d’altérer le prix, la sécurité, la légalité ou l’exécution peut entraîner suspension, supplément, retour, refus ou résiliation aux frais de la partie responsable.
+
+9. Emballage, marquage, valeur déclarée et documents
+
+L’expéditeur choisit un emballage adapté aux chocs, vibrations, empilements, humidité, chaleur, poussière, manipulations et durée prévisible. Il ferme, scelle et étiquette correctement l’Envoi, retire les anciennes étiquettes et protège les données visibles. Le prestataire peut refuser un emballage manifestement insuffisant ou proposer un reconditionnement facturable.
+
+La valeur déclarée doit être sincère et justifiable. Elle ne crée pas, à elle seule, une assurance ni une limite d’indemnisation plus élevée. Une couverture de valeur, assurance transport ou option de responsabilité doit être expressément confirmée. L’expéditeur fournit les factures, autorisations, certificats, déclarations douanières ou documents réglementaires nécessaires.
+
+10. Biens interdits, réglementés ou à risque
+
+Il est interdit d’utiliser TiiBnTick pour des biens illégaux, volés, contrefaits, dangereux ou dont la détention, le transport, la vente, l’exportation ou la remise n’est pas autorisée. Sont notamment exclus, sauf canal expressément autorisé et opérateur habilité : armes et munitions, explosifs, substances toxiques ou radioactives, stupéfiants, produits pharmaceutiques soumis à prescription, espèces protégées, organes humains, contenus illicites, espèces monétaires non déclarées, titres au porteur, produits périssables sans chaîne adaptée et batteries ou matières dangereuses non déclarées.
+
+Les animaux vivants, aliments, alcool, tabac, médicaments, prélèvements biologiques, données ou supports hautement confidentiels, objets de grande valeur et marchandises transfrontalières sont soumis aux lois, licences, emballages et accords spécifiques. Le prestataire peut inspecter extérieurement, peser, scanner ou demander l’ouverture en présence de l’expéditeur lorsque la loi, la sécurité ou un doute raisonnable le justifie.
+
+Alerte : L’utilisateur reste responsable de la légalité et de la déclaration du contenu, même lorsqu’une catégorie est proposée dans l’interface.
+
+11. Collecte, garde, relais, stockage et chaîne de possession
+
+Chaque transfert matériel doit être enregistré lorsque la fonctionnalité est disponible. Un scan, QR, OTP, signature, photo ou journal peut documenter la chaîne de possession. L’absence ponctuelle d’un événement numérique ne prouve pas nécessairement l’absence de transfert physique; elle doit être rapprochée des autres éléments disponibles.
+
+Un point relais ou une agence applique ses horaires, capacités, contrôles d’identité, règles de stockage et délais annoncés. Les Envois non retirés, refusés, non distribuables ou dangereux peuvent être retournés, déplacés vers un autre site, conservés aux frais de la partie responsable ou traités conformément à la loi après notifications raisonnables. Aucun partenaire ne doit ouvrir ou utiliser le contenu, sauf autorisation, urgence de sécurité ou obligation légale.
+
+12. Livraison, retrait, refus, retours et preuves
+
+La remise peut être conditionnée à un code OTP, QR code, pièce d’identité, signature, photo, géolocalisation, nom du réceptionnaire, cachet, procuration ou autre preuve proportionnée. Le destinataire doit vérifier l’état extérieur et signaler immédiatement une anomalie apparente. Les réserves doivent être précises; une formule générale peut être insuffisante.
+
+La livraison à un tiers, gardien, accueil, voisin, point sécurisé ou lieu convenu n’est autorisée que selon l’instruction applicable, les usages raisonnables et la loi. Une photo ne doit pas révéler inutilement l’intérieur d’un domicile, des personnes non concernées ou des documents sensibles. Le refus, l’absence, l’adresse inaccessible ou l’échec d’authentification peut générer une nouvelle tentative, un dépôt, un retour ou des frais.
+
+13. Suivi, cartographie, horaires et estimations
+
+Les statuts, cartes, positions et heures estimées sont informatifs. Ils dépendent du GPS, du réseau, des saisies humaines, des capteurs, de la synchronisation et de services tiers. Ils peuvent être approximatifs, différés ou indisponibles. Une heure estimée n’est un engagement ferme que lorsqu’elle est expressément qualifiée de garantie dans une offre.
+
+Le partage public de suivi doit utiliser un lien ou code limité. Le destinataire et l’expéditeur ne doivent pas publier un identifiant permettant à des tiers de suivre un Envoi. Yowyob peut masquer une position exacte, retarder l’affichage ou limiter la fréquence afin de protéger le personnel, le destinataire, l’Envoi ou la sécurité opérationnelle.
+
+14. Règles spécifiques à TiiBnTick Go
+
+TiiBnTick Go permet de découvrir, proposer, réserver ou attribuer des opportunités. Le freelance ou prestataire vérifie avant acceptation la nature de la mission, la distance, la rémunération, les frais, la capacité de son véhicule, les documents, les risques et les délais. Il n’accepte pas une mission qu’il ne peut exécuter légalement et en sécurité.
+
+L’attribution algorithmique, un score, une priorité, une suggestion de trajet ou une estimation de gain n’est pas une promesse de revenu, d’exclusivité, de volume ou de statut salarié. Le prestataire organise son activité de façon indépendante, sous réserve du contrat conclu avec l’agence ou le client. Les arrangements hors plateforme destinés à éluder la sécurité, la traçabilité ou les frais peuvent entraîner une suspension.
+
+15. Règles spécifiques à TiiBnTick Point
+
+Le point relais doit maintenir un local raisonnablement sécurisé, propre, accessible selon ses horaires publiés, avec un personnel autorisé et formé. Il sépare les Envois, protège les codes et données, contrôle les remises, tient les journaux requis, signale les écarts et respecte les capacités maximales et délais de garde.
+
+Le point relais n’utilise pas le numéro ou l’adresse d’un client à des fins propres, ne sous-traite pas la garde sans autorisation et ne déplace pas les Envois hors du site déclaré sauf procédure prévue. Les commissions, responsabilités de garde, inventaires, écarts, franchises, assurances et rapprochements sont définis par le contrat partenaire.
+
+16. Règles spécifiques à TiiBnTick Agency
+
+L’organisation utilisant Agency administre ses agences, antennes, personnels, véhicules, itinéraires, missions, hubs, incidents, factures et documents. Elle est responsable de la configuration de ses rôles, tarifs, taxes, zones, contrats, règles de validation, numérotation, modèles, délégations et référentiels.
+
+Les journaux et tableaux de bord soutiennent l’exploitation mais ne remplacent pas les contrôles comptables, fiscaux, sociaux, réglementaires, de caisse, de maintenance ou de sécurité exigés. L’organisation vérifie les rapports avant déclaration, paiement ou décision. Elle s’assure que ses employés et sous-traitants sont informés de la surveillance, de la géolocalisation et des règles de confidentialité applicables.
+
+17. Règles spécifiques à TiiBnTick Market
+
+Market permet la découverte, comparaison ou publication d’offres. Le fournisseur décrit loyalement son identité, ses zones, capacités, prix, exclusions, délais, assurances et conditions. Il ne publie pas de faux avis, disponibilité fictive, prix d’appel trompeur, logo non autorisé ou contenu copié.
+
+Le classement peut tenir compte de la pertinence, disponibilité, distance, qualité de données, performance, prix, fiabilité, relation commerciale ou caractère sponsorisé. Une offre sponsorisée doit être identifiable. Yowyob peut modérer, déréférencer ou corriger une présentation manifestement trompeuse, sans garantir chaque offre ni chaque avis.
+
+18. Règles spécifiques à TiiBnTick Core, identité et confiance
+
+Core peut fournir des services communs d’identité, authentification, autorisation, profils, organisations, réputation, notifications, synchronisation, audit et sécurité. Une identité numérique, un badge ou un score est un indicateur contextuel fondé sur les informations disponibles; il ne doit pas être interprété comme une garantie universelle de solvabilité, de moralité ou de performance.
+
+Les utilisateurs ne doivent pas tenter de fusionner abusivement des identités, contourner une suspension, manipuler un score, acheter des avis, usurper une organisation ou réutiliser les justificatifs d’un tiers. Yowyob peut corriger, geler ou dissocier des identités et exiger une vérification supplémentaire.
+
+19. Règles spécifiques aux API, webhooks et intégrations
+
+L’intégrateur utilise les API uniquement dans les limites documentées, protège les clés et secrets, valide les signatures de webhook, applique des délais d’expiration, gère les rejouements, respecte les limites de débit et maintient un environnement de test distinct. Il ne contourne pas les contrôles, ne procède pas à une extraction massive non autorisée et ne tente pas d’identifier des personnes au-delà de la finalité convenue.
+
+L’intégrateur informe ses propres utilisateurs de l’usage de TiiBnTick, obtient les autorisations nécessaires, sécurise ses terminaux et serveurs, conserve des journaux adéquats, traite les erreurs de manière idempotente et notifie rapidement toute compromission. Les modifications de version, champs ou limites sont annoncées selon leur criticité; une fonction bêta peut évoluer sans compatibilité permanente.
+
+Les données retournées par l’API restent soumises aux droits des personnes, à la confidentialité et aux limites contractuelles. La création d’un produit concurrent par copie systématique, l’utilisation pour entraîner un modèle sans autorisation ou la revente de données brutes sont interdites.
+
+20. Prix, frais, taxes, commissions et devises
+
+Les prix peuvent inclure ou exclure transport, collecte, relais, assurance, emballage, attente, manutention, retour, taxes, frais de paiement, commission, abonnement, API ou services additionnels. L’interface ou le devis doit préciser les éléments connus avant confirmation. Des frais supplémentaires peuvent s’appliquer en cas d’information inexacte, dépassement, zone difficile, attente, nouvelle tentative, retour, stockage prolongé, douane ou demande additionnelle.
+
+Chaque professionnel demeure responsable de ses obligations fiscales et de l’émission des documents requis. Les conversions de devise, lorsqu’elles existent, sont indicatives jusqu’à la transaction. Une erreur manifeste de prix peut être corrigée avant exécution, avec possibilité de renoncer à la commande lorsque la loi l’exige.
+
+21. Paiements, encaissement à la livraison et reversements
+
+Les paiements peuvent être fournis par Yowyob ou par un prestataire de paiement indépendant. Des contrôles de fraude, limites, délais de compensation, frais, retenues ou vérifications peuvent s’appliquer. Yowyob ne conserve pas nécessairement les données complètes de carte ou de compte mobile lorsque celles-ci sont traitées directement par le prestataire.
+
+Pour un encaissement à la livraison, le montant, le mandat d’encaissement, la preuve, le délai et le bénéficiaire doivent être confirmés. Le coursier, point ou agence ne peut utiliser les fonds collectés. Les écarts, faux billets, rétrofacturations, remboursements et rapprochements sont traités selon le contrat applicable. Un reversement peut être différé en cas d’enquête, contestation, obligation légale ou risque de fraude.
+
+22. Annulation, modification, remboursement et rétractation
+
+L’annulation ou la modification dépend du stade opérationnel. Des frais peuvent être dus lorsque le prestataire s’est déplacé, a réservé une capacité, collecté l’Envoi, engagé des coûts ou commencé l’exécution. Après collecte, l’annulation peut devenir un retour facturable plutôt qu’une annulation gratuite.
+
+Les droits impératifs du consommateur demeurent applicables. Les services pleinement exécutés, personnalisés, urgents ou liés à des biens périssables peuvent être soumis aux exceptions légales. Toute demande de remboursement doit identifier la commande, le motif et les éléments disponibles. Le remboursement approuvé est effectué via le moyen possible et peut nécessiter un délai bancaire ou opérateur.
+
+23. Obligations générales des utilisateurs
+
+Agir loyalement, avec prudence et dans le respect de la loi, des présentes CGU et des instructions de sécurité.
+
+Fournir des informations exactes, vérifier les confirmations et conserver les justificatifs utiles.
+
+Respecter les personnes, les biens, les horaires, les zones, les règles des sites et la confidentialité.
+
+Signaler rapidement une perte, un dommage, une erreur de remise, un incident de sécurité, une fraude ou un accès non autorisé.
+
+Coopérer raisonnablement aux vérifications, enquêtes, retours, remboursements, contrôles réglementaires et exercices de droits.
+
+Ne pas discriminer, harceler, menacer, corrompre, solliciter illicitement, détourner des clients ou mettre en danger un utilisateur.
+
+24. Utilisations interdites et intégrité de la plateforme
+
+Contourner une restriction, une suspension, un contrôle KYC, un plafond, une tarification ou une mesure de sécurité.
+
+Introduire un logiciel malveillant, scanner sans autorisation, exploiter une vulnérabilité, saturer le service, automatiser abusivement ou intercepter des communications.
+
+Créer de faux comptes, usurper une identité, manipuler des avis, preuves, trajets, positions, poids, prix, codes, statuts ou horodatages.
+
+Collecter, vendre, publier ou réutiliser les données d’autrui hors de la finalité du service.
+
+Utiliser TiiBnTick pour la traite, l’exploitation, le blanchiment, la fraude, le recel, le financement illicite ou toute activité contraire aux droits fondamentaux.
+
+Téléverser des contenus diffamatoires, haineux, obscènes, contrefaisants, trompeurs ou portant atteinte à la sécurité et à la vie privée.
+
+25. Contenus, avis, documents et licence technique
+
+L’utilisateur conserve ses droits sur les contenus qu’il fournit et garantit disposer des autorisations nécessaires. Il accorde à Yowyob, pour la durée nécessaire au service et aux obligations légales, une licence non exclusive, mondiale, limitée, transférable aux sous-traitants, permettant d’héberger, reproduire, convertir, transmettre, afficher, sauvegarder et traiter ces contenus aux seules fins d’exécution, sécurité, support, preuve, conformité et amélioration du service.
+
+Les avis doivent relater une expérience authentique, rester pertinents et ne pas contenir de données sensibles inutiles. Yowyob peut modérer un contenu illicite, manifestement trompeur, hors sujet, menaçant, confidentiel ou portant atteinte aux droits d’autrui, tout en préservant les éléments nécessaires à une enquête ou à la preuve.
+
+26. Données stockées ou traitées hors du Yowyob Cloud
+
+Toute donnée exportée, téléchargée, imprimée, synchronisée, mise en cache, copiée, transmise par API ou webhook, stockée dans un terminal, un tableur, un serveur, un cloud, une messagerie, un logiciel partenaire ou une sauvegarde hors du Yowyob Cloud passe sous le contrôle et la responsabilité de la personne ou de l’organisation qui décide de ce traitement externe.
+
+Cette personne ou organisation doit assurer la base légale, l’information des personnes, la sécurité, le contrôle des accès, le chiffrement approprié, la sauvegarde, l’exactitude, la journalisation, la durée de conservation, la suppression, la réponse aux droits, la gestion des sous-traitants et la notification des violations. Elle doit empêcher les copies incontrôlées et supprimer les exports devenus inutiles.
+
+Yowyob n’est pas responsable d’un incident résultant exclusivement d’un environnement externe qu’il ne contrôle pas, d’un partage, d’une configuration, d’une sauvegarde, d’un terminal ou d’une intégration du partenaire. Cette exclusion ne couvre pas une faute propre de Yowyob, un défaut du service sous son contrôle ni les données réimportées et traitées par Yowyob selon les instructions applicables.
+
+Clause essentielle : Une exportation n’emporte aucun transfert de propriété sur les données ni extinction des droits des personnes.
+
+27. Propriété intellectuelle et signes distinctifs
+
+Les logiciels, interfaces, marques, noms, logos, bases, modèles, documentations, architectures, textes, éléments graphiques et contenus de Yowyob sont protégés. Sauf licence expresse, l’utilisateur reçoit un droit personnel, limité, non exclusif, révocable et non transférable d’utiliser le service pour ses besoins autorisés.
+
+Il est interdit de décompiler au-delà des exceptions légales, copier substantiellement, créer une œuvre dérivée, retirer une mention, enregistrer une marque similaire, extraire une base, reproduire l’apparence ou utiliser les signes de Yowyob pour laisser croire à un partenariat. Les retours et suggestions peuvent être utilisés sans obligation de rémunération, sans divulguer d’information confidentielle du contributeur.
+
+28. Confidentialité, données personnelles et sécurité
+
+Chaque partie protège les informations non publiques reçues dans le cadre du service. L’accès est limité aux personnes ayant besoin d’en connaître. Les obligations ne s’appliquent pas aux informations devenues publiques sans faute, déjà détenues légitimement, reçues licitement d’un tiers ou développées indépendamment.
+
+Le traitement des données personnelles est décrit dans la Privacy Notice TiiBnTick. Les utilisateurs professionnels peuvent être responsables de traitement indépendants ou donneurs d’instructions selon le contexte. Ils doivent conclure les accords requis et ne demander que les données nécessaires.
+
+Yowyob utilise des mesures proportionnées de sécurité, mais aucun système n’est invulnérable. L’utilisateur doit sécuriser ses appareils, appliquer les mises à jour, limiter les droits et signaler immédiatement une compromission à support@yowyob.com et privacy@yowyob.com.
+
+29. Preuves électroniques, journaux et contestation
+
+Sous réserve de la loi, les journaux techniques, validations, horodatages, identifiants, messages, OTP, QR, signatures, photos, géolocalisations, scans, reçus, statuts, appels API et confirmations peuvent constituer des éléments de preuve. Ils sont appréciés avec leur contexte, intégrité, provenance et éventuelles contradictions.
+
+Une preuve générée par TiiBnTick ne doit pas être altérée. Toute contestation doit être formulée rapidement, avec les documents disponibles. Yowyob peut conserver les éléments nécessaires à l’établissement, l’exercice ou la défense de droits, même après la clôture d’un compte, dans les limites légales.
+
+Lorsque des mécanismes d’ancrage, empreinte ou registre distribué sont utilisés, TiiBnTick privilégie l’inscription d’empreintes ou références minimisées; les données personnelles brutes ne doivent pas être publiées sur une blockchain publique sans base et garanties spécifiques.
+
+30. Services tiers, liens, cartes, communications et open source
+
+TiiBnTick peut dépendre de services tiers : hébergement, paiement, cartographie, SMS, e-mail, push, identité, analytique, stockage, signature ou support. Leur disponibilité et leurs conditions peuvent s’appliquer. Yowyob sélectionne et encadre ses prestataires selon le contexte mais ne contrôle pas les services indépendants choisis directement par l’utilisateur.
+
+Les liens externes et comptes sociaux sont fournis à titre pratique. L’utilisateur vérifie le domaine, les autorisations demandées et les politiques du tiers. Les composants open source restent soumis à leurs licences respectives.
+
+31. Disponibilité, maintenance, sauvegarde et continuité
+
+Yowyob peut effectuer des maintenances programmées ou urgentes, appliquer des limitations, isoler un tenant ou suspendre une fonction pour protéger le système. Des notifications sont fournies lorsque cela est raisonnablement possible. Les utilisateurs professionnels maintiennent des procédures de continuité adaptées, notamment pour les remises, inventaires, paiements, preuves et contacts urgents.
+
+Les mécanismes de sauvegarde de Yowyob ne remplacent pas les obligations de conservation propre d’un professionnel lorsque la loi ou son activité l’impose. Les exports doivent toutefois être protégés conformément à l’article 26.
+
+32. Suspension, restriction et résiliation
+
+Yowyob peut restreindre ou suspendre un compte, une organisation, une clé API, une offre, un paiement ou une mission en cas de risque de sécurité, fraude, impayé, contenu illicite, violation grave, absence de justificatif, demande d’une autorité ou nécessité de protéger des personnes et des biens. Lorsque la situation le permet, l’utilisateur est informé du motif et peut présenter des observations.
+
+L’utilisateur peut cesser d’utiliser le service et demander la clôture, sous réserve des missions en cours, sommes dues, obligations de conservation, litiges et droits de tiers. La résiliation n’efface pas les clauses destinées à survivre, notamment paiement, preuve, confidentialité, propriété intellectuelle, responsabilité et règlement des litiges.
+
+33. Réclamations, incidents, pertes et coopération
+
+Une réclamation doit être adressée au canal de support avec le numéro de suivi, les parties, les dates, le dommage, les réserves, photos, factures et autres éléments. Elle doit être introduite dans le délai contractuel ou légal applicable. Un dossier incomplet peut retarder l’analyse.
+
+Les parties préservent l’Envoi et l’emballage lorsque cela est nécessaire, évitent toute aggravation du dommage et coopèrent aux investigations. Yowyob peut transmettre le dossier au prestataire, assureur, payeur, conseil ou autorité compétente dans les limites de la Privacy Notice.
+
+34. Garanties, responsabilité, indemnisation et force majeure
+
+Le service est fourni avec un niveau raisonnable de compétence et de diligence, compte tenu de son statut bêta. Sauf obligation impérative ou engagement exprès, Yowyob ne garantit pas un volume d’affaires, un revenu, une disponibilité permanente, un itinéraire, un délai non garanti, la solvabilité d’un utilisateur, l’absence de fraude ou l’adéquation à un besoin non communiqué.
+
+Chaque partie répond de ses fautes, manquements, contenus, employés, sous-traitants et équipements. Dans la mesure permise par la loi, les dommages indirects, perte de chance, de profit, de clientèle ou de données due à l’absence de sauvegarde adéquate sont exclus. Toute limitation financière prévue dans une offre ne s’applique pas lorsqu’elle est interdite, notamment en cas de dol, faute lourde, atteinte corporelle ou violation ne pouvant être limitée.
+
+L’utilisateur professionnel garantit Yowyob contre les réclamations de tiers résultant de son contenu, bien interdit, opération illégale, mauvaise déclaration, violation de droits, traitement externe de données ou manquement de ses personnels, sauf faute imputable à Yowyob.
+
+Aucune partie n’est responsable d’un retard causé par un événement imprévisible, irrésistible et extérieur au sens de la loi, sous réserve d’informer, limiter les effets et reprendre l’exécution. Les obligations de paiement déjà nées et de protection des données demeurent.
+
+35. Droit applicable, règlement des différends, modifications et langue
+
+Les présentes CGU sont régies par le droit camerounais, sans priver un consommateur des protections impératives de son lieu de résidence lorsque celles-ci s’appliquent. Les parties recherchent d’abord une solution amiable en adressant une réclamation documentée. À défaut, les juridictions matériellement et territorialement compétentes sont saisies, sauf convention d’arbitrage ou mécanisme obligatoire applicable.
+
+Yowyob peut modifier les CGU pour tenir compte de la loi, de la sécurité, des fonctionnalités ou du modèle économique. Les changements substantiels sont portés à la connaissance des utilisateurs par un moyen approprié et prennent effet à la date indiquée. Une acceptation spécifique est demandée lorsque la loi ou la nature du changement l’exige.
+
+Les versions française et anglaise visent le même effet. Pour les opérations au Cameroun, la version française prévaut en cas de divergence d’interprétation, sauf règle impérative, contrat particulier ou accord exprès contraire. La nullité d’une clause n’affecte pas les autres clauses.
+
+36. Contacts
+
+Questions juridiques : legal@yowyob.com. Vie privée et droits : privacy@yowyob.com. Assistance opérationnelle et sécurité : support@yowyob.com. Informations générales : info@yowyob.com. Téléphones : +237 675 518 880; +237 656 168 129.
+
+Adresse : Yowyob Inc. Ltd, Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroun. Toute notification formelle doit permettre d’identifier son auteur, l’objet, la plateforme et la commande ou le compte concerné.
+
+PART II — TERMS OF USE AND SERVICES — ENGLISH
+
+Effective date: 25 July 2026
+
+These Terms are the common contractual foundation of the TiiBnTick system. Special terms for an order, subscription, agency, relay point, carrier, API integration or commercial offer supplement these Terms. In case of conflict, the priority order in Section 3 applies.
+
+1. Publisher identity and purpose
+
+Yowyob Inc. Ltd, a limited liability company incorporated under Cameroonian law, with share capital of XAF 1,000,000, registered with the Trade and Personal Property Credit Register under number RC/YAO/2020/B/1614, Tax Identification Number M102015282478U, registered office at Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroon.
+
+TiiBnTick is a Yowyob digital subsystem designed to facilitate the discovery, matching, booking, organisation, performance, traceability, evidence and administrative management of logistics, pickup, carriage, relay, delivery and related services. Depending on the module, Yowyob provides software infrastructure, a trust environment, a digital marketplace, operational tools, tracking interfaces or integration services.
+
+These Terms define platform access and use rules, obligations for each category of user, Yowyob’s role, and rules governing orders, data, payments, content, evidence, APIs, incidents and liability.
+
+2. Definitions
+
+“User” means any individual or legal entity accessing a TiiBnTick platform, with or without an account.
+
+“Customer” or “Sender” means the person requesting or funding a pickup, carriage, relay or delivery service.
+
+“Recipient” means the person designated to receive, collect, refuse or arrange receipt of a Shipment.
+
+“Logistics Provider” means an agency, carrier, business, courier, delivery person, driver or freelancer offering or performing a service.
+
+“Relay Point” or “Micro-hub” means an establishment or operator responsible for receipt, temporary custody, handover, return or proximity operations.
+
+“Merchant” means a seller, trader, platform or professional using TiiBnTick to organise deliveries or publish an offer.
+
+“Shipment” means a parcel, letter, merchandise, document or item declared in a request, excluding prohibited items.
+
+“Mission” or “Opportunity” means a logistics operation published, proposed, reserved, assigned or performed through TiiBnTick Go, Agency or a connected module.
+
+“Operational Evidence” means a timestamped log, location, QR code, OTP, photograph, signature, acknowledgement, status, scan, receipt, message or other element generated during the service lifecycle.
+
+“Yowyob Cloud” means the hosting, storage, backup and service environment controlled or contracted by Yowyob for operation of the system.
+
+3. Acceptance, contract formation and document hierarchy
+
+Accessing a feature, creating an account, ticking an acceptance box, submitting an order, using an API key, accepting a mission, depositing or collecting a parcel, or continuing to use the service after notice of an update constitutes acceptance of these Terms to the extent permitted by law.
+
+An electronic contract is formed when the user confirms an operation and TiiBnTick or the relevant provider acknowledges it, subject to verification, availability, payment, KYC checks, price confirmation or provider acceptance.
+
+Priority order: (1) mandatory law; (2) signed agreement or special terms expressly accepted; (3) confirmed order form, quotation or offer; (4) sector or module terms; (5) these Terms; and (6) documentation, FAQs and general communications.
+
+Earlier TiiBnTick legal pages are superseded for the same subject matter from the effective date of this version.
+
+4. Eligibility, capacity and authority
+
+A user must have the legal capacity required for the relevant activity. A person acting for a company, agency, NGO, public body, merchant, relay point or carrier represents that they are authorised to bind it. Professional accounts may be subject to documentary validation and internal administration rights.
+
+A minor may not create a professional account, accept a mission, publish an offer, conclude a paid operation or submit a third party’s data without the involvement and verifiable permission of a legal representative, unless the law provides otherwise.
+
+5. Accounts, roles, credentials and security
+
+Registration information must be accurate, current and complete. Users must promptly update inaccurate information and protect credentials, devices, sessions, OTPs, private QR codes, API keys and webhook secrets.
+
+An account is personal unless it is an organisational account with authorised users. An organisation administrator must assign roles on a least-privilege basis, promptly remove leavers’ access and review activity logs. Operations performed using valid credentials are presumed authorised until a credible compromise is reported.
+
+Yowyob may require stronger authentication and verification of address, telephone, identity, company, vehicle, licence, insurance, payment account or beneficial owner where necessary for security, trust, legal compliance or risk management.
+
+6. Yowyob’s role and independence of physical operators
+
+Unless expressly stated in an offer or agreement, Yowyob acts as publisher, technical operator, tool provider, marketplace or digital intermediary. Yowyob is not automatically the carrier, employer, principal, insurer, bailee, seller or representative of independent providers.
+
+Agencies, carriers, couriers, drivers, relay points, merchants and other partners remain responsible for their licences, staff, subcontractors, vehicles, premises, insurance, taxes, physical security, accepted packaging, custody, driving, performance, handovers, returns and consumer obligations. Display of a profile, badge, score, availability, price or “verified” label is not an absolute guarantee or regulatory certification unless specifically stated.
+
+Where Yowyob directly supplies an identified service, liability is assessed under the special terms of that service and mandatory law.
+
+7. Published Beta status and service evolution
+
+The “Published Beta” is publicly accessible but remains under continuous improvement. Features may be experimental, territorially restricted, wait-listed, unavailable offline, modified, migrated or withdrawn. Interface inconsistencies, delayed synchronisation, duplicate notifications or temporary outages may occur.
+
+Yowyob uses reasonable efforts to correct defects and preserve data, but does not promise uninterrupted availability or complete absence of error. A critical beta feature must not be the sole means of satisfying a legal, safety, health or evidentiary retention obligation without an appropriate fallback.
+
+8. Requests, orders, quotations and Shipment data
+
+The Sender must provide accurate information: identities and contacts, addresses and landmarks, nature of goods, quantity, dimensions, weight, declared value, handling constraints, time window, handover instructions, cash-on-delivery amount, required documents and special risks. An automated estimate is not a certified measurement and may be revised after inspection.
+
+A provider may accept, reject or propose a change. An order becomes final only after the essential details are confirmed and, where applicable, payment, preauthorisation or deposit is made. Any omission affecting price, safety, legality or performance may result in suspension, surcharge, return, rejection or termination at the responsible party’s cost.
+
+9. Packaging, marking, declared value and documents
+
+The Sender must choose packaging suitable for impacts, vibration, stacking, humidity, heat, dust, handling and expected duration. The Shipment must be properly closed, sealed and labelled; old labels must be removed and visible personal data minimised. A provider may reject manifestly inadequate packaging or offer chargeable repackaging.
+
+The declared value must be truthful and supportable. It does not by itself create insurance or a higher liability limit. Value coverage, transit insurance or enhanced liability must be expressly confirmed. The Sender supplies invoices, permits, certificates, customs declarations and other required documents.
+
+10. Prohibited, regulated and high-risk items
+
+TiiBnTick may not be used for illegal, stolen, counterfeit or dangerous goods, or goods whose possession, transport, sale, export or delivery is unauthorised. Unless an expressly authorised channel and qualified operator are used, excluded items include weapons and ammunition, explosives, toxic or radioactive substances, narcotics, prescription-only pharmaceuticals, protected species, human organs, unlawful content, undeclared cash or bearer instruments, perishables without an appropriate chain, and undeclared batteries or dangerous goods.
+
+Live animals, food, alcohol, tobacco, medicine, biological samples, highly confidential media, valuable objects and cross-border goods require specific laws, licences, packaging and agreements. A provider may externally inspect, weigh, scan or request opening in the Sender’s presence where law, safety or reasonable suspicion justifies it.
+
+Warning: The user remains responsible for legality and content declaration even where the interface offers a category.
+
+11. Pickup, custody, relay, storage and chain of possession
+
+Each physical transfer should be recorded where the feature is available. A scan, QR, OTP, signature, photo or log may document the chain of possession. The temporary absence of a digital event does not necessarily prove the absence of a physical transfer; all available evidence must be considered together.
+
+A relay point or agency applies its stated hours, capacity, identity checks, storage rules and holding periods. Uncollected, refused, undeliverable or hazardous Shipments may be returned, moved to another site, held at the responsible party’s cost or handled under law after reasonable notice. No partner may open or use the contents except with authorisation, for a safety emergency or where legally required.
+
+12. Delivery, collection, refusal, returns and evidence
+
+Handover may require an OTP, QR code, identity document, signature, photograph, geolocation, recipient name, stamp, authority letter or other proportionate evidence. The Recipient must inspect the apparent external condition and promptly report visible damage. Reservations should be specific; a generic reservation may be insufficient.
+
+Delivery to a third party, concierge, reception desk, neighbour, secure place or agreed location is allowed only under the applicable instruction, reasonable practice and law. A photo must not unnecessarily expose the inside of a home, unrelated persons or sensitive documents. Refusal, absence, inaccessible address or failed authentication may lead to another attempt, relay deposit, return or fees.
+
+13. Tracking, maps, schedules and estimates
+
+Statuses, maps, positions and estimated times are informational. They depend on GPS, network coverage, human input, sensors, synchronisation and third-party services and may be approximate, delayed or unavailable. An estimated time is binding only where expressly described as guaranteed in an offer.
+
+Public tracking must use a limited link or code. Senders and Recipients must not publish an identifier that enables third parties to track a Shipment. Yowyob may mask exact position, delay display or limit update frequency to protect staff, the Recipient, the Shipment or operational security.
+
+14. TiiBnTick Go-specific rules
+
+TiiBnTick Go enables Users to discover, propose, reserve or assign Opportunities. Before acceptance, a freelancer or provider must review the mission, distance, remuneration, expenses, vehicle capacity, documentation, risks and deadlines. A provider must not accept a mission that cannot be lawfully and safely performed.
+
+Algorithmic assignment, a score, priority, route suggestion or estimated earnings are not a promise of income, exclusivity, volume or employment status. The provider organises its activity independently, subject to the agreement with the agency or customer. Off-platform arrangements intended to bypass safety, traceability or fees may lead to suspension.
+
+15. TiiBnTick Point-specific rules
+
+A Relay Point must maintain reasonably secure, clean premises, accessible during published hours, with authorised and trained staff. It must segregate Shipments, protect codes and data, control handovers, maintain required logs, report discrepancies, and respect capacity and holding limits.
+
+A Relay Point may not use a customer’s telephone or address for its own purposes, subcontract custody without approval or move Shipments away from the declared site except under an authorised procedure. Commissions, custody liability, inventory discrepancies, deductibles, insurance and reconciliation are governed by the partner agreement.
+
+16. TiiBnTick Agency-specific rules
+
+An organisation using Agency administers branches, staff, vehicles, routes, missions, hubs, incidents, invoices and documents. It is responsible for role configuration, prices, taxes, zones, contracts, validation rules, numbering, templates, delegations and reference data.
+
+Logs and dashboards support operations but do not replace required accounting, tax, employment, cash, maintenance, regulatory or safety controls. The organisation must verify reports before filing, paying or deciding and must ensure that employees and subcontractors are informed of monitoring, location and confidentiality rules.
+
+17. TiiBnTick Market-specific rules
+
+Market enables discovery, comparison and publication of offers. A supplier must fairly describe identity, zones, capacity, prices, exclusions, timeframes, insurance and conditions. False reviews, fictitious availability, deceptive teaser pricing, unauthorised logos and copied content are prohibited.
+
+Ranking may consider relevance, availability, distance, data quality, performance, price, reliability, commercial relationship or sponsorship. Sponsored offers must be identifiable. Yowyob may moderate, delist or correct a manifestly misleading presentation without guaranteeing every offer or review.
+
+18. TiiBnTick Core, identity and trust rules
+
+Core may provide shared identity, authentication, authorisation, profile, organisation, reputation, notification, synchronisation, audit and security services. A digital identity, badge or score is a contextual indicator based on available information; it is not a universal guarantee of solvency, character or performance.
+
+Users must not improperly merge identities, bypass suspension, manipulate a score, buy reviews, impersonate an organisation or reuse another person’s evidence. Yowyob may correct, freeze or separate identities and require additional verification.
+
+19. API, webhook and integration rules
+
+An Integrator may use APIs only within documented limits, must protect keys and secrets, validate webhook signatures, apply expiry periods, handle replay attempts, respect rate limits and maintain separate test and production environments. Circumvention, unauthorised bulk extraction and identification beyond the agreed purpose are prohibited.
+
+The Integrator must inform its users about TiiBnTick, obtain required permissions, secure devices and servers, keep appropriate logs, process errors idempotently and promptly report compromise. Version, field and limit changes are announced according to criticality; beta functionality may evolve without permanent backward compatibility.
+
+API data remains subject to data-subject rights, confidentiality and contractual limits. Systematic copying to create a competing product, model training without authorisation, or resale of raw data is prohibited.
+
+20. Prices, charges, taxes, commissions and currencies
+
+Prices may include or exclude carriage, pickup, relay, insurance, packaging, waiting, handling, return, taxes, payment fees, commission, subscription, API or additional services. The interface or quotation should identify known components before confirmation. Additional charges may arise from inaccurate information, excess size or weight, difficult areas, waiting, reattempts, returns, extended storage, customs or extra instructions.
+
+Each professional remains responsible for tax obligations and required documents. Currency conversions, where available, remain indicative until transaction. A manifest pricing error may be corrected before performance, with a right to cancel where required by law.
+
+21. Payments, cash on delivery and payouts
+
+Payments may be provided by Yowyob or an independent payment provider. Fraud checks, limits, settlement periods, charges, reserves or verification may apply. Yowyob does not necessarily retain full card or mobile-money account data where the payment provider processes it directly.
+
+For cash on delivery, the amount, collection mandate, evidence, deadline and beneficiary must be confirmed. A courier, point or agency may not use collected funds. Shortfalls, counterfeit notes, chargebacks, refunds and reconciliation are handled under the applicable agreement. A payout may be delayed during an investigation, dispute, legal requirement or fraud risk.
+
+22. Cancellation, changes, refunds and withdrawal rights
+
+Cancellation or amendment depends on the operational stage. Charges may be due where a provider travelled, reserved capacity, collected the Shipment, incurred costs or started performance. After pickup, cancellation may become a chargeable return rather than a free cancellation.
+
+Mandatory consumer rights remain applicable. Fully performed, personalised, urgent or perishable-related services may fall under legal exceptions. A refund request must identify the order, reason and supporting material. An approved refund is made through an available method and may be subject to banking or operator delays.
+
+23. General user obligations
+
+Act honestly, carefully and in compliance with law, these Terms and safety instructions.
+
+Provide accurate information, review confirmations and retain useful records.
+
+Respect people, property, hours, areas, site rules and confidentiality.
+
+Promptly report loss, damage, misdelivery, security incidents, fraud or unauthorised access.
+
+Reasonably cooperate with verification, investigation, returns, refunds, regulatory checks and rights requests.
+
+Do not discriminate, harass, threaten, bribe, unlawfully solicit, divert customers or endanger a User.
+
+24. Prohibited use and platform integrity
+
+Circumventing restrictions, suspension, KYC checks, limits, pricing or security controls.
+
+Introducing malware, unauthorised scanning, exploiting vulnerabilities, overloading the service, abusive automation or interception.
+
+Creating false accounts or manipulating identity, reviews, evidence, routes, position, weight, price, codes, statuses or timestamps.
+
+Collecting, selling, publishing or reusing another person’s data outside the service purpose.
+
+Using TiiBnTick for trafficking, exploitation, laundering, fraud, fencing, illicit financing or activities contrary to fundamental rights.
+
+Uploading defamatory, hateful, obscene, infringing, deceptive, unsafe or privacy-invasive content.
+
+25. Content, reviews, documents and technical licence
+
+A User retains rights in submitted content and warrants the necessary permissions. For the period required to provide the service and meet legal obligations, the User grants Yowyob a non-exclusive, worldwide, limited licence, sublicensable to processors, to host, reproduce, convert, transmit, display, back up and process that content solely for service delivery, security, support, evidence, compliance and improvement.
+
+Reviews must describe a genuine experience, remain relevant and avoid unnecessary sensitive data. Yowyob may moderate unlawful, manifestly misleading, irrelevant, threatening, confidential or rights-infringing content while preserving material required for investigation or evidence.
+
+26. Data stored or processed outside the Yowyob Cloud
+
+Any data exported, downloaded, printed, synchronised, cached, copied, sent through an API or webhook, stored on a device, spreadsheet, server, cloud, mailbox, partner system or backup outside the Yowyob Cloud falls under the control and responsibility of the person or organisation deciding that external processing.
+
+That person or organisation must ensure a legal basis, transparency, security, access control, appropriate encryption, backup, accuracy, logging, retention, deletion, rights handling, processor governance and breach notification. It must prevent uncontrolled copies and delete exports that are no longer needed.
+
+Yowyob is not responsible for an incident arising exclusively in an external environment it does not control, or from a partner’s sharing, configuration, backup, device or integration. This exclusion does not cover Yowyob’s own fault, a defect in a service under its control, or data re-imported and processed by Yowyob under applicable instructions.
+
+Essential clause: Export does not transfer ownership of data or extinguish data-subject rights.
+
+27. Intellectual property and distinctive signs
+
+Yowyob software, interfaces, marks, names, logos, databases, models, documentation, architectures, texts and graphics are protected. Unless expressly licensed, a User receives a personal, limited, non-exclusive, revocable and non-transferable right to use the service for authorised needs.
+
+Users may not decompile beyond legal exceptions, substantially copy, create derivatives, remove notices, register confusing marks, extract a database, reproduce appearance or use Yowyob signs to imply partnership. Feedback and suggestions may be used without payment obligation, without disclosing the contributor’s confidential information.
+
+28. Confidentiality, personal data and security
+
+Each party must protect non-public information received through the service and limit access to persons with a need to know. These duties do not apply to information lawfully public, already lawfully held, lawfully received from a third party or independently developed.
+
+Personal-data processing is described in the TiiBnTick Privacy Notice. Professional Users may be independent controllers or parties giving instructions depending on context. They must enter required agreements and request only necessary data.
+
+Yowyob applies proportionate security measures, but no system is invulnerable. Users must secure devices, apply updates, minimise permissions and immediately report compromise to support@yowyob.com and privacy@yowyob.com.
+
+29. Electronic evidence, logs and disputes
+
+Subject to law, technical logs, validations, timestamps, identifiers, messages, OTPs, QR codes, signatures, photographs, locations, scans, receipts, statuses, API calls and confirmations may constitute evidence. They are assessed with context, integrity, provenance and contradictions.
+
+Evidence generated by TiiBnTick must not be altered. A challenge should be made promptly with available records. Yowyob may retain material needed to establish, exercise or defend legal claims after account closure within legal limits.
+
+Where anchoring, fingerprinting or distributed-ledger mechanisms are used, TiiBnTick favours minimised hashes or references; raw personal data must not be written to a public blockchain without a specific legal basis and safeguards.
+
+30. Third-party services, links, maps, communications and open source
+
+TiiBnTick may rely on third-party hosting, payment, mapping, SMS, email, push, identity, analytics, storage, signature or support services. Their availability and terms may apply. Yowyob selects and governs its providers according to context but does not control independent services chosen directly by the User.
+
+External links and social accounts are provided for convenience. Users must verify the domain, permissions and third-party policies. Open-source components remain subject to their respective licences.
+
+31. Availability, maintenance, backup and continuity
+
+Yowyob may perform scheduled or emergency maintenance, apply limits, isolate a tenant or suspend a function to protect the system. Notice is provided where reasonably possible. Professional Users must maintain appropriate continuity procedures for handovers, inventory, payments, evidence and emergency contacts.
+
+Yowyob backup mechanisms do not replace a professional’s own statutory or business retention duties. Any export remains subject to Section 26.
+
+32. Suspension, restriction and termination
+
+Yowyob may restrict or suspend an account, organisation, API key, offer, payment or mission for security risk, fraud, non-payment, unlawful content, serious breach, missing evidence, authority request or the need to protect people and property. Where circumstances allow, the User is informed and may provide observations.
+
+A User may stop using the service and request closure, subject to ongoing missions, sums due, retention duties, disputes and third-party rights. Termination does not affect provisions intended to survive, including payment, evidence, confidentiality, intellectual property, liability and dispute resolution.
+
+33. Complaints, incidents, loss and cooperation
+
+A complaint should be submitted to support with the tracking number, parties, dates, loss, reservations, photographs, invoices and other evidence. It must be filed within the contractual or statutory period. An incomplete file may delay review.
+
+The parties must preserve the Shipment and packaging where needed, avoid aggravating loss and cooperate with investigation. Yowyob may share the file with the provider, insurer, payer, adviser or competent authority within the Privacy Notice.
+
+34. Warranties, liability, indemnity and force majeure
+
+The service is supplied with reasonable skill and care having regard to its beta status. Except for mandatory duties or express commitments, Yowyob does not guarantee business volume, income, uninterrupted availability, a route, a non-guaranteed deadline, User solvency, absence of fraud or fitness for an undisclosed need.
+
+Each party is responsible for its faults, breaches, content, personnel, subcontractors and equipment. To the extent permitted by law, indirect loss, loss of opportunity, profit, goodwill or data caused by inadequate backup is excluded. Any financial cap in an offer does not apply where prohibited, including fraud, gross fault, bodily injury or non-limitable violations.
+
+A professional User indemnifies Yowyob against third-party claims arising from that User’s content, prohibited goods, illegal operation, misdeclaration, rights infringement, external data processing or personnel breach, except to the extent caused by Yowyob.
+
+Neither party is responsible for delay caused by a legally recognised unforeseeable, unavoidable external event, provided it gives notice, mitigates and resumes performance. Accrued payment and data-protection duties remain.
+
+35. Governing law, disputes, amendments and language
+
+These Terms are governed by Cameroonian law without depriving a consumer of mandatory protections of their residence where applicable. The parties first seek an amicable solution through a documented complaint. Failing resolution, the competent courts have jurisdiction unless an applicable arbitration agreement or mandatory mechanism provides otherwise.
+
+Yowyob may amend the Terms for legal, security, functional or business reasons. Material changes are notified through an appropriate channel and take effect on the stated date. Specific consent is requested where law or the nature of the change requires it.
+
+The French and English versions are intended to have the same effect. For operations in Cameroon, the French version prevails in case of interpretive discrepancy unless mandatory law, special contract or express agreement provides otherwise. Invalidity of one provision does not affect the others.
+
+36. Contacts
+
+Legal matters: legal@yowyob.com. Privacy and rights: privacy@yowyob.com. Operational and security support: support@yowyob.com. General information: info@yowyob.com. Telephone: +237 675 518 880; +237 656 168 129.
+
+Address: Yowyob Inc. Ltd, Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroon. A formal notice must identify the sender, purpose, platform and relevant order or account.
+
+ANNEXE A / ANNEX A — MATRICE DES RESPONSABILITÉS / RESPONSIBILITY MATRIX
+
+Acteur / Actor
+
+Responsabilités principales / Main responsibilities
+
+Ne doit pas / Must not
+
+Éléments de preuve / Typical evidence
+
+Expéditeur / Sender
+
+Déclaration, emballage, documents, paiement / Declaration, packaging, documents, payment
+
+Dissimuler un risque ou un contenu / Conceal risk or contents
+
+Commande, facture, photos, poids / Order, invoice, photos, weight
+
+Destinataire / Recipient
+
+Disponibilité, authentification, contrôle apparent / Availability, authentication, apparent inspection
+
+Partager un OTP ou un lien public / Share OTP or public link
+
+OTP, signature, réserves / OTP, signature, reservations
+
+Coursier / Courier
+
+Exécution sûre, scans, garde, signalement / Safe performance, scans, custody, reporting
+
+Sous-traiter ou détourner sans accord / Unauthorised subcontracting or diversion
+
+GPS, scans, photo, statut / GPS, scans, photo, status
+
+Point relais / Relay Point
+
+Sécurité du site, inventaire, remise / Site security, inventory, handover
+
+Utiliser les données clients / Use customer data
+
+Journal entrée-sortie, identité / Check-in/out log, ID
+
+Agence / Agency
+
+Personnel, flotte, conformité, facturation / Staff, fleet, compliance, billing
+
+Se fier uniquement aux tableaux de bord / Rely solely on dashboards
+
+Ordres, missions, incidents, factures / Orders, missions, incidents, invoices
+
+Marchand / Merchant
+
+Offre loyale, biens conformes, retours / Fair offer, compliant goods, returns
+
+Avis ou disponibilité fictifs / Fake reviews or availability
+
+Catalogue, prix, preuve de vente / Listing, price, proof of sale
+
+Intégrateur / Integrator
+
+Sécurité API, information, minimisation / API security, notice, minimisation
+
+Extraire ou revendre les données / Scrape or resell data
+
+Logs API, consentements, clés / API logs, consents, keys
+
+Yowyob
+
+Plateforme, sécurité contrôlée, support, gouvernance / Platform, controlled security, support, governance
+
+Garantir les actes d’opérateurs indépendants / Guarantee independent operators
+
+Journaux plateforme, tickets / Platform logs, tickets
+
+ANNEXE B / ANNEX B — HIÉRARCHIE INDICATIVE DES PREUVES / INDICATIVE EVIDENCE HIERARCHY
+
+1. Enregistrement cryptographiquement ou techniquement protégé, rapproché d’autres éléments / Cryptographically or technically protected record corroborated by other evidence.
+
+2. QR, OTP, signature, scan, journal d’identité ou paiement vérifié / QR, OTP, signature, scan, identity or verified payment log.
+
+3. Photo, géolocalisation, horodatage, appel API ou notification / Photo, location, timestamp, API call or notification.
+
+4. Document commercial, facture, reçu, message ou témoignage / Commercial document, invoice, receipt, message or testimony.
+
+5. Statut isolé ou saisie non corroborée / Isolated status or uncorroborated entry.
+
+Attention / Caution. Cette hiérarchie est indicative et ne lie ni une autorité ni un juge. La fiabilité dépend de l’intégrité, de la provenance, du contexte et de la loi applicable. / This hierarchy is indicative and does not bind an authority or court. Reliability depends on integrity, provenance, context and applicable law.
+
+Contacts et réseaux sociaux / Contacts and social media
+
+Canal / Channel
+
+Coordonnée / Detail
+
+Legal / Juridique
+
+legal@yowyob.com
+
+Privacy / Vie privée
+
+privacy@yowyob.com
+
+Support
+
+support@yowyob.com
+
+General information / Informations générales
+
+info@yowyob.com
+
+Telephone / Téléphone
+
++237 675 518 880; +237 656 168 129
+
+Facebook
+
+https://www.facebook.com/YowyobInc
+
+X (Twitter)
+
+https://twitter.com/yowyob
+
+Instagram
+
+https://www.instagram.com/yowyob
+
+Sécurité des échanges / Communication security. Ne transmettez jamais un mot de passe, un code à usage unique, une clé API, un secret webhook, un numéro complet de carte ou un document d’identité non sollicité par message privé sur un réseau social. / Never send a password, one-time code, API key, webhook secret, full card number or unsolicited identity document through a social-media direct message.

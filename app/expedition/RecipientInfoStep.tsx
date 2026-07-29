@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Phone, Mail, MapPin, Home, ArrowRight, ArrowLeft, Target, Sparkles, Circle, Globe, Building, Navigation } from 'lucide-react';
 import { AddressAutocomplete } from '@/components/AddressAutocomplete';
+import { CENTRAL_AFRICA_COUNTRIES, mapCountryNameToKey } from '@/lib/centralAfricaData';
 
 interface RecipientData {
   recipientFirstName: string;
@@ -23,98 +24,9 @@ interface RecipientInfoStepProps {
   onBack: () => void;
 }
 
-// Données des pays et régions (identiques à SenderInfoStep)
-const countries = {
-  cameroun: {
-    name: 'Cameroun',
-    regions: {
-      'centre': {
-        name: 'Centre',
-        cities: ['Yaoundé', 'Mbalmayo', 'Akonolinga', 'Bafia', 'Ntui', 'Mfou', 'Obala', 'Okola', 'Soa']
-      },
-      'littoral': {
-        name: 'Littoral',
-        cities: ['Douala', 'Edéa', 'Nkongsamba', 'Yabassi', 'Loum', 'Manjo', 'Mbanga', 'Mouanko']
-      },
-      'ouest': {
-        name: 'Ouest',
-        cities: ['Bafoussam', 'Dschang', 'Bandjoun', 'Mbouda', 'Bangangté', 'Foumban', 'Kékem']
-      },
-      'nord-ouest': {
-        name: 'Nord-Ouest',
-        cities: ['Bamenda', 'Kumbo', 'Wum', 'Ndop', 'Mbengwi', 'Bali', 'Bafut']
-      },
-      'sud-ouest': {
-        name: 'Sud-Ouest',
-        cities: ['Buéa', 'Limbe', 'Kumba', 'Mamfe', 'Tiko', 'Idenau', 'Fontem']
-      },
-      'adamaoua': {
-        name: 'Adamaoua',
-        cities: ['Ngaoundéré', 'Meiganga', 'Tibati', 'Tignère', 'Banyo', 'Kontcha']
-      },
-      'nord': {
-        name: 'Nord',
-        cities: ['Garoua', 'Maroua', 'Guider', 'Figuil', 'Poli', 'Rey-Bouba', 'Tcholliré']
-      },
-      'extreme-nord': {
-        name: 'Extrême-Nord',
-        cities: ['Maroua', 'Mokolo', 'Kousséri', 'Yagoua', 'Mora', 'Waza', 'Kaélé']
-      },
-      'est': {
-        name: 'Est',
-        cities: ['Bertoua', 'Batouri', 'Abong-Mbang', 'Yokadouma', 'Kenzou', 'Garoua-Boulaï']
-      },
-      'sud': {
-        name: 'Sud',
-        cities: ['Ebolowa', 'Sangmélima', 'Kribi', 'Ambam', 'Lolodorf', 'Campo', 'Mvangane']
-      }
-    }
-  },
-  nigeria: {
-    name: 'Nigeria',
-    regions: {
-      'lagos': {
-        name: 'Lagos',
-        cities: ['Lagos', 'Ikeja', 'Epe', 'Ikorodu', 'Badagry', 'Mushin', 'Alimosho']
-      },
-      'abuja': {
-        name: 'Abuja FCT',
-        cities: ['Abuja', 'Gwagwalada', 'Kuje', 'Abaji', 'Bwari', 'Kwali']
-      },
-      'kano': {
-        name: 'Kano',
-        cities: ['Kano', 'Wudil', 'Gwarzo', 'Rano', 'Karaye', 'Rimin Gado']
-      },
-      'rivers': {
-        name: 'Rivers',
-        cities: ['Port Harcourt', 'Obio-Akpor', 'Eleme', 'Ikwerre', 'Oyigbo', 'Okrika']
-      },
-      'oyo': {
-        name: 'Oyo',
-        cities: ['Ibadan', 'Ogbomoso', 'Oyo', 'Iseyin', 'Saki', 'Igboho', 'Eruwa']
-      },
-      'kaduna': {
-        name: 'Kaduna',
-        cities: ['Kaduna', 'Zaria', 'Kafanchan', 'Kagoro', 'Zonkwa', 'Makarfi']
-      },
-      'ogun': {
-        name: 'Ogun',
-        cities: ['Abeokuta', 'Sagamu', 'Ijebu-Ode', 'Ota', 'Ilaro', 'Ayetoro']
-      },
-      'anambra': {
-        name: 'Anambra',
-        cities: ['Awka', 'Onitsha', 'Nnewi', 'Ekwulobia', 'Agulu', 'Ihiala']
-      }
-    }
-  }
-} as const;
-
-// Add type definitions for better type safety
-type CountryKey = keyof typeof countries;
-type RegionData = {
-  name: string;
-  cities: string[];
-};
+// Supprimé - utilise CENTRAL_AFRICA_COUNTRIES depuis centralAfricaData.ts
+type CountryKey = string;
+type RegionData = { name: string; cities: string[] };
 
 const FloatingIcon = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
@@ -209,16 +121,7 @@ export default function RecipientInfoStep({ initialData, onContinue, onBack }: R
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // --- CORRECTION START ---
-  // Mapping pour convertir les noms de pays en clés internes
-  const mapCountryToKey = (countryName: string): string => {
-    const name = countryName.toLowerCase();
-    if (name.includes('cameroun') || name.includes('cameroon')) return 'cameroun';
-    if (name.includes('nigeria')) return 'nigeria';
-    return '';
-  };
-  // LES EFFETS DE RÉINITIALISATION ONT ÉTÉ SUPPRIMÉS POUR ÉVITER LES SUPPRESSIONS INTEMPESTIVES
-  // --- CORRECTION END ---
+  const mapCountryToKey = (countryName: string): string => mapCountryNameToKey(countryName);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -269,13 +172,14 @@ export default function RecipientInfoStep({ initialData, onContinue, onBack }: R
     setIsSubmitting(false);
   };
 
-  const availableRegions = formData.recipientCountry ? countries[formData.recipientCountry as CountryKey]?.regions || {} : {};
+  const availableRegions = formData.recipientCountry
+    ? CENTRAL_AFRICA_COUNTRIES[formData.recipientCountry as keyof typeof CENTRAL_AFRICA_COUNTRIES]?.regions || {}
+    : {};
   const availableCities = (() => {
     if (formData.recipientCountry && formData.recipientRegion) {
-      const countryData = countries[formData.recipientCountry as CountryKey];
+      const countryData = CENTRAL_AFRICA_COUNTRIES[formData.recipientCountry as keyof typeof CENTRAL_AFRICA_COUNTRIES];
       if (countryData) {
-        // Type-safe access to the region with proper typing
-        const regionData = countryData.regions[formData.recipientRegion as keyof typeof countryData.regions] as RegionData | undefined;
+        const regionData = (countryData.regions as any)[formData.recipientRegion] as RegionData | undefined;
         return regionData?.cities || [];
       }
     }
@@ -397,8 +301,8 @@ export default function RecipientInfoStep({ initialData, onContinue, onBack }: R
                   error={errors.recipientCountry}
                 >
                   <option value="">Sélectionner un pays</option>
-                  {Object.entries(countries).map(([key, country]) => (
-                    <option key={key} value={key}>{country.name}</option>
+                  {Object.entries(CENTRAL_AFRICA_COUNTRIES).map(([key, country]) => (
+                    <option key={key} value={key}>{country.flag} {country.name}</option>
                   ))}
                 </SelectField>
 
@@ -410,11 +314,13 @@ export default function RecipientInfoStep({ initialData, onContinue, onBack }: R
                     value={formData.recipientRegion}
                     onChange={(e: any) => {
                       const region = e.target.value;
-                      const city = region === 'centre' ? 'Yaoundé' : 'Douala';
+                      const countryData = CENTRAL_AFRICA_COUNTRIES[formData.recipientCountry as keyof typeof CENTRAL_AFRICA_COUNTRIES];
+                      const regionData = (countryData?.regions as any)?.[region];
+                      const firstCity = regionData?.cities?.[0] || '';
                       setFormData(prev => ({
                         ...prev,
                         recipientRegion: region,
-                        recipientCity: city
+                        recipientCity: firstCity
                       }));
                     }}
                     label="Région de destination"
@@ -422,8 +328,9 @@ export default function RecipientInfoStep({ initialData, onContinue, onBack }: R
                     disabled={!formData.recipientCountry}
                   >
                     <option value="">Sélectionner une région</option>
-                    <option value="centre">Centre</option>
-                    <option value="littoral">Littoral</option>
+                    {Object.entries(availableRegions).map(([key, region]) => (
+                      <option key={key} value={key}>{(region as any).name}</option>
+                    ))}
                   </SelectField>
 
                   <SelectField

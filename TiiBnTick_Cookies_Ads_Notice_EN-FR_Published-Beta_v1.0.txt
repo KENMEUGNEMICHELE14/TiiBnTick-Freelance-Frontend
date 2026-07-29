@@ -1,0 +1,659 @@
+TiiBnTick
+
+A YOWYOB SYSTEM / UN SYSTÈME YOWYOB
+
+AVIS RELATIF AUX COOKIES, TRACEURS ET PUBLICITÉS
+
+COOKIES, TRACKERS AND ADVERTISING NOTICE
+
+Technologies web, mobiles, PWA, SDK, mesure d’audience et contenus sponsorisés TiiBnTick
+
+TiiBnTick web, mobile, PWA, SDK, audience measurement and sponsored-content technologies
+
+Statut / Status
+
+Bêta publiée / Published Beta
+
+Version
+
+1.0
+
+Date
+
+25 juillet 2026 / 25 July 2026
+
+Code document / Document code
+
+TBT-LEGAL-COOKIES-ADS-ENFR-1.0
+
+Éditeur / Publisher
+
+Yowyob Inc. Ltd
+
+Portée / Scope
+
+Toutes les plateformes et applications TiiBnTick / All TiiBnTick platforms and applications
+
+IMPORTANT / IMPORTANT — Ce document régit une version bêta publiée susceptible d’évoluer. Il doit être lu avec les avis ou conditions spécifiques affichés dans un module, une commande, une offre, un contrat partenaire ou une intégration API. / This document governs a published beta that may evolve. It must be read together with module-specific notices, order terms, offers, partner agreements or API integration terms.
+
+Contrôle du document / Document control
+
+Version
+
+Date
+
+Statut / Status
+
+Portée / Scope
+
+Évolution / Change
+
+1.0
+
+25 juillet 202625 July 2026
+
+Bêta publiéePublished Beta
+
+Suite TiiBnTick complèteFull TiiBnTick suite
+
+Première version consolidée couvrant cookies, SDK, stockage local, analytics, publicités et choix utilisateurs.First consolidated version covering cookies, SDKs, local storage, analytics, advertising and user choices.
+
+Périmètre des plateformes / Platform scope
+
+Plateforme / Platform
+
+Adresse / Address
+
+Fonction indicative / Indicative function
+
+TiiBnTick Link
+
+https://tiibntick.yowyob.com/en
+
+Public portal, shipment initiation, tracking and recipient interactions / Portail public, création d’envois, suivi et interactions destinataires
+
+TiiBnTick Go
+
+https://tiibntick-go.yowyob.com/
+
+Courier and delivery opportunity marketplace / Place de marché des opportunités de livraison
+
+TiiBnTick Point
+
+https://tiibntick-point.yowyob.com/
+
+Relay points and micro-hubs / Points relais et micro-hubs
+
+TiiBnTick Core
+
+https://tiibntick-core.yowyob.com/
+
+Shared identity, trust, security and synchronization services / Services communs d’identité, confiance, sécurité et synchronisation
+
+TiiBnTick Market
+
+https://tiibntick-market.yowyob.com/en
+
+Public logistics and service marketplace / Place de marché publique de services logistiques
+
+TiiBnTick Agency
+
+https://tiibntick-agency.yowyob.com/
+
+Agency, branch, fleet, mission, billing and operational management / Gestion d’agences, antennes, flotte, missions, facturation et opérations
+
+TiiBnTick API
+
+https://tiibntick-api.yowyob.com/
+
+APIs, webhooks and integrations / API, webhooks et intégrations
+
+Clause d’extension / Extension clause. Le présent document s’applique également aux applications mobiles, PWA, interfaces administratives, domaines de préproduction rendus publics, modules intégrés, services de confiance, API, webhooks, SDK, QR codes, notifications et fonctionnalités futures commercialisées sous les marques TiiBnTick ou Yowyob lorsqu’elles renvoient au présent document. / This document also applies to mobile apps, PWAs, administrative interfaces, publicly accessible pre-production domains, embedded modules, trust services, APIs, webhooks, SDKs, QR codes, notifications and future features marketed under the TiiBnTick or Yowyob brands where they link to this document.
+
+Principales références juridiques / Main legal references
+
+France / Français
+
+Loi n° 2024/017 du 23 décembre 2024 relative à la protection des données à caractère personnel au Cameroun, ainsi que ses textes d’application lorsqu’ils entrent en vigueur.
+
+Loi n° 2010/021 du 21 décembre 2010 régissant le commerce électronique au Cameroun et décret n° 2011/1521/PM du 15 juin 2011 fixant ses modalités d’application.
+
+Loi n° 2010/012 du 21 décembre 2010 relative à la cybersécurité et à la cybercriminalité au Cameroun, telle que modifiée ou remplacée.
+
+Actes uniformes OHADA applicables, droit camerounais des obligations, de la consommation, de la fiscalité, des transports, de la preuve et de la propriété intellectuelle.
+
+Règlementations sectorielles et territoriales applicables aux opérateurs, agences, transporteurs, points relais, paiements, télécommunications, publicité et protection des consommateurs.
+
+English
+
+Law No. 2024/017 of 23 December 2024 relating to personal data protection in Cameroon, together with implementing instruments as they enter into force.
+
+Law No. 2010/021 of 21 December 2010 governing electronic commerce in Cameroon and Decree No. 2011/1521/PM of 15 June 2011 implementing that law.
+
+Law No. 2010/012 of 21 December 2010 on cybersecurity and cybercrime in Cameroon, as amended or replaced.
+
+Applicable OHADA Uniform Acts and Cameroonian rules on contracts, consumer protection, taxation, transport, evidence and intellectual property.
+
+Sectoral and territorial rules applicable to operators, agencies, carriers, relay points, payments, telecommunications, advertising and consumer protection.
+
+Règle de prudence / Compliance qualification. Les références ci-dessus ne constituent pas une liste exhaustive. Une activité de transport, de point relais, de paiement, de publicité ou de traitement de données peut nécessiter des autorisations, assurances, licences, formalités ou contrats supplémentaires à la charge de l’opérateur concerné. / The references above are not exhaustive. Transport, relay-point, payment, advertising or data-processing activities may require additional authorisations, insurance, licences, filings or contracts for which the relevant operator remains responsible.
+
+PARTIE I — AVIS COOKIES, TRACEURS ET PUBLICITÉS — FRANÇAIS
+
+Entrée en vigueur : 25 juillet 2026
+
+Cet Avis décrit les technologies susceptibles d’être utilisées dans TiiBnTick. Le registre dynamique affiché dans le gestionnaire de consentement ou les paramètres de l’application prévaut pour les fournisseurs, noms, durées et finalités effectivement actifs sur un domaine, une version ou un appareil. Une technologie non essentielle n’est activée qu’après le choix requis par la loi.
+
+1. Objet et portée
+
+Le présent Avis s’applique aux sites, applications web, PWA, applications mobiles, interfaces administratives, pages publiques de suivi, widgets, QR codes ouvrant une page, API documentaires et communications numériques de TiiBnTick. Il complète la Privacy Notice et les CGU.
+
+Les domaines TiiBnTick peuvent avoir des configurations différentes. Une technologie disponible dans un module n’est pas nécessairement active dans tous les autres. Le centre de préférences accessible depuis le service décrit la configuration courante.
+
+2. Qu’est-ce qu’un cookie ou traceur ?
+
+Un cookie est un petit fichier ou identifiant enregistré ou lu sur un terminal lors d’une visite. Des technologies comparables comprennent le stockage local ou de session, IndexedDB, cache PWA, pixels, balises, scripts, SDK mobiles, identifiants publicitaires, empreintes limitées de sécurité, journaux serveur, liens balisés et notifications push.
+
+Ces technologies peuvent mémoriser une session, sécuriser un compte, conserver une langue, permettre un mode hors ligne, mesurer une audience, attribuer une campagne, personnaliser une interface ou, lorsqu’autorisé, afficher ou mesurer une publicité.
+
+3. Responsable et partenaires
+
+Yowyob détermine les finalités des traceurs qu’il déploie pour ses propres plateformes. Certains traceurs sont déposés ou lus par un prestataire agissant pour Yowyob; d’autres peuvent être contrôlés par un tiers indépendant, par exemple une plateforme sociale ou publicitaire, selon ses propres conditions.
+
+Une agence, un marchand ou un intégrateur intégrant TiiBnTick à son site peut être responsable des cookies de son propre environnement. Il doit afficher son avis, recueillir les choix nécessaires et ne pas présenter les préférences TiiBnTick comme couvrant automatiquement ses autres traceurs.
+
+4. Catégories de technologies
+
+Strictement nécessaires : session, authentification, sécurité, répartition de charge, panier ou commande, prévention de fraude, consentement, langue indispensable, continuité, réseau et fonctions demandées.
+
+Préférences et fonctionnalité : langue, affichage, zone, point favori, historique local, choix non essentiels, accessibilité et personnalisation fonctionnelle.
+
+Mesure d’audience et performance : pages, événements, erreurs, temps de réponse, parcours agrégés, campagnes et qualité technique.
+
+Publicité et mesure marketing : attribution, fréquence, conversion, audience, personnalisation publicitaire lorsque utilisée et autorisée.
+
+Réseaux sociaux et contenus externes : boutons, vidéos, cartes, publications ou widgets tiers susceptibles de communiquer avec le fournisseur.
+
+Sécurité et anti-abus : détection d’automatisation, fraude, reprise de session, anomalies, intégrité d’appareil et protection API.
+
+5. Technologies strictement nécessaires
+
+Les technologies nécessaires permettent une fonction explicitement demandée ou protègent le service. Elles peuvent mémoriser le consentement, maintenir la session, appliquer les droits, acheminer le trafic, protéger contre une attaque, conserver temporairement une commande, synchroniser une PWA ou vérifier un webhook.
+
+Elles ne sont pas utilisées pour créer un profil publicitaire indépendant. Elles peuvent être placées sans consentement lorsque la loi le permet, mais restent décrites et limitées. Leur blocage par le terminal ou le navigateur peut empêcher la connexion, le paiement, le suivi, l’API ou le mode hors ligne.
+
+6. Préférences et personnalisation fonctionnelle
+
+Avec la base appropriée, TiiBnTick peut retenir la langue, la zone, le type de carte, un filtre, une agence, un point relais, des colonnes, un thème, des choix d’accessibilité ou des paramètres de notification. Ces données servent à rendre l’interface plus pratique et ne doivent pas être confondues avec la publicité personnalisée.
+
+L’utilisateur peut réinitialiser les préférences dans l’application, effacer le stockage du site ou modifier le navigateur. Une réinitialisation peut supprimer des brouillons hors ligne, reconnexions, choix de langue et files de synchronisation non encore envoyées.
+
+7. Mesure d’audience, diagnostic et performance
+
+Sous réserve du choix requis, Yowyob peut mesurer les visites, écrans, clics, recherches, erreurs, temps de chargement, types d’appareils, zones approximatives, sources de campagne et conversions. L’objectif est d’améliorer l’ergonomie, la stabilité, la capacité et l’efficacité des communications.
+
+Lorsque possible, les données sont agrégées, l’adresse IP est réduite, les identifiants sont limités et la durée est courte. Les événements ne doivent pas contenir le contenu détaillé d’un Envoi, un OTP, une clé API, un document d’identité, une donnée de paiement complète ou un texte libre sensible.
+
+8. Publicité, promotion et contenus sponsorisés
+
+TiiBnTick peut afficher des annonces, offres partenaires, promotions ou classements sponsorisés dans Market, Link ou d’autres modules. Le caractère sponsorisé doit être identifiable et ne doit pas masquer les informations essentielles d’une offre.
+
+Une publicité peut être contextuelle, fondée sur la page, la zone générale ou la catégorie consultée, sans profil intersite. Une publicité personnalisée, un reciblage ou une mesure intersite n’est utilisé que si une base valable et les choix requis sont disponibles. Le refus de personnalisation n’empêche pas nécessairement l’affichage d’annonces contextuelles.
+
+Un annonceur ne reçoit pas automatiquement l’identité, l’adresse, les données de colis, la position précise ou les coordonnées de l’utilisateur. Tout partage identifiable pour une campagne requiert une information, une base et des garanties spécifiques.
+
+9. Classement, recommandations et transparence commerciale
+
+Les résultats peuvent être classés selon la pertinence, distance, disponibilité, capacité, qualité des données, prix, performance, fiabilité, préférence, relation contractuelle ou rémunération. Lorsqu’un paiement influence significativement la visibilité, l’offre est signalée comme sponsorisée, promue ou équivalent.
+
+Le consentement publicitaire n’est pas une condition pour voir les offres organiques. Les critères de sécurité, légalité, qualité et disponibilité peuvent continuer à influencer les résultats même après refus des cookies marketing.
+
+10. Réseaux sociaux et contenus intégrés
+
+Les liens Facebook, X et Instagram conduisent vers des services indépendants. Un simple lien n’envoie normalement des données qu’au moment du clic, tandis qu’un widget, une vidéo ou un bouton actif peut permettre au tiers de recevoir l’adresse IP, le navigateur, la page et, s’il est connecté, d’associer l’interaction à son compte.
+
+TiiBnTick privilégie les liens simples ou l’activation après choix lorsque cela est possible. L’utilisateur doit consulter les paramètres et avis du réseau social. Les messages privés sur les réseaux sociaux ne doivent jamais contenir de mot de passe, OTP, clé API, pièce d’identité ou donnée complète de paiement.
+
+11. Cartes, géolocalisation et services externes
+
+Les cartes et services d’adresse peuvent charger des ressources d’un fournisseur et recevoir l’adresse IP, la zone, le navigateur et les requêtes nécessaires. La géolocalisation du terminal repose également sur une permission du système ou du navigateur, distincte du consentement aux cookies.
+
+Yowyob limite l’envoi au besoin de cartographie, itinéraire, adresse ou distance. Une carte non essentielle peut être bloquée jusqu’au choix. L’utilisateur peut saisir une adresse manuellement lorsque la fonctionnalité le permet.
+
+12. PWA, mode hors ligne, cache et synchronisation
+
+Une PWA peut utiliser un service worker, un cache, IndexedDB ou un stockage local pour charger l’interface, conserver un brouillon, mettre en file une opération ou synchroniser après retour du réseau. Ces éléments sont généralement fonctionnels ou nécessaires au service demandé.
+
+Un terminal partagé peut exposer les données hors ligne. L’utilisateur doit fermer la session, chiffrer l’appareil, supprimer les données de site et éviter d’enregistrer des informations sensibles sur un appareil public. La suppression du cache avant synchronisation peut entraîner la perte d’un brouillon.
+
+13. Applications mobiles, SDK et identifiants publicitaires
+
+Une application mobile peut utiliser un SDK pour les notifications, diagnostics, cartes, sécurité, paiement, attribution ou analytique. Le registre de l’application indique les fournisseurs actifs. Les permissions du système — position, caméra, photos, notifications, contacts ou téléphone — sont demandées séparément et doivent correspondre à une fonction.
+
+Les identifiants publicitaires du système, tels que l’identifiant Android ou iOS lorsqu’ils sont disponibles, ne sont utilisés pour la publicité personnalisée qu’avec la permission et la base requises. L’utilisateur peut les réinitialiser ou les limiter dans les paramètres du terminal.
+
+14. E-mails, SMS, notifications push et liens balisés
+
+Les messages transactionnels peuvent inclure des identifiants techniques ou liens permettant de sécuriser une action, confirmer une livraison, mesurer la remise ou détecter une fraude. Les messages marketing peuvent mesurer l’ouverture ou le clic lorsque cela est autorisé et décrit.
+
+L’utilisateur peut désactiver les notifications marketing sans bloquer les messages indispensables à une opération active. Les paramètres du système contrôlent les notifications push; le désabonnement ou les préférences contrôlent les e-mails et SMS commerciaux.
+
+15. API et traceurs côté serveur
+
+Les API n’utilisent pas toujours des cookies, mais génèrent des journaux serveur : adresse IP, clé ou client, heure, route, statut, latence, volume, erreur et identifiant de corrélation. Ces journaux sont nécessaires à la sécurité, à la facturation éventuelle, au support, à l’audit et au respect des limites.
+
+Un intégrateur ne doit pas ajouter dans les paramètres, URL ou en-têtes des données sensibles non prévues. Les URL peuvent être journalisées par plusieurs systèmes. Les jetons et secrets ne doivent jamais être placés dans une URL publique ou un outil analytique.
+
+16. Recueil et preuve du consentement
+
+Lorsqu’un consentement est requis, le bandeau ou centre de préférences permet d’accepter, refuser ou choisir par finalité avec une facilité comparable. Aucune case non essentielle ne doit être précochée. Le refus ne doit pas entraîner de pression trompeuse ou de dégradation sans rapport avec la technologie refusée.
+
+Yowyob conserve une preuve limitée du choix : version de l’avis, date, catégories, identifiant de consentement et source. Le consentement peut être demandé à nouveau après une durée appropriée, un changement important, une suppression du stockage ou lorsque la preuve n’est plus disponible.
+
+17. Modifier ou retirer vos choix
+
+L’utilisateur peut rouvrir « Préférences cookies », « Confidentialité » ou « Ads settings » depuis le pied de page, le compte ou l’application lorsque disponible. Il peut retirer un consentement sans affecter les traitements antérieurs.
+
+Le navigateur permet de bloquer, supprimer ou isoler les cookies; le système mobile contrôle permissions et identifiants publicitaires. Une suppression globale peut déconnecter l’utilisateur, effacer des préférences ou réinitialiser le consentement. Les technologies strictement nécessaires sont restaurées lors d’une nouvelle utilisation lorsque le service en a besoin.
+
+18. Signaux Global Privacy Control et Do Not Track
+
+Lorsque techniquement et juridiquement applicable, Yowyob interprète un signal Global Privacy Control valide comme une opposition ou un refus pour les finalités de vente, partage publicitaire ou publicité ciblée couvertes. La portée peut dépendre du navigateur, du territoire et de la connexion au compte.
+
+Le signal Do Not Track n’a pas une interprétation juridique et technique uniforme. Yowyob peut le prendre en compte comme préférence lorsque cela est possible, sans qu’il remplace nécessairement le centre de consentement. Le registre précise les mécanismes effectivement supportés.
+
+19. Durées et expiration
+
+Un cookie de session expire à la fermeture ou à la fin de session; un cookie persistant expire à la date définie ou à sa suppression. Les durées sont proportionnées à la finalité. Les cookies de consentement peuvent durer assez longtemps pour respecter le choix, tandis que les identifiants publicitaires et analytiques doivent être limités.
+
+Le registre dynamique indique la durée exacte ou le critère d’expiration. Une technologie ne doit pas être prolongée artificiellement par chaque visite sans justification. Les journaux serveur et données dérivées suivent les durées de la Privacy Notice.
+
+20. Partage, transferts et fournisseurs tiers
+
+Les fournisseurs reçoivent uniquement les données nécessaires à leur service et sont encadrés comme sous-traitants ou tiers indépendants selon leur rôle. Un fournisseur situé hors du Cameroun peut entraîner un transfert international soumis aux garanties de la Privacy Notice.
+
+Les politiques des tiers peuvent évoluer indépendamment. Yowyob met à jour le registre et évalue les fournisseurs, mais l’utilisateur doit consulter les avis d’un tiers lorsqu’il choisit d’activer son contenu ou de quitter TiiBnTick.
+
+21. Sécurité et minimisation
+
+Yowyob protège les identifiants et préférences par des paramètres adaptés : Secure, HttpOnly, SameSite, portée de domaine, expiration, contrôle des scripts, validation des entrées, gestion des dépendances et politiques de contenu lorsque pertinentes.
+
+Les traceurs ne doivent pas contenir un mot de passe, OTP, clé API, secret, donnée complète de paiement, copie d’identité ou contenu détaillé d’un Envoi. Les identifiants sont pseudonymisés ou agrégés lorsque possible.
+
+22. Enfants
+
+TiiBnTick n’utilise pas sciemment de cookies publicitaires personnalisés pour cibler des enfants. Lorsqu’un service est susceptible d’être utilisé par un mineur avec l’autorisation requise, les technologies sont limitées au fonctionnement, à la sécurité et aux finalités appropriées.
+
+Un représentant peut demander des informations ou la suppression de données inappropriées via privacy@yowyob.com.
+
+23. Absence de vente de fichiers et limites publicitaires
+
+Yowyob ne vend pas des listes de contacts TiiBnTick à des annonceurs. La diffusion ou mesure d’une campagne ne signifie pas qu’un annonceur reçoit les données brutes d’un utilisateur.
+
+Les données d’expédition, preuve, position précise, pièce d’identité, paiement, réclamation et API ne sont pas utilisées comme catégories publicitaires ordinaires. Toute utilisation exceptionnelle nécessiterait une finalité compatible ou un choix spécifique, une minimisation et une information claire.
+
+24. Modifications et registre dynamique
+
+Yowyob peut modifier cet Avis et le registre lors d’un changement de fournisseur, finalité, durée, technologie ou loi. Une nouvelle demande de choix est présentée lorsque le changement rend le consentement antérieur insuffisant.
+
+Le registre en ligne ou dans l’application est la source opérationnelle pour les technologies réellement détectées. Le tableau en annexe est un modèle de gouvernance et non une affirmation que chaque exemple est actif.
+
+25. Langue et contacts
+
+Les versions française et anglaise visent le même effet. Pour les opérations camerounaises, la version française prévaut en cas de divergence, sous réserve du droit impératif.
+
+Choix et vie privée : privacy@yowyob.com. Sécurité et support : support@yowyob.com. Questions juridiques : legal@yowyob.com. Adresse : Yowyob Inc. Ltd, Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroun.
+
+PART II — COOKIES, TRACKERS AND ADVERTISING NOTICE — ENGLISH
+
+Effective date: 25 July 2026
+
+This Notice describes technologies that may be used in TiiBnTick. The dynamic register shown in the consent manager or app settings prevails for the providers, names, durations and purposes actually active on a domain, version or device. Non-essential technology is activated only after the choice required by law.
+
+1. Purpose and scope
+
+This Notice applies to TiiBnTick websites, web apps, PWAs, mobile applications, administrative interfaces, public tracking pages, widgets, QR-linked pages, API documentation and digital communications. It supplements the Privacy Notice and Terms.
+
+TiiBnTick domains may use different configurations. A technology available in one module is not necessarily active in another. The preference centre available through the service describes the current configuration.
+
+2. What is a cookie or tracker?
+
+A cookie is a small file or identifier stored or read on a device during a visit. Comparable technologies include local or session storage, IndexedDB, PWA cache, pixels, tags, scripts, mobile SDKs, advertising identifiers, limited security fingerprints, server logs, tagged links and push notifications.
+
+These technologies may remember a session, secure an account, retain language, enable offline use, measure audience, attribute a campaign, personalise an interface or, where permitted, display or measure advertising.
+
+3. Controller and partners
+
+Yowyob determines the purposes of trackers it deploys for its own platforms. Some are placed or read by a provider acting for Yowyob; others may be controlled by an independent third party, such as a social or advertising platform, under its own terms.
+
+An agency, merchant or Integrator embedding TiiBnTick in its website may be responsible for cookies in its own environment. It must provide its notice, collect required choices and must not represent TiiBnTick preferences as automatically covering its other trackers.
+
+4. Technology categories
+
+Strictly necessary: session, authentication, security, load balancing, cart or order, fraud prevention, consent, essential language, continuity, network and requested functions.
+
+Preference and functionality: language, display, zone, favourite point, local history, non-essential settings, accessibility and functional personalisation.
+
+Audience and performance: pages, events, errors, response times, aggregate journeys, campaigns and technical quality.
+
+Advertising and marketing measurement: attribution, frequency, conversion, audience and personalised advertising where used and permitted.
+
+Social and external content: buttons, video, maps, posts or third-party widgets that may communicate with the provider.
+
+Security and anti-abuse: automation, fraud, session recovery, anomalies, device integrity and API protection.
+
+5. Strictly necessary technologies
+
+Necessary technologies enable an expressly requested function or protect the service. They may store consent, maintain a session, enforce rights, route traffic, defend against attack, temporarily retain an order, synchronise a PWA or verify a webhook.
+
+They are not used to create an independent advertising profile. They may be used without consent where law allows, but remain described and limited. Device or browser blocking may prevent login, payment, tracking, API use or offline operation.
+
+6. Preferences and functional personalisation
+
+Under the appropriate basis, TiiBnTick may remember language, area, map type, filter, agency, Relay Point, columns, theme, accessibility choices or notification settings. This improves the interface and is distinct from personalised advertising.
+
+Users may reset preferences in the app, clear site storage or change browser settings. Resetting may remove offline drafts, remembered login, language choices and unsent synchronisation queues.
+
+7. Audience measurement, diagnostics and performance
+
+Subject to the required choice, Yowyob may measure visits, screens, clicks, searches, errors, loading times, device types, approximate areas, campaign sources and conversions to improve usability, stability, capacity and communication effectiveness.
+
+Where possible, data is aggregated, IP addresses reduced, identifiers limited and retention short. Events must not contain detailed Shipment contents, OTPs, API keys, identity documents, complete payment data or sensitive free text.
+
+8. Advertising, promotions and sponsored content
+
+TiiBnTick may display advertisements, partner offers, promotions or sponsored rankings in Market, Link or other modules. Sponsorship must be identifiable and must not obscure essential offer information.
+
+Advertising may be contextual, based on the page, general area or viewed category without cross-site profiling. Personalised advertising, retargeting or cross-site measurement is used only where a valid basis and required choices exist. Refusal of personalisation does not necessarily prevent contextual ads.
+
+An advertiser does not automatically receive identity, address, parcel data, precise location or contact details. Identifiable campaign sharing requires specific notice, basis and safeguards.
+
+9. Ranking, recommendations and commercial transparency
+
+Results may be ranked by relevance, distance, availability, capacity, data quality, price, performance, reliability, preference, contractual relationship or remuneration. Where payment materially influences visibility, the offer is labelled sponsored, promoted or equivalent.
+
+Advertising consent is not a condition for viewing organic offers. Safety, legality, quality and availability criteria may continue to influence results after marketing cookies are refused.
+
+10. Social media and embedded content
+
+Facebook, X and Instagram links lead to independent services. A simple link generally sends data only when clicked, while an active widget, video or button may allow the provider to receive IP address, browser and page and, when logged in, associate the interaction with an account.
+
+TiiBnTick favours simple links or activation after choice where possible. Users should review social-network settings and notices. Direct messages must never contain passwords, OTPs, API keys, identity documents or complete payment data.
+
+11. Maps, location and external services
+
+Maps and address services may load provider resources and receive IP address, general area, browser and necessary requests. Device location also relies on a separate operating-system or browser permission distinct from cookie consent.
+
+Yowyob limits disclosure to mapping, route, address or distance needs. A non-essential map may be blocked until selected. Manual address entry may be available.
+
+12. PWA, offline mode, cache and synchronisation
+
+A PWA may use a service worker, cache, IndexedDB or local storage to load the interface, retain a draft, queue an operation or synchronise after connectivity returns. These elements are generally functional or necessary for the requested service.
+
+A shared device may expose offline data. Users must sign out, secure the device, clear site data and avoid sensitive storage on public devices. Clearing cache before synchronisation may lose a draft.
+
+13. Mobile apps, SDKs and advertising identifiers
+
+A mobile app may use SDKs for notifications, diagnostics, maps, security, payment, attribution or analytics. The app register identifies active providers. Operating-system permissions — location, camera, photos, notifications, contacts or telephone — are requested separately and must correspond to a function.
+
+System advertising identifiers, such as Android or iOS identifiers where available, are used for personalised advertising only with the required permission and basis. Users can reset or restrict them in device settings.
+
+14. Email, SMS, push notifications and tagged links
+
+Transaction messages may include technical identifiers or links to secure an action, confirm delivery, measure delivery of the message or detect fraud. Marketing messages may measure opening or clicking where authorised and described.
+
+Marketing notifications may be disabled without blocking messages essential to an active operation. Device settings control push; unsubscribe and preferences control commercial email and SMS.
+
+15. APIs and server-side tracking
+
+APIs do not always use cookies but generate server logs, including IP address, key or client, time, route, status, latency, volume, error and correlation identifier. These logs support security, possible billing, support, audit and rate limits.
+
+An Integrator must not place unexpected sensitive data in parameters, URLs or headers. URLs may be logged by multiple systems. Tokens and secrets must never appear in a public URL or analytics tool.
+
+16. Obtaining and recording consent
+
+Where consent is required, the banner or preference centre provides accept, reject and purpose-by-purpose choices with comparable ease. Non-essential options must not be preselected. Refusal must not be met with deceptive pressure or unrelated degradation.
+
+Yowyob keeps limited evidence of choice: notice version, date, categories, consent identifier and source. Consent may be requested again after an appropriate period, a material change, storage deletion or loss of evidence.
+
+17. Changing or withdrawing choices
+
+Users may reopen “Cookie preferences”, “Privacy” or “Ads settings” through the footer, account or app where available. Consent may be withdrawn without affecting earlier processing.
+
+Browsers can block, delete or isolate cookies; mobile systems control permissions and advertising identifiers. Global deletion may sign out the User, erase preferences or reset consent. Strictly necessary technology is restored when required for a new service use.
+
+18. Global Privacy Control and Do Not Track
+
+Where technically and legally applicable, Yowyob interprets a valid Global Privacy Control signal as an objection or refusal for covered sale, advertising sharing or targeted-advertising purposes. Scope may depend on browser, territory and account login.
+
+Do Not Track has no uniform legal or technical meaning. Yowyob may treat it as a preference where possible, but it may not replace the consent centre. The register identifies mechanisms actually supported.
+
+19. Duration and expiry
+
+A session cookie expires on closure or session end; a persistent cookie expires on its date or deletion. Periods are proportionate to purpose. Consent cookies may last long enough to honour the choice, while advertising and analytics identifiers should be limited.
+
+The dynamic register states the exact duration or expiry criterion. Technology should not be artificially extended at each visit without justification. Server logs and derived data follow the Privacy Notice retention rules.
+
+20. Sharing, transfers and third-party providers
+
+Providers receive only data needed for their service and are governed as processors or independent third parties according to role. A provider outside Cameroon may create an international transfer subject to Privacy Notice safeguards.
+
+Third-party policies may change independently. Yowyob updates the register and assesses providers, but Users should review a third party’s notice when activating its content or leaving TiiBnTick.
+
+21. Security and minimisation
+
+Yowyob protects identifiers and choices using suitable settings such as Secure, HttpOnly, SameSite, domain scope, expiry, script control, input validation, dependency management and content policies where relevant.
+
+Trackers must not contain passwords, OTPs, API keys, secrets, complete payment data, identity-document copies or detailed Shipment contents. Identifiers are pseudonymised or aggregated where possible.
+
+22. Children
+
+TiiBnTick does not knowingly use personalised advertising cookies to target children. Where a service may be used by a minor with required authorisation, technology is limited to operation, security and appropriate purposes.
+
+A representative may request information or deletion of inappropriate data through privacy@yowyob.com.
+
+23. No sale of contact lists and advertising limits
+
+Yowyob does not sell TiiBnTick contact lists to advertisers. Campaign delivery or measurement does not mean an advertiser receives raw User data.
+
+Shipment, evidence, precise location, identity, payment, complaint and API data are not ordinary advertising categories. Exceptional use would require a compatible purpose or specific choice, minimisation and clear notice.
+
+24. Changes and dynamic register
+
+Yowyob may amend this Notice and register when a provider, purpose, duration, technology or law changes. A new choice is requested where the change makes earlier consent insufficient.
+
+The online or in-app register is the operational source for technologies actually detected. The annex table is a governance template and does not state that every example is active.
+
+25. Language and contacts
+
+The French and English versions are intended to have the same effect. For Cameroon operations, the French version prevails in case of discrepancy, subject to mandatory law.
+
+Choices and privacy: privacy@yowyob.com. Security and support: support@yowyob.com. Legal questions: legal@yowyob.com. Address: Yowyob Inc. Ltd, Carrefour Anguissa, Yaoundé, S/C Yaoundé 1er, Rue 1.121 Djoungolo, Cameroon.
+
+ANNEXE A / ANNEX A — REGISTRE MODÈLE DES TECHNOLOGIES / TECHNOLOGY REGISTER TEMPLATE
+
+Catégorie / Category
+
+Nom générique / Generic name
+
+Support
+
+Finalité / Purpose
+
+Données / Data
+
+Durée / Duration
+
+Choix / Choice
+
+Nécessaire / Necessary
+
+session_token (indicatif)
+
+Web/PWA
+
+Session et authentification / Session and authentication
+
+Identifiant pseudonyme / Pseudonymous ID
+
+Session ou durée courte / Session or short
+
+Requis / Required
+
+Nécessaire / Necessary
+
+consent_choice (indicatif)
+
+Web/App
+
+Mémoriser le choix / Remember choice
+
+Version, catégories, date / Version, categories, date
+
+Durée proportionnée / Proportionate
+
+Requis pour preuve / Required for evidence
+
+Fonctionnel / Functional
+
+language_preference (indicatif)
+
+Web/App
+
+Langue / Language
+
+Code langue / Language code
+
+Jusqu’au changement / Until changed
+
+Paramétrable / Configurable
+
+Fonctionnel / Functional
+
+offline_queue (indicatif)
+
+PWA
+
+File hors ligne / Offline queue
+
+Actions en attente / Pending actions
+
+Jusqu’à synchronisation / Until sync
+
+Fonction demandée / Requested function
+
+Analytics
+
+audience_id (si activé)
+
+Web/App
+
+Audience et performance / Audience and performance
+
+Événements limités / Limited events
+
+Registre dynamique / Dynamic register
+
+Consentement si requis / Consent if required
+
+Publicité / Advertising
+
+ad_measurement_id (si activé)
+
+Web/App
+
+Attribution et fréquence / Attribution and frequency
+
+Campagne, conversion / Campaign, conversion
+
+Registre dynamique / Dynamic register
+
+Consentement si requis / Consent if required
+
+Sécurité / Security
+
+risk_signal (indicatif)
+
+Server/App
+
+Anti-fraude / Anti-fraud
+
+IP, appareil, événement / IP, device, event
+
+Selon le risque / Based on risk
+
+Intérêt légitime ou nécessité / Legitimate interest or necessity
+
+API
+
+request_log
+
+Server/API
+
+Sécurité, audit, débit / Security, audit, rate limits
+
+Client, route, statut, temps / Client, route, status, time
+
+Selon journalisation / Per logging schedule
+
+Nécessaire / Necessary
+
+Important / Important. Les noms ci-dessus sont des désignations génériques et indicatives. Le déploiement technique doit renseigner automatiquement le nom réel, le domaine, le fournisseur, la durée, la finalité et le lien vers l’avis du tiers avant publication. / Names above are generic and illustrative. The technical deployment must automatically populate the real name, domain, provider, duration, purpose and third-party notice link before publication.
+
+ANNEXE B / ANNEX B — EXIGENCES DE MISE EN ŒUVRE / IMPLEMENTATION REQUIREMENTS
+
+☐ Bloquer les scripts non essentiels avant le choix / Block non-essential scripts before choice.
+
+☐ Proposer « Tout refuser » avec une visibilité comparable à « Tout accepter » / Offer “Reject all” with visibility comparable to “Accept all”.
+
+☐ Conserver la preuve sans créer un profil publicitaire / Keep consent evidence without creating an advertising profile.
+
+☐ Scanner régulièrement les domaines, PWA et SDK / Regularly scan domains, PWAs and SDKs.
+
+☐ Empêcher les OTP, clés, données KYC et contenus d’Envoi dans l’analytics / Keep OTPs, keys, KYC and Shipment contents out of analytics.
+
+☐ Tester retrait, GPC, suppression et synchronisation multi-appareils / Test withdrawal, GPC, deletion and cross-device synchronisation.
+
+☐ Marquer clairement toute offre sponsorisée / Clearly label every sponsored offer.
+
+☐ Mettre à jour le registre avant activation d’un nouveau fournisseur / Update the register before enabling a new provider.
+
+Contacts et réseaux sociaux / Contacts and social media
+
+Canal / Channel
+
+Coordonnée / Detail
+
+Legal / Juridique
+
+legal@yowyob.com
+
+Privacy / Vie privée
+
+privacy@yowyob.com
+
+Support
+
+support@yowyob.com
+
+General information / Informations générales
+
+info@yowyob.com
+
+Telephone / Téléphone
+
++237 675 518 880; +237 656 168 129
+
+Facebook
+
+https://www.facebook.com/YowyobInc
+
+X (Twitter)
+
+https://twitter.com/yowyob
+
+Instagram
+
+https://www.instagram.com/yowyob
+
+Sécurité des échanges / Communication security. Ne transmettez jamais un mot de passe, un code à usage unique, une clé API, un secret webhook, un numéro complet de carte ou un document d’identité non sollicité par message privé sur un réseau social. / Never send a password, one-time code, API key, webhook secret, full card number or unsolicited identity document through a social-media direct message.

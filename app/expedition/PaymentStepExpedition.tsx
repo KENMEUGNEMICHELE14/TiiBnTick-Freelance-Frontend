@@ -493,8 +493,8 @@ export default function PaymentStep({ allData, onBack, onPaymentFinalized, curre
                               )}
                             </div>
 
-                            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                              <p className="text-sm text-blue-700 dark:text-blue-300">
+                            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/30 rounded-xl">
+                              <p className="text-sm text-orange-700 dark:text-orange-300">
                                 <strong>Note :</strong> Vous recevrez un SMS de confirmation pour valider le paiement.
                               </p>
                             </div>
@@ -556,8 +556,8 @@ export default function PaymentStep({ allData, onBack, onPaymentFinalized, curre
                           </div>
                         )}
                         {allData.isPerishable && (
-                          <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-xl">
-                            <span className="text-sm font-medium text-blue-700 dark:text-blue-400">Périssable</span>
+                          <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-950/30 px-3 py-2 rounded-xl">
+                            <span className="text-sm font-medium text-orange-700 dark:text-orange-400">Périssable</span>
                           </div>
                         )}
                         <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-xl">

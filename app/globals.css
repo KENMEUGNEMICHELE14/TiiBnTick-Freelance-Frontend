@@ -11,20 +11,22 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  /* TiiBnTick Orange Primary: #e67e22 / orange-600 */
+  --primary: oklch(0.65 0.19 46);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: oklch(0.65 0.19 46);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
+  /* Orange ring for focus */
+  --ring: oklch(0.65 0.19 46);
+  --chart-1: oklch(0.65 0.19 46);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
@@ -32,12 +34,13 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  /* Orange for sidebar active/accent */
+  --sidebar-primary: oklch(0.65 0.19 46);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.97 0.01 46);
+  --sidebar-accent-foreground: oklch(0.55 0.19 46);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-ring: oklch(0.65 0.19 46);
 }
 
 .dark {
@@ -47,8 +50,9 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  /* TiiBnTick Orange Primary (dark mode: lighter shade) #f97316 */
+  --primary: oklch(0.72 0.19 46);
+  --primary-foreground: oklch(0.145 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -67,12 +71,13 @@
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  /* Orange for sidebar active/accent (dark) */
+  --sidebar-primary: oklch(0.72 0.19 46);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.269 0.02 46);
+  --sidebar-accent-foreground: oklch(0.72 0.19 46);
   --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --sidebar-ring: oklch(0.72 0.19 46);
 }
 
 @theme inline {
@@ -291,4 +296,55 @@
 .tiibtick [data-slot="switch-thumb"] {
   width: 1.25rem !important;
   height: 1.25rem !important;
+}
+
+/* ─────────────────────────────────────────────────────
+   TiiBnTick Global Orange Harmonization
+   Applies to ALL pages (expedition, inscription, landing)
+   ───────────────────────────────────────────────────── */
+
+/* Custom scrollbar with orange accent */
+:root {
+  --tbt-orange: #e67e22;
+  --tbt-orange-light: #f97316;
+  --tbt-orange-dark: #d35400;
+  --tbt-orange-50: #fff7ed;
+  --tbt-orange-100: #ffedd5;
+}
+
+/* Focus rings use orange universally */
+*:focus-visible {
+  outline-color: var(--tbt-orange) !important;
+}
+
+/* Primary buttons: orange */
+.btn-primary,
+[class*="bg-orange-500"],
+[class*="bg-orange-600"] {
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+/* Input focus borders: orange */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--tbt-orange) !important;
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--tbt-orange);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--tbt-orange-dark);
 }
