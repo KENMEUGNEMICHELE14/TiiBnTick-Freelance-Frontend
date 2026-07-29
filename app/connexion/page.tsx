@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 export default function LoginPage() {
   const router = useRouter()
   // const { login } = useAuth()
+  const [role, setRole] = useState<'client' | 'livreur' | 'freelancer'>('client')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -26,14 +27,20 @@ export default function LoginPage() {
 
     // TODO: Implémenter l'appel API de connexion ici
     try {
-      // const success = await login(email, password)
+      // const success = await login(email, password, role)
       // if (success) router.push('/dashboard')
       
       // Simulation d'une requête réseau
       setTimeout(() => {
         setIsLoading(false)
-        // Redirection factice après succès (à adapter selon le rôle)
-        // router.push('/dashboard')
+        // Redirection après succès selon le rôle choisi
+        if (role === 'livreur') {
+          router.push('/go')
+        } else if (role === 'freelancer') {
+          router.push('/freelancer')
+        } else {
+          router.push('/user')
+        }
       }, 1500)
     } catch (err) {
       setError('Email ou mot de passe incorrect')
@@ -43,18 +50,18 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-md space-y-6">
         
         {/* Header / Logo */}
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-12 h-12 bg-[#e67e22] rounded-xl flex items-center justify-center shadow-md">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </div>
             <span className="text-3xl font-bold text-gray-900 tracking-tight">
-              TiiB<span className="text-orange-600">n</span>Tick
+              TiiB<span className="text-[#e67e22]">n</span>Tick
             </span>
           </div>
           <div className="text-center">
@@ -66,6 +73,43 @@ export default function LoginPage() {
         {/* Login Card */}
         <Card className="border-2 border-gray-200 shadow-sm rounded-2xl overflow-hidden bg-white">
           <CardContent className="p-6 md:p-8">
+            {/* Account Type Selector */}
+            <div className="flex bg-gray-100 p-1 rounded-xl gap-1 mb-6">
+              <button
+                type="button"
+                onClick={() => setRole('client')}
+                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
+                  role === 'client'
+                    ? 'bg-[#e67e22] text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                }`}
+              >
+                User
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole('livreur')}
+                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
+                  role === 'livreur'
+                    ? 'bg-[#e67e22] text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                }`}
+              >
+                Go (Livreur)
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole('freelancer')}
+                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
+                  role === 'freelancer'
+                    ? 'bg-[#e67e22] text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                }`}
+              >
+                Freelancer
+              </button>
+            </div>
+
             <form onSubmit={handleLogin} className="space-y-5">
               
               {error && (
@@ -78,14 +122,14 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <Label className="text-gray-700 text-sm font-medium">Adresse email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-orange-500" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#e67e22]" />
                   <Input
                     type="email"
                     placeholder="votre@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="pl-10 h-12 rounded-xl border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-all text-base"
+                    className="pl-10 h-12 rounded-xl border-gray-300 focus:border-[#e67e22] focus:ring-[#e67e22] transition-all text-base"
                   />
                 </div>
               </div>
@@ -94,24 +138,24 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-gray-700 text-sm font-medium">Mot de passe</Label>
-                  <Link href="#" className="text-sm text-orange-600 hover:text-orange-700 font-medium hover:underline">
+                  <Link href="#" className="text-sm text-[#e67e22] hover:text-[#d35400] font-medium hover:underline">
                     Oublié ?
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-orange-500" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#e67e22]" />
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="pl-10 pr-10 h-12 rounded-xl border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-all text-base"
+                    className="pl-10 pr-10 h-12 rounded-xl border-gray-300 focus:border-[#e67e22] focus:ring-[#e67e22] transition-all text-base"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-600 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#e67e22] transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -122,7 +166,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white h-12 rounded-xl text-base font-semibold shadow-md transition-all mt-4"
+                className="w-full bg-[#e67e22] hover:bg-[#d35400] text-white h-12 rounded-xl text-base font-semibold shadow-md transition-all mt-4"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
@@ -140,7 +184,7 @@ export default function LoginPage() {
         {/* Footer Link */}
         <p className="text-center text-sm text-gray-600">
           Pas encore de compte ?{' '}
-          <Link href="/inscription" className="text-orange-600 font-bold hover:underline">
+          <Link href="/inscription" className="text-[#e67e22] font-bold hover:underline">
             S'inscrire
           </Link>
         </p>
