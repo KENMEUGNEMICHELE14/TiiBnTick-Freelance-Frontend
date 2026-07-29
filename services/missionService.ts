@@ -52,9 +52,9 @@ export async function getMissions(): Promise<MissionResponseDTO[]> {
   }
 }
 
-export async function acceptMission(missionId: string): Promise<boolean> {
+export async function acceptMission(missionId: string, freelancerId: string): Promise<boolean> {
   try {
-    await apiClient.post(`${API_URL}/${missionId}/accept`);
+    await apiClient.post(`${API_URL}/${missionId}/accept`, { freelancerId });
     return true;
   } catch (error) {
     console.error('Failed to accept mission:', error);
