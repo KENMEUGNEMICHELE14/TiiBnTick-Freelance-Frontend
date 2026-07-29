@@ -696,7 +696,7 @@ export default function RegisterPage() {
               {/* Lien connexion */}
               <p className="text-center text-sm text-gray-600 pt-2">
                 Déjà un compte ?{' '}
-                <Link href="/" className="text-orange-600 font-semibold hover:underline">Se connecter</Link>
+                <Link href="/connexion" className="text-orange-600 font-semibold hover:underline">Se connecter</Link>
               </p>
             </div>
           )}

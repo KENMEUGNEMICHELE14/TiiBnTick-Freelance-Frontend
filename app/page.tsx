@@ -64,7 +64,7 @@ export default function TiiBnTickFreelancerLandingPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/inscription" className="text-gray-700 hover:text-orange-600 font-medium transition-colors px-4 py-2 hidden sm:block">Connexion</Link>
+              <Link href="/connexion" className="text-gray-700 hover:text-orange-600 font-medium transition-colors px-4 py-2 hidden sm:block">Connexion</Link>
               <Link href="/inscription" className="hidden sm:flex bg-[#e67e22] hover:bg-[#d35400] text-white font-medium px-5 py-2.5 rounded-lg transition-all shadow-md items-center justify-center">S&apos;inscrire</Link>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -83,7 +83,7 @@ export default function TiiBnTickFreelancerLandingPage() {
               <a href="#" className="text-orange-600 font-bold py-2">Freelancer</a>
               <a href="#" className="text-[#5a6b8a] hover:text-orange-600 font-medium py-2">Solutions</a>
               <a href="#" className="text-[#5a6b8a] hover:text-orange-600 font-medium py-2">Resources</a>
-              <Link href="/inscription" className="text-[#5a6b8a] font-medium py-2 text-left">Connexion</Link>
+              <Link href="/connexion" className="text-[#5a6b8a] font-medium py-2 text-left">Connexion</Link>
               <Link href="/inscription" className="w-full">
                 <Button className="w-full bg-[#e67e22] hover:bg-[#d35400] text-white font-medium rounded-lg">S&apos;inscrire</Button>
               </Link>

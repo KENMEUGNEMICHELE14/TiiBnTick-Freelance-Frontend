@@ -6,7 +6,6 @@ import { ArrowLeft, Loader2, Clock, AlertTriangle, RefreshCw, SkipForward } from
 import dynamic from 'next/dynamic'
 import { geocode } from '@/services/geocoding'
 import { getRoute } from '@/services/routing'
-import type { GeoJSON } from 'geojson'
 
 interface RouteData {
   departurePointId: string | null
@@ -60,7 +59,7 @@ export default function RouteSelectionStep({
   const [travelPrice, setTravelPrice] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [markers, setMarkers] = useState<any[]>([])
-  const [routeGeoJSON, setRouteGeoJSON] = useState<GeoJSON.Feature | null>(null)
+  const [routeGeoJSON, setRouteGeoJSON] = useState<any | null>(null)
   const [mapCenter, setMapCenter] = useState<[number, number]>([5.33, -4.03])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 

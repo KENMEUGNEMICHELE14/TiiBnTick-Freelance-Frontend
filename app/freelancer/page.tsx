@@ -291,7 +291,6 @@ export function FreelancerDashboard() {
               </div>
             </div>
 
-<<<<<<< HEAD
             {/* Desktop right: profil pill + settings + logout */}
             <div className="hidden md:flex items-center gap-3">
               <Button variant="ghost" size="icon" className="text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-colors">
@@ -316,9 +315,6 @@ export function FreelancerDashboard() {
                 <LogOut className="w-5 h-5" />
               </Button>
             </div>
-=======
-
->>>>>>> 1f72e460de878d8d3e8d7ac798fed12495ec7067
 
             {/* Mobile hamburger */}
             <div className="md:hidden flex items-center gap-2">
