@@ -133,7 +133,7 @@ export default function RegisterPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [phoneDialCode, setPhoneDialCode] = useState('+237');
   const [showDialDropdown, setShowDialDropdown] = useState(false);
-  const [dialSearch, setDialSearch] = useState('');
+
   const dialDropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Fermer le dropdown si clic en dehors
@@ -816,7 +816,7 @@ export default function RegisterPage() {
                     <div className="relative" ref={dialDropdownRef}>
                       <button
                         type="button"
-                        onClick={() => { setShowDialDropdown(!showDialDropdown); setDialSearch(''); }}
+                        onClick={() => setShowDialDropdown(!showDialDropdown)}
                         className="flex items-center gap-1 px-2.5 py-2.5 bg-orange-50 hover:bg-orange-100 transition-colors border-r border-gray-300 text-sm font-medium text-gray-700 min-w-[90px] h-full"
                       >
                         <span className="text-lg leading-none">
@@ -826,51 +826,26 @@ export default function RegisterPage() {
                         <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${showDialDropdown ? 'rotate-180' : ''}`} />
                       </button>
                       {showDialDropdown && (
-                        <div className="absolute top-full left-0 z-50 mt-1 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 flex flex-col">
-                          {/* Search bar */}
-                          <div className="p-2 border-b border-gray-100">
-                            <input
-                              type="text"
-                              autoFocus
-                              placeholder="🔍 Rechercher un pays..."
-                              value={dialSearch}
-                              onChange={e => setDialSearch(e.target.value)}
-                              className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-300 bg-gray-50"
-                            />
-                          </div>
-                          {/* Country list */}
-                          <div className="overflow-y-auto max-h-60">
-                            {ALL_DIAL_CODES.filter(c =>
-                              c.name.toLowerCase().includes(dialSearch.toLowerCase()) ||
-                              c.dialCode.includes(dialSearch)
-                            ).length === 0 ? (
-                              <p className="text-center text-gray-400 text-sm py-4">Aucun pays trouvé</p>
-                            ) : (
-                              ALL_DIAL_CODES.filter(c =>
-                                c.name.toLowerCase().includes(dialSearch.toLowerCase()) ||
-                                c.dialCode.includes(dialSearch)
-                              ).map((country) => (
-                                <button
-                                  key={country.key}
-                                  type="button"
-                                  onClick={() => {
-                                    setPhoneDialCode(country.dialCode);
-                                    setShowDialDropdown(false);
-                                    setDialSearch('');
-                                  }}
-                                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-orange-50 transition-colors text-left ${
-                                    phoneDialCode === country.dialCode ? 'bg-orange-50 font-semibold text-orange-700' : 'text-gray-700'
-                                  }`}
-                                >
-                                  <span className="text-xl flex-shrink-0">{country.flag}</span>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium truncate">{country.name}</p>
-                                  </div>
-                                  <span className="text-orange-600 font-bold text-xs ml-auto flex-shrink-0">{country.dialCode}</span>
-                                </button>
-                              ))
-                            )}
-                          </div>
+                        <div className="absolute top-full left-0 z-50 mt-1 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-y-auto max-h-72">
+                          {ALL_DIAL_CODES.map((country) => (
+                            <button
+                              key={country.key}
+                              type="button"
+                              onClick={() => {
+                                setPhoneDialCode(country.dialCode);
+                                setShowDialDropdown(false);
+                              }}
+                              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-orange-50 transition-colors text-left ${
+                                phoneDialCode === country.dialCode ? 'bg-orange-50 font-semibold text-orange-700' : 'text-gray-700'
+                              }`}
+                            >
+                              <span className="text-xl flex-shrink-0">{country.flag}</span>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium truncate">{country.name}</p>
+                              </div>
+                              <span className="text-orange-600 font-bold text-xs ml-auto flex-shrink-0">{country.dialCode}</span>
+                            </button>
+                          ))}
                         </div>
                       )}
                     </div>
