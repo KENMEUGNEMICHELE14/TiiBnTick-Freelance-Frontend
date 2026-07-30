@@ -7,8 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Package, MapPin, Clock, CheckCircle2, Truck, Phone,
   User, ArrowLeft, Star, ChevronRight, Navigation,
-  Weight, Box, Calendar, RefreshCw,
+  Weight, Box, Calendar, RefreshCw, AlertCircle, Loader2,
 } from 'lucide-react';
+import {
+  getAnnouncementTracking,
+  TrackingResponseDTO,
+  DeliveryStatus,
+} from '@/services/livraisonService';
 
 // ── Dynamic map import (SSR-safe) ─────────────────────────────────────────────
 const MapLeaflet = dynamic(() => import('@/components/MapLeaflet'), {
@@ -17,59 +22,33 @@ const MapLeaflet = dynamic(() => import('@/components/MapLeaflet'), {
     <div className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100 animate-pulse flex items-center justify-center">
       <div className="flex flex-col items-center gap-2 text-orange-400">
         <Navigation className="w-8 h-8 animate-bounce" />
-        <span className="text-sm font-medium">Calcul du trajet…</span>
+        <span className="text-sm font-medium">Chargement de la carte…</span>
       </div>
     </div>
   ),
 });
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-type DeliveryStatus = 'pending' | 'picked_up' | 'in_transit' | 'delivered';
-
-interface DeliveryData {
-  id: string;
-  status: DeliveryStatus;
-  colis: { designation: string; poids: string; dimensions: string };
-  livreur: { nom: string; prenom: string; telephone: string; vehicule: string };
-  from: { label: string; lat: number; lng: number };
-  to:   { label: string; lat: number; lng: number };
-  estimatedArrival: string;
-  distance: string;
-  createdAt: string;
-}
-
-// ── Mock data (remplacer par appel API /api/livraisons/[id]) ──────────────────
-const MOCK_DELIVERY: DeliveryData = {
-  id: 'LIV-2026-00142',
-  status: 'in_transit',
-  colis: { designation: 'Documents confidentiels', poids: '0.5 kg', dimensions: '30×20×5 cm' },
-  livreur: { nom: 'Nkounga', prenom: 'Éric', telephone: '+237691234567', vehicule: 'Moto Honda CB 125 — LT 2456 AC' },
-  from: { label: 'Akwa, Douala', lat: 4.0511, lng: 9.7085 },
-  to:   { label: 'Bonanjo, Douala', lat: 4.0580, lng: 9.6960 },
-  estimatedArrival: '12 min',
-  distance: '3.2 km',
-  createdAt: '30 juillet 2026, 12h45',
-};
-
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<DeliveryStatus, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
-  pending:    { label: 'En attente',      color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200',   icon: <Clock className="w-4 h-4" /> },
-  picked_up:  { label: 'Colis récupéré', color: 'text-blue-700',   bg: 'bg-blue-50 border-blue-200',     icon: <Package className="w-4 h-4" /> },
-  in_transit: { label: 'En route',        color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200', icon: <Truck className="w-4 h-4" /> },
-  delivered:  { label: 'Livré ✓',         color: 'text-green-700',  bg: 'bg-green-50 border-green-200',   icon: <CheckCircle2 className="w-4 h-4" /> },
+  PENDING:    { label: 'En attente',      color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200',   icon: <Clock className="w-4 h-4" /> },
+  PICKED_UP:  { label: 'Colis récupéré', color: 'text-blue-700',   bg: 'bg-blue-50 border-blue-200',     icon: <Package className="w-4 h-4" /> },
+  IN_TRANSIT: { label: 'En route',        color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200', icon: <Truck className="w-4 h-4" /> },
+  DELIVERED:  { label: 'Livré ✓',         color: 'text-green-700',  bg: 'bg-green-50 border-green-200',   icon: <CheckCircle2 className="w-4 h-4" /> },
+  CANCELLED:  { label: 'Annulée',         color: 'text-red-700',    bg: 'bg-red-50 border-red-200',       icon: <AlertCircle className="w-4 h-4" /> },
 };
 
 const TIMELINE: { key: DeliveryStatus; label: string; sub: string }[] = [
-  { key: 'pending',    label: 'Commande créée',  sub: 'Colis en attente de prise en charge' },
-  { key: 'picked_up', label: 'Colis récupéré',   sub: 'Le livreur a pris votre colis' },
-  { key: 'in_transit',label: 'En route',          sub: 'Colis en cours de livraison' },
-  { key: 'delivered', label: 'Livré',             sub: 'Colis remis au destinataire' },
+  { key: 'PENDING',    label: 'Commande créée',  sub: 'Colis en attente de prise en charge' },
+  { key: 'PICKED_UP', label: 'Colis récupéré',   sub: 'Le livreur a pris votre colis' },
+  { key: 'IN_TRANSIT',label: 'En route',          sub: 'Colis en cours de livraison' },
+  { key: 'DELIVERED', label: 'Livré',             sub: 'Colis remis au destinataire' },
 ];
 
-const STATUS_ORDER: DeliveryStatus[] = ['pending', 'picked_up', 'in_transit', 'delivered'];
+const STATUS_ORDER: DeliveryStatus[] = ['PENDING', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'];
 
-// ── OSRM fetcher ──────────────────────────────────────────────────────────────
-async function fetchOsrmRoute(from: { lat: number; lng: number }, to: { lat: number; lng: number }) {
+// ── OSRM route fetcher ────────────────────────────────────────────────────────
+async function fetchOsrmRoute(from: { lat?: number; lng?: number }, to: { lat?: number; lng?: number }) {
+  if (!from.lat || !from.lng || !to.lat || !to.lng) return null;
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
     const res = await fetch(url);
@@ -78,45 +57,97 @@ async function fetchOsrmRoute(from: { lat: number; lng: number }, to: { lat: num
     if (data.routes?.[0]?.geometry) {
       return { type: 'Feature' as const, geometry: data.routes[0].geometry, properties: {} };
     }
-  } catch { /* fallback — ligne droite dans MapLeaflet */ }
+  } catch { /* fallback — MapLeaflet draw straight line */ }
   return null;
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function SuiviLivraisonPage() {
-  const params = useParams();
-  const router = useRouter();
-  const deliveryId = (params?.id as string) || MOCK_DELIVERY.id;
+  const params   = useParams();
+  const router   = useRouter();
+  const deliveryId = params?.id as string;
 
-  const [delivery] = useState<DeliveryData>(MOCK_DELIVERY);
-  const [route, setRoute] = useState<any>(null);
-  const [routeLoading, setRouteLoading] = useState(true);
+  const [delivery,     setDelivery]     = useState<TrackingResponseDTO | null>(null);
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState<string | null>(null);
+  const [route,        setRoute]        = useState<any>(null);
+  const [routeLoading, setRouteLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [lastRefresh,  setLastRefresh]  = useState<Date>(new Date());
 
-  const statusIndex = STATUS_ORDER.indexOf(delivery.status);
-  const statusConf  = STATUS_CONFIG[delivery.status];
+  // ── Fetch delivery data ─────────────────────────────────────────────────────
+  const loadDelivery = useCallback(async () => {
+    if (!deliveryId) return;
+    try {
+      setError(null);
+      const data = await getAnnouncementTracking(deliveryId);
+      setDelivery(data);
+      // Load OSRM route after we have coordinates
+      if (data.from.lat && data.to.lat) {
+        setRouteLoading(true);
+        const r = await fetchOsrmRoute(data.from, data.to);
+        setRoute(r);
+        setRouteLoading(false);
+      }
+    } catch (err: any) {
+      setError("Impossible de charger les données de suivi. Vérifiez votre connexion.");
+    } finally {
+      setLoading(false);
+    }
+  }, [deliveryId]);
 
-  const loadRoute = useCallback(async () => {
-    const r = await fetchOsrmRoute(delivery.from, delivery.to);
-    setRoute(r);
-    setRouteLoading(false);
-  }, [delivery.from, delivery.to]);
-
-  useEffect(() => { loadRoute(); }, [loadRoute]);
+  useEffect(() => { loadDelivery(); }, [loadDelivery]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    setRouteLoading(true);
-    await loadRoute();
+    await loadDelivery();
     setLastRefresh(new Date());
     setTimeout(() => setIsRefreshing(false), 700);
   };
 
+  // ── Loading state ───────────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+        <p className="text-gray-500 text-sm">Chargement du suivi…</p>
+      </div>
+    );
+  }
+
+  // ── Error state ─────────────────────────────────────────────────────────────
+  if (error || !delivery) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-red-500" />
+        </div>
+        <p className="text-gray-800 font-bold">{error || "Livraison introuvable"}</p>
+        <button onClick={handleRefresh} className="px-6 py-2 bg-orange-500 text-white rounded-xl font-semibold text-sm hover:bg-orange-600 transition-colors">
+          Réessayer
+        </button>
+        <button onClick={() => router.back()} className="text-sm text-gray-400 hover:text-gray-600">
+          ← Retour
+        </button>
+      </div>
+    );
+  }
+
+  const statusIndex = STATUS_ORDER.indexOf(delivery.status);
+  const statusConf  = STATUS_CONFIG[delivery.status] ?? STATUS_CONFIG['PENDING'];
+
   const markers = [
-    { position: [delivery.from.lat, delivery.from.lng] as [number,number], label: `📦 ${delivery.from.label}`, color: '#f97316' },
-    { position: [delivery.to.lat,   delivery.to.lng]   as [number,number], label: `📍 ${delivery.to.label}`,   color: '#22c55e' },
+    ...(delivery.from.lat && delivery.from.lng
+      ? [{ position: [delivery.from.lat, delivery.from.lng] as [number, number], label: `📦 ${delivery.from.label}`, color: '#f97316' }]
+      : []),
+    ...(delivery.to.lat && delivery.to.lng
+      ? [{ position: [delivery.to.lat, delivery.to.lng] as [number, number], label: `📍 ${delivery.to.label}`, color: '#22c55e' }]
+      : []),
   ];
+
+  const mapCenter: [number, number] = (delivery.from.lat && delivery.to.lat)
+    ? [(delivery.from.lat + delivery.to.lat) / 2, (delivery.from.lng! + delivery.to.lng!) / 2]
+    : [4.05, 9.70]; // Douala fallback
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -145,13 +176,14 @@ export default function SuiviLivraisonPage() {
           <div className={`${statusConf.color} flex-shrink-0`}>{statusConf.icon}</div>
           <div className="flex-1">
             <p className={`font-bold text-sm ${statusConf.color}`}>{statusConf.label}</p>
-            {delivery.status === 'in_transit' && (
+            {delivery.status === 'IN_TRANSIT' && (
               <p className="text-xs text-gray-500 mt-0.5">
-                Arrivée estimée dans <strong>{delivery.estimatedArrival}</strong> · {delivery.distance}
+                {delivery.estimatedArrival && <>Arrivée estimée : <strong>{delivery.estimatedArrival}</strong> · </>}
+                {delivery.distance && <>{delivery.distance}</>}
               </p>
             )}
           </div>
-          {delivery.status === 'in_transit' && (
+          {delivery.status === 'IN_TRANSIT' && (
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500" />
@@ -164,13 +196,7 @@ export default function SuiviLivraisonPage() {
           className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
           <div className="h-64 md:h-80">
             {!routeLoading ? (
-              <MapLeaflet
-                center={[(delivery.from.lat + delivery.to.lat) / 2, (delivery.from.lng + delivery.to.lng) / 2]}
-                zoom={13}
-                markers={markers}
-                route={route}
-                className="h-full"
-              />
+              <MapLeaflet center={mapCenter} zoom={13} markers={markers} route={route} className="h-full" />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100 animate-pulse flex items-center justify-center">
                 <div className="flex flex-col items-center gap-2 text-orange-400">
@@ -210,9 +236,9 @@ export default function SuiviLivraisonPage() {
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all ${
                     done ? 'bg-green-500 border-green-500' : active ? 'bg-orange-500 border-orange-500' : 'bg-white border-gray-300'
                   }`}>
-                    {done ? <CheckCircle2 className="w-4 h-4 text-white" />
-                          : active ? <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
-                          : <div className="w-2 h-2 rounded-full bg-gray-300" />}
+                    {done   ? <CheckCircle2 className="w-4 h-4 text-white" />
+                            : active ? <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
+                            : <div className="w-2 h-2 rounded-full bg-gray-300" />}
                   </div>
                   {!isLast && <div className={`w-0.5 h-9 mt-1 ${done ? 'bg-green-400' : 'bg-gray-200'}`} />}
                 </div>
@@ -237,18 +263,24 @@ export default function SuiviLivraisonPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-gray-900">{delivery.livreur.prenom} {delivery.livreur.nom}</p>
-              <p className="text-xs text-gray-500 mt-0.5 truncate">{delivery.livreur.vehicule}</p>
-              <div className="flex items-center gap-0.5 mt-1">
-                {[1,2,3,4,5].map(s => (
-                  <Star key={s} className={`w-3 h-3 ${s <= 4 ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
-                ))}
-                <span className="text-xs text-gray-500 ml-1">4.0</span>
-              </div>
+              {delivery.livreur.vehicule && (
+                <p className="text-xs text-gray-500 mt-0.5 truncate">{delivery.livreur.vehicule}</p>
+              )}
+              {delivery.livreur.rating !== undefined && (
+                <div className="flex items-center gap-0.5 mt-1">
+                  {[1,2,3,4,5].map(s => (
+                    <Star key={s} className={`w-3 h-3 ${s <= Math.round(delivery.livreur.rating!) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                  ))}
+                  <span className="text-xs text-gray-500 ml-1">{delivery.livreur.rating.toFixed(1)}</span>
+                </div>
+              )}
             </div>
-            <a href={`tel:${delivery.livreur.telephone}`}
-              className="w-11 h-11 rounded-xl bg-green-500 hover:bg-green-600 flex items-center justify-center transition-colors shadow-sm">
-              <Phone className="w-5 h-5 text-white" />
-            </a>
+            {delivery.livreur.telephone && (
+              <a href={`tel:${delivery.livreur.telephone}`}
+                className="w-11 h-11 rounded-xl bg-green-500 hover:bg-green-600 flex items-center justify-center transition-colors shadow-sm">
+                <Phone className="w-5 h-5 text-white" />
+              </a>
+            )}
           </div>
         </motion.div>
 
@@ -261,9 +293,9 @@ export default function SuiviLivraisonPage() {
           <div className="grid grid-cols-2 gap-3">
             {[
               { icon: <Box className="w-3.5 h-3.5" />,      label: 'Désignation', value: delivery.colis.designation },
-              { icon: <Weight className="w-3.5 h-3.5" />,   label: 'Poids',       value: delivery.colis.poids },
-              { icon: <MapPin className="w-3.5 h-3.5" />,   label: 'Dimensions',  value: delivery.colis.dimensions },
-              { icon: <Calendar className="w-3.5 h-3.5" />, label: 'Créée le',    value: delivery.createdAt },
+              { icon: <Weight className="w-3.5 h-3.5" />,   label: 'Poids',       value: delivery.colis.poids ?? '—' },
+              { icon: <MapPin className="w-3.5 h-3.5" />,   label: 'Dimensions',  value: delivery.colis.dimensions ?? '—' },
+              { icon: <Calendar className="w-3.5 h-3.5" />, label: 'Créée le',    value: new Date(delivery.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) },
             ].map((item, i) => (
               <div key={i} className="bg-gray-50 rounded-xl p-3">
                 <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">{item.icon}{item.label}</div>
@@ -273,9 +305,9 @@ export default function SuiviLivraisonPage() {
           </div>
         </motion.div>
 
-        {/* CTA notation — affiché seulement si livré */}
+        {/* CTA notation — uniquement si livré */}
         <AnimatePresence>
-          {delivery.status === 'delivered' && (
+          {delivery.status === 'DELIVERED' && (
             <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0 }}
               className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-5 shadow-lg">
               <p className="text-white font-bold text-base mb-1">Livraison terminée ! 🎉</p>
