@@ -134,6 +134,14 @@ export default function RegisterPage() {
   const [phoneDialCode, setPhoneDialCode] = useState('+237');
   const [showDialDropdown, setShowDialDropdown] = useState(false);
 
+  useEffect(() => {
+    const selectedCountry = ALL_DIAL_CODES.find(c => c.dialCode === phoneDialCode);
+    const maxDigits = selectedCountry ? selectedCountry.phoneDigits : 9;
+    if (formData.telephone.length > maxDigits) {
+      setFormData(prev => ({ ...prev, telephone: prev.telephone.slice(0, maxDigits) }));
+    }
+  }, [phoneDialCode]);
+
   // Webcam states pour photo temps réel
   const [showWebcam, setShowWebcam] = useState(false)
   const videoRef = React.useRef<HTMLVideoElement>(null)
@@ -259,6 +267,18 @@ export default function RegisterPage() {
     } else if (formData.motDePasse !== formData.confirmerMotDePasse) {
       errors.confirmerMotDePasse = "Les mots de passe ne correspondent pas";
       isValid = false;
+    }
+
+    if (!formData.telephone.trim()) {
+      errors.telephone = "Le numéro de téléphone est requis";
+      isValid = false;
+    } else {
+      const selectedCountry = ALL_DIAL_CODES.find(c => c.dialCode === phoneDialCode);
+      const requiredDigits = selectedCountry ? selectedCountry.phoneDigits : 9;
+      if (formData.telephone.replace(/\s/g, '').length !== requiredDigits) {
+        errors.telephone = `Le numéro de téléphone doit contenir exactement ${requiredDigits} chiffres`;
+        isValid = false;
+      }
     }
 
     setFieldErrors(errors);
@@ -456,16 +476,9 @@ export default function RegisterPage() {
 
   const updateField = (field: string, value: string) => {
     if (field === 'telephone') {
-      let digitsOnly = value.replace(/\D/g, '').slice(0, 9)
-      // Force start with 6 if user types anything else at start
-      if (digitsOnly.length > 0 && !digitsOnly.startsWith('6')) {
-        // If user typed '6' it's fine. If they typed '1', replace with '6' or block?
-        // User said "forcé cela sur l'interface". Let's handle it by auto-prefixing or validation.
-        // Simpler to just enforce strictly in validation and maybe prevent non-6 start if possible, 
-        // but simple replace is often jarring. 
-        // Let's just allow digits but validation handles it.
-        // Actually, let's try to be smart.
-      }
+      const selectedCountry = ALL_DIAL_CODES.find(c => c.dialCode === phoneDialCode);
+      const maxDigits = selectedCountry ? selectedCountry.phoneDigits : 9;
+      const digitsOnly = value.replace(/\D/g, '').slice(0, maxDigits);
       setFormData({ ...formData, [field]: digitsOnly })
     } else if (field === 'numeroCNI') {
       const digitsOnly = value.replace(/\D/g, '')

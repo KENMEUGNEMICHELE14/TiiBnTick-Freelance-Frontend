@@ -409,8 +409,8 @@ export default function TiiBnTickFreelancerLandingPage() {
             </div>
           </div>
 
-          <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="text-sm text-slate-400 text-center">
+          <div className="border-t border-slate-800 pt-8 flex flex-col items-center gap-4 text-center">
+            <p className="text-sm text-slate-400">
               &copy; 2026 TiiBnTick — Un système Yowyob Inc. Ltd. Tous droits réservés.
             </p>
             <div className="flex gap-4 text-xs text-slate-500">
