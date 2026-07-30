@@ -141,7 +141,6 @@ export default function RegisterPage() {
     const handleClickOutside = (e: MouseEvent) => {
       if (dialDropdownRef.current && !dialDropdownRef.current.contains(e.target as Node)) {
         setShowDialDropdown(false);
-        setDialSearch('');
       }
     };
     if (showDialDropdown) document.addEventListener('mousedown', handleClickOutside);
