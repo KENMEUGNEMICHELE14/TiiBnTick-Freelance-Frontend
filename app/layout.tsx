@@ -15,7 +15,6 @@ import { cookies } from 'next/headers'
 import ThemeCookieSync from '@/components/theme-cookie-sync'
 import { Toaster } from '@/components/ui/toaster'
 import LocationTracker from '@/components/LocationTracker'
-import FloatingChatWidget from '@/components/chat/FloatingChatWidget'
 
 export const metadata: Metadata = {
   title: 'TiiBnTick',
@@ -67,7 +66,6 @@ export default async function RootLayout({
           </AuthProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
-        <FloatingChatWidget />
       </body>
     </html>
   )

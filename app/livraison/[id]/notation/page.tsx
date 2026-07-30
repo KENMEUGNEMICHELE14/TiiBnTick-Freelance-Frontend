@@ -4,33 +4,14 @@ import React, { useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Star, ArrowLeft, Send, CheckCircle2, Package,
-  Truck, User, MapPin, MessageSquare, ThumbsUp,
-  Clock, Shield, Award, Loader2,
+  Star, ArrowLeft, Send, CheckCircle2,
+  Truck, User, MessageSquare, Loader2,
 } from 'lucide-react';
 import { submitRating } from '@/services/livraisonService';
 
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Role = 'client' | 'livreur';
-
-// ── Tags rapides ──────────────────────────────────────────────────────────────
-const CLIENT_TAGS = [
-  { id: 'ponctuel',      label: '⏱ Ponctuel' },
-  { id: 'soigneux',     label: '📦 Soigneux' },
-  { id: 'professionnel',label: '💼 Professionnel' },
-  { id: 'rapide',       label: '⚡ Rapide' },
-  { id: 'communicatif', label: '💬 Communicatif' },
-  { id: 'fiable',       label: '🛡 Fiable' },
-];
-
-const LIVREUR_TAGS = [
-  { id: 'disponible',   label: '✅ Disponible' },
-  { id: 'bien_emballe', label: '📦 Colis bien emballé' },
-  { id: 'facile_acces', label: '🗺 Facile d\'accès' },
-  { id: 'clair',        label: '💬 Instructions claires' },
-  { id: 'sympathique',  label: '😊 Sympathique' },
-  { id: 'ponctuel',     label: '⏱ Ponctuel' },
-];
 
 // ── Star rating component ─────────────────────────────────────────────────────
 function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
@@ -104,16 +85,11 @@ export default function NotationPage() {
 
   const [rating,    setRating]    = useState(0);
   const [comment,   setComment]   = useState('');
-  const [tags,      setTags]      = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [loading,   setLoading]   = useState(false);
   const [apiError,  setApiError]  = useState<string | null>(null);
 
-  const tagList  = role === 'client' ? CLIENT_TAGS : LIVREUR_TAGS;
   const isClient = role === 'client';
-
-  const toggleTag = (id: string) =>
-    setTags(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,7 +102,6 @@ export default function NotationPage() {
         role,
         rating,
         comment: comment.trim() || undefined,
-        tags: tags.length > 0 ? tags : undefined,
       });
       setSubmitted(true);
     } catch (err: any) {
@@ -199,29 +174,6 @@ export default function NotationPage() {
             )}
           </motion.div>
 
-          {/* Tags rapides */}
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-            className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-            <h2 className="font-bold text-gray-900 text-sm mb-1">Points forts</h2>
-            <p className="text-xs text-gray-400 mb-4">Sélectionnez ce qui correspond (optionnel)</p>
-            <div className="flex flex-wrap gap-2">
-              {tagList.map(tag => {
-                const selected = tags.includes(tag.id);
-                return (
-                  <button key={tag.id} type="button" onClick={() => toggleTag(tag.id)}
-                    className={`px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
-                      selected
-                        ? 'bg-orange-500 text-white border-orange-500 shadow-sm scale-[1.03]'
-                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-orange-300 hover:bg-orange-50'
-                    }`}>
-                    {tag.label}
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-
-          {/* Commentaire */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
             <label className="font-bold text-gray-900 text-sm mb-1 block">
